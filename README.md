@@ -5,8 +5,8 @@
 - [ ] Find afterglow of aurora
 - [ ] Overdosed by cutie, adorable and energized
 
- <p style="text-align:center">
- <b><i>There won't be a second Elysia</i> - Kevin Kaslana</b>
+ <p align="center">
+<i>"There won't be a second Elysia"</i> -  <b>Kevin Kaslana</b>
  </p>
 
 ![Elysiaaaa](https://github.com/phuchptty/Yggdrasil/blob/main/images/b2.png?raw=true)

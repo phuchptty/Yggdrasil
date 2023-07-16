@@ -1,0 +1,46 @@
+keycloak:
+  image:
+    registry: git.hisoft.com.vn:5050
+    repository: tek4vn/keycloak
+    tag: latest
+    pullPolicy: Always
+    pullSecrets:
+      - keycloak-registry
+  production: true
+  proxy: edge
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+      cert-manager.io/cluster-issuer: le-dns01
+    hostname: sso.techgate.vn
+    tls: true
+  auth:
+    adminUser: admin
+    adminPassword: HH223344!@#
+  resources:
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
+    requests:
+      cpu: "300m"
+      memory: "1Gi"
+  extraEnvVars:
+    - name: KAFKA_TOPIC
+      value: vn.tek4.keycloak.spi.events
+    - name: KAFKA_CLIENT_ID
+      value: keycloak-kafka
+    - name: KAFKA_BOOTSTRAP_SERVERS
+      value: 10.0.10.0:9092
+    - name: KAFKA_EVENTS
+      value: REGISTER,VERIFY_EMAIL,UPDATE_EMAIL
+  postgresql:
+    auth:
+      postgresPassword: 9RmmLUI2FX
+      password: 9vQJSG8iWQ
+imageCredentials:
+  registry: git.hisoft.com.vn:5050
+  username: trancong12102@gmail.com
+  password: glpat-sqyxvTDzv_M1QvxXnzfV
+  email: trancong12102@gmail.com

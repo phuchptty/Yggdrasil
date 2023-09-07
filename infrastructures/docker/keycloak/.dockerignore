@@ -1,0 +1,6 @@
+theme/node_modules
+theme/out
+theme/theme/keywind/login/resources/dist
+.git
+.gitignore
+*.md

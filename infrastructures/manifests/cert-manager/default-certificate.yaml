@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: 'yggdrasil-wildcard-tls'
+  namespace: cert-manager
+spec:
+  dnsNames:
+    - "*.cuterabbit.art"
+  issuerRef:
+    kind: ClusterIssuer
+    name: le-dns01
+  secretName: yggdrasil-wildcard-tls

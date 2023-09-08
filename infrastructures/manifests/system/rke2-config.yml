@@ -1,0 +1,13 @@
+tls-san:
+  - "cluster.pre.cuterabbit.art"
+kube-controller-manager-arg:
+  - "node-cidr-mask-size=18"
+  - "bind-address=0.0.0.0"
+kube-proxy-arg:
+  - "metrics-bind-address=0.0.0.0"
+kube-scheduler-arg:
+  - "bind-address=0.0.0.0"
+kubelet-arg:
+  - "max-pods=16000"
+#disable: rke2-ingress-nginx
+etcd-expose-metrics: true

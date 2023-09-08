@@ -1,0 +1,9 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: 'ingress-default'
+  namespace: {{ .Release.Namespace }}
+spec:
+  dnsNames: {{ .Values.defaultCertificate.dnsNames | toYaml | nindent 4 }}
+  issuerRef: {{ .Values.defaultCertificate.issuerRef | toYaml | nindent 4 }}
+  secretName: ingress-default-certificate-tls

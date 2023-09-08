@@ -1,0 +1,24 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: rke2-ingress-nginx
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    controller:
+      ingressClass: "nginx"
+      ingressClassResource:
+        controllerValue: "k8s.io/ingress-nginx"
+        default: true
+        name: "nginx"
+      config:
+        use-forwarded-headers: "true"
+        proxy-buffer-size: "256k"
+        proxy-buffer-number: "4"
+        large-client-header-buffers: "4 16k"
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+          additionalLabels:
+            cluster: nonproduction

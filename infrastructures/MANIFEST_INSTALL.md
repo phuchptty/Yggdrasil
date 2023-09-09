@@ -55,3 +55,9 @@ kubectl apply -k cert-manager
 ```shell
 kubectl apply -f ingress-nginx/helmConfig.yaml
 ```
+
+## (Optional) Echo server to test certificate and ingress
+```shell
+helm install echo-server -n echo-server --create-namespace echo-server
+```
+

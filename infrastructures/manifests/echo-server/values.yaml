@@ -1,0 +1,11 @@
+echo-server:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - host: echo.yds.cuterabbit.art
+        paths:
+          - /
+    tls:
+      - hosts:
+          - echo.yds.cuterabbit.art

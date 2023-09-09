@@ -16,6 +16,8 @@ spec:
         proxy-buffer-size: "256k"
         proxy-buffer-number: "4"
         large-client-header-buffers: "4 16k"
+      extraArgs:
+        default-ssl-certificate: "cert-manager/yggdrasil-wildcard-tls"
       metrics:
         enabled: true
         serviceMonitor:

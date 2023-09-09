@@ -50,6 +50,12 @@ helm install rancher rancher-latest/rancher `
   
 ```
 
+## Create rancher project (for better orgnize) (optional)
+```shell
+kubectl apply -f rancher/project-core.yml
+kubectl apply -f rancher/project-guest-vm.yml
+```
+
 ## Apply wildcard cert-manager
 
 ```shell

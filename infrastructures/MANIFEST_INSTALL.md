@@ -1,3 +1,10 @@
+# Table of content
+
+- Infrastructure prerequisite
+- Service deploy
+
+# Step 1: Infrastructure prerequisite
+
 ## Install cert manager
 
 ```shell
@@ -77,4 +84,12 @@ kubectl -n longhorn-system get pod
 kubectl -n longhorn-system create secret generic basic-auth --from-file=longhorn/auth
 
 kubectl -n longhorn-system apply -f longhorn/ingress.yml
+```
+
+# Step 2: Service Deploy
+
+## Install Keycloak
+
+```shell
+helm upgrade keycloak -n keycloak --create-namespace keycloak
 ```

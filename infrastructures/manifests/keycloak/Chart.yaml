@@ -25,5 +25,5 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: keycloak
-    version: "^15.0.0"
+    version: "^16.1.2"
     repository: oci://registry-1.docker.io/bitnamicharts

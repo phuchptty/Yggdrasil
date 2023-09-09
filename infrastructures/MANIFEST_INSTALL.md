@@ -85,8 +85,13 @@ helm install longhorn longhorn/longhorn --namespace longhorn-system --create-nam
 
 kubectl -n longhorn-system get pod
 
-# TAO INGRESS
-# Account la admin:HH223344
+# Wait for about 5 mins for longhorn process done
+
+# Apply config
+kubectl apply -f longhorn/config-storageclass.yml
+
+# UI INGRESS
+# Default account admin:HH223344
 kubectl -n longhorn-system create secret generic basic-auth --from-file=longhorn/auth
 
 kubectl -n longhorn-system apply -f longhorn/ingress.yml

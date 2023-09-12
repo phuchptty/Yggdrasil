@@ -1,8 +1,17 @@
 import { NestFactory } from "@nestjs/core";
+import { FastifyAdapter, NestFastifyApplication } from "@nestjs/platform-fastify";
 import { AppModule } from "./app.module";
+import { Logger } from "@nestjs/common";
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
-    await app.listen(3000);
+    process.env.TZ = "Asia/Ho_Chi_Minh";
+
+    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+
+    await app.listen(3000, "0.0.0.0");
+
+    Logger.log(`🚀  Server running on ${await app.getUrl()}`, "Bootstrap");
+    Logger.log(`🚀  Graphql running on ${await app.getUrl()}/graphql`, "Bootstrap");
 }
+
 bootstrap();

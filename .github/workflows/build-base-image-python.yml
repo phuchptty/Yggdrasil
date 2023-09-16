@@ -35,7 +35,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          cd pkg/beacon
+          cd infrastructures/docker/baseImages/python
           docker build -t ${{ env.REGISTRY }}/${{ env.OWNER_LC }} .
 
       - name: Push Docker Image

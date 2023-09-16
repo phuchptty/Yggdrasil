@@ -1,4 +1,4 @@
-name: Build Beacon Docker Image
+name: Build Base Image Python
 
 on:
   workflow_dispatch:

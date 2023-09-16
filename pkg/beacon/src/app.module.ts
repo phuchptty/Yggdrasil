@@ -1,38 +1,29 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
-import { GraphQLModule } from "@nestjs/graphql";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { MongooseModule } from "@nestjs/mongoose";
+import { ConfigModule } from "@nestjs/config";
+import { FileSystemModule } from "./modules/file-system/file-system.module";
+import { GatewayModule } from "./modules/gateway/gateway.module";
 import appConfig from "./configs/app.config";
-import databaseConfig from "./configs/database.config";
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            load: [appConfig, databaseConfig],
+            load: [appConfig],
             isGlobal: true,
         }),
-        MongooseModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (config: ConfigService) => ({
-                uri: config.get<string>("database.uri"),
-                dbName: config.get<string>("database.name"),
-            }),
-        }),
-        GraphQLModule.forRoot<ApolloDriverConfig>({
-            driver: ApolloDriver,
-            playground: false,
-            plugins: [ApolloServerPluginLandingPageLocalDefault()],
-            sortSchema: true,
-            introspection: true,
-            autoSchemaFile: false,
-            subscriptions: {
-                "graphql-ws": true,
-            },
-        }),
+        // GraphQLModule.forRoot<ApolloDriverConfig>({
+        //     driver: ApolloDriver,
+        //     playground: false,
+        //     plugins: [ApolloServerPluginLandingPageLocalDefault()],
+        //     sortSchema: true,
+        //     introspection: true,
+        //     autoSchemaFile: true,
+        //     subscriptions: {
+        //         "graphql-ws": true,
+        //     },
+        // }),
+        FileSystemModule,
+        GatewayModule,
     ],
     controllers: [AppController],
     providers: [],

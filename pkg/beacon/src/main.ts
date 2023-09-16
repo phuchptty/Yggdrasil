@@ -1,12 +1,13 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter, NestFastifyApplication } from "@nestjs/platform-fastify";
 import { AppModule } from "./app.module";
-import { Logger } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
     process.env.TZ = "Asia/Ho_Chi_Minh";
 
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+    app.useGlobalPipes(new ValidationPipe());
 
     await app.listen(3000, "0.0.0.0");
 

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-configmap
+data:
+  nginx.conf: |
+    worker_processes 1;
+    events { worker_connections 1024; }
+    http {
+      map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+      }
+
+      server {
+        listen 80;
+
+        location ~ ^/api/v1/namespaces/[^/]+/pods/[^/]+/exec$ {
+            resolver 10.43.0.10 valid=300s;
+            resolver_timeout 10s;
+
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header Authorization "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjhBMWs3dTgta0hBbXo4NHktNmJETWdXcUFaaVBCejYtemtPWlZTS1lvZXcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJleGVjLW5naW54LXByb3h5Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImV4ZWMtbmdpbngtcHJveHktdG9rZW4tc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImV4ZWMtbmdpbngtZnVsbC1wZXJtIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiMzdiMTI4OWUtZjFmZi00OGMzLTlmMzMtMzMzZmZhZmQ0ZDVjIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmV4ZWMtbmdpbngtcHJveHk6ZXhlYy1uZ2lueC1mdWxsLXBlcm0ifQ.TJNxt2Ibrvee7GVsJ-XwyFYNLSEcMbcB6ePMMrDi7jz-oWfH0-fPkMor4i8i4ov7aqKtvpw7Lt34-tTSMTfqMtiyQQmjzFM3KfSmG8qQzflBjkY8Hk0K2cGr9Fd8v5Q_Jq9kW0kbRuJrzWyQEZ4I54J63Oyc8q3Lx9n4hHgAbm8aAnH5if0lEZs4FFtJ1knUU1NrnfSn0dL-Nx8fY_RXwRwSztU7KfNXO_UjFYb0_1IyjcrWzVJJGBvqNiolUM6OOlAdSsuWN_gEIANBadZa4RNllSc0rXmAHJEseooZ7lb2-iH6lEHAbVCDF71zw4ZU5o-r5EK3ZKqdrkWWkSMkfA";
+            
+            proxy_ssl_trusted_certificate /var/run/secrets/kubernetes.io/serviceaccount/ca.crt;
+
+            proxy_pass https://kubernetes.default.svc.cluster.local;
+        }
+      }
+    }

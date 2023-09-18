@@ -104,3 +104,8 @@ kubectl -n longhorn-system apply -f longhorn/ingress.yml
 ```shell
 helm upgrade keycloak -n keycloak --create-namespace keycloak
 ```
+
+## Install kubeapi exec proxy
+```shell
+helm install exec-proxy -n exec-nginx-proxy --create-namespace .
+```

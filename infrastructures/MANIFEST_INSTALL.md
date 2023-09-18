@@ -107,5 +107,5 @@ helm upgrade keycloak -n keycloak --create-namespace keycloak
 
 ## Install kubeapi exec proxy
 ```shell
-helm install exec-proxy -n exec-nginx-proxy --create-namespace .
+helm upgrade exec-proxy -n exec-nginx-proxy --create-namespace exec-nginx-proxy
 ```

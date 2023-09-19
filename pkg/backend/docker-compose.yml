@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  playground_service:
+    container_name: playground_service_prod
+    restart: unless-stopped
+    image: "git.hisoft.com.vn:5050/tek4vn/playground-service:prod"
+    ports:
+      - ${APP_PORT}:3000
+    env_file:
+      - ./.env
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - ppx
+
+  mongo:
+    container_name: mongodb_prod
+    image: mongo:latest
+    restart: always
+    volumes:
+      - db:/data/db
+    networks:
+      - ppx
+
+  redis:
+    container_name: redis_prod
+    image: redis:alpine
+    command: redis-server --requirepass superSecret123
+    restart: always
+    volumes:
+      - redis:/data
+    networks:
+      - ppx
+
+volumes:
+  db:
+  redis:
+
+networks:
+  ppx:

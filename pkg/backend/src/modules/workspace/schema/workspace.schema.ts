@@ -3,11 +3,10 @@ import { Field, GraphQLISODateTime, ID, ObjectType } from "@nestjs/graphql";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 import paginate from "mongoose-paginate-v2";
-import { WorkspaceFile, WorkspaceFileSchema } from "../../../commons/schemas/workspaceFile.schema";
 import { generateSlug } from "random-word-slugs";
 import dayjs from "dayjs";
 import { Language } from "../../language/schema/language.schema";
-import { User, UserSchema } from "../../../commons/schemas/user.schema";
+import { User, UserSchema } from "../../user/schema/user.schema";
 
 @Schema({ timestamps: true, _id: true })
 @ObjectType("Playground_Workspace")

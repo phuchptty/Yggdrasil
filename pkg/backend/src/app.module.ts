@@ -9,6 +9,7 @@ import { LanguageModule } from "./modules/language/language.module";
 import { WorkspaceModule } from "./modules/workspace/workspace.module";
 import { QueueModule } from './modules/queue/queue.module';
 import { KubeApiModule } from './modules/external/kube-api/kube-api.module';
+import { UserModule } from './modules/user/user.module';
 import appConfig from "./configs/app.config";
 import databaseConfig from "./configs/database.config";
 import GraphQLJSON from "graphql-type-json";
@@ -40,6 +41,7 @@ import GraphQLJSON from "graphql-type-json";
         LanguageModule,
         WorkspaceModule,
         KubeApiModule,
+        UserModule,
     ],
     controllers: [AppController],
     providers: [],

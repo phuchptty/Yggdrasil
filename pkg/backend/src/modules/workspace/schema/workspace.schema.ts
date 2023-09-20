@@ -1,4 +1,4 @@
-import { WorkspacePermission, WorkspaceStatus } from "../../../commons/enums";
+import { WorkspacePermission } from "../../../commons/enums";
 import { Field, GraphQLISODateTime, ID, ObjectType } from "@nestjs/graphql";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
@@ -29,10 +29,6 @@ export class Workspace {
     @Field(() => String, { nullable: true })
     @Prop()
     description?: string;
-
-    @Field(() => WorkspaceStatus, { nullable: false })
-    @Prop({ required: true, type: String, enum: WorkspaceStatus, default: WorkspaceStatus.DRAFT })
-    status: WorkspaceStatus;
 
     @Field(() => WorkspacePermission, { nullable: false })
     @Prop({ required: true, type: String, enum: WorkspacePermission, default: WorkspacePermission.PRIVATE })

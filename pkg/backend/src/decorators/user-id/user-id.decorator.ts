@@ -8,8 +8,8 @@ export const UserId = createParamDecorator((data: unknown, ctx: ExecutionContext
 
     let userId = null;
 
-    if (headers["Keycloak-Sub"] || headers["keycloak-sub"]) {
-        userId = headers["Keycloak-Sub"] || headers["keycloak-sub"];
+    if (headers["Keycloak-Sub"] || headers["keycloak.ts-sub"]) {
+        userId = headers["Keycloak-Sub"] || headers["keycloak.ts-sub"];
     }
 
     return userId;

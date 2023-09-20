@@ -23,21 +23,21 @@ export class LanguageResolver {
 
     @Mutation(() => Language, { name: "playground_createLanguage" })
     @UseGuards(AuthGuard)
-    @Role(RoleEnum.ADMIN, RoleEnum.MODERATOR, RoleEnum.EDITOR)
+    @Role(RoleEnum.ADMIN)
     async createLanguage(@Args("input") input: CreateLanguageInput): Promise<Language> {
         return this.languageService.create(input);
     }
 
     @Mutation(() => Language, { name: "playground_updateLanguage" })
     @UseGuards(AuthGuard)
-    @Role(RoleEnum.ADMIN, RoleEnum.MODERATOR, RoleEnum.EDITOR)
+    @Role(RoleEnum.ADMIN)
     async updateLanguage(@Args("id", { type: () => ID }) id: string, @Args("input") input: UpdateLanguageInput): Promise<Language> {
         return this.languageService.update(id, input);
     }
 
     @Mutation(() => Boolean, { name: "playground_deleteLanguage" })
     @UseGuards(AuthGuard)
-    @Role(RoleEnum.ADMIN, RoleEnum.MODERATOR, RoleEnum.EDITOR)
+    @Role(RoleEnum.ADMIN)
     async deleteLanguage(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
         await this.languageService.delete(id);
         return true;

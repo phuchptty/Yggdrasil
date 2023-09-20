@@ -10,7 +10,7 @@ import { WorkspaceFileInput } from "../../commons/dto/workspaceFile.input";
 import { SaveWorkspaceFileInput } from "./dto/workspaceFile.input";
 import { mergeArrays, filterPreProcess } from "../../utils";
 import { WorkspaceFile } from "../../commons/schemas/workspaceFile.schema";
-import { WorkspacePermission, WorkspaceStatus } from "../../commons/enums";
+import { WorkspacePermission } from "../../commons/enums";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 
 @Injectable()

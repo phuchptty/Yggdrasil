@@ -14,6 +14,8 @@ import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
 import { keycloakConfig, appConfig, databaseConfig } from "./configs";
 import GraphQLJSON from "graphql-type-json";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { HeaderInterceptor } from "./interceptors/header/header.interceptor";
 
 @Module({
     imports: [
@@ -36,7 +38,7 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
             sortSchema: true,
             introspection: true,
             autoSchemaFile: true, // Enable generate schemas on-the-fly
-            resolvers: { JSON: GraphQLJSON },
+            // resolvers: { JSON: GraphQLJSON },
         }),
         RedisModule.forRootAsync({
             imports: [ConfigModule],
@@ -64,6 +66,11 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
         KcClientModule,
     ],
     controllers: [AppController],
-    providers: [],
+    providers: [
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: HeaderInterceptor,
+        },
+    ],
 })
 export class AppModule {}

@@ -8,6 +8,8 @@ export class AuthGuard implements CanActivate {
         const ctx = GqlExecutionContext.create(context);
         const headers = ctx.getContext().req.headers;
 
+        console.log("Oh lalala ", headers);
+
         return !!(headers["Keycloak-App-Roles"] || headers["keycloak-app-roles"] || headers["Keycloak-Sub"] || headers["keycloak-sub"]);
     }
 }

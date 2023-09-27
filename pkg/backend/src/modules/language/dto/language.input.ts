@@ -1,6 +1,5 @@
 import { InputType, Field, PartialType } from '@nestjs/graphql';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { PlaygroundType } from "../../../commons/enums";
 
 @InputType("Playground_CreateLanguageInput")
 export class CreateLanguageInput {
@@ -18,11 +17,6 @@ export class CreateLanguageInput {
     @IsNotEmpty()
     @IsString()
     editorKey: string;
-
-    @Field(() => PlaygroundType)
-    @IsNotEmpty()
-    @IsString()
-    playgroundType: PlaygroundType;
 }
 
 @InputType("Playground_UpdateLanguageInput")

@@ -1,20 +1,20 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import k8s from "@kubernetes/client-node";
+import { CoreV1Api, KubeConfig } from "@kubernetes/client-node";
 
 @Injectable()
 export class KubeApiService implements OnModuleInit {
     private logger = new Logger(KubeApiService.name);
 
-    public kubeApi: k8s.CoreV1Api;
-    public kubeConfig: k8s.KubeConfig;
+    public kubeApi: CoreV1Api;
+    public kubeConfig: KubeConfig;
 
     onModuleInit(): any {
-        const kc = new k8s.KubeConfig();
+        const kc = new KubeConfig();
         kc.loadFromDefault();
 
-        this.kubeApi = kc.makeApiClient(k8s.CoreV1Api);
+        this.kubeApi = kc.makeApiClient(CoreV1Api);
         this.kubeConfig = kc;
 
-        this.logger.debug("KubeApiService initialized");
+        this.logger.log("KubeApiService initialized");
     }
 }

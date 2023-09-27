@@ -15,7 +15,7 @@ export class KcClientService implements OnModuleInit {
     private readonly kcClientAdminRestApiUrl: string;
     private logger = new Logger(KcClientService.name);
 
-    constructor(private readonly httpService: HttpService, private configService: ConfigService, @InjectRedis("KEYCLOAK") private readonly redis: Redis) {
+    constructor(private readonly httpService: HttpService, private configService: ConfigService, @InjectRedis() private readonly redis: Redis) {
         this.kcClientTokenApiUrl = `${this.configService.get("keycloak.baseUrl")}/realms/master/protocol/openid-connect/token`;
         this.kcClientAdminRestApiUrl = `${this.configService.get("keycloak.baseUrl")}/admin/realms/${this.configService.get("keycloak.realm")}`;
     }
@@ -34,9 +34,9 @@ export class KcClientService implements OnModuleInit {
     private async getKcToken() {
         try {
             const params = qs.stringify({
-                client_id: this.configService.get("keycloak.ts.clientId"),
+                client_id: this.configService.get("keycloak.clientId"),
                 grant_type: "client_credentials",
-                client_secret: this.configService.get("keycloak.ts.clientSecret"),
+                client_secret: this.configService.get("keycloak.clientSecret"),
             });
 
             const headers = { headers: { "content-type": "application/x-www-form-urlencoded" } };
@@ -99,7 +99,7 @@ export class KcClientService implements OnModuleInit {
 
     public async introspectToken(token: string): Promise<undefined | KeyCloakTokenIntrospectRsp> {
         // Check token already in redis
-        const redisToken = await this.redis.get(`TOKEN_${token}`);
+        const redisToken = await this.redis.get(`KC_TOKEN_${token}`);
 
         if (redisToken) {
             return JSON.parse(redisToken);
@@ -131,7 +131,7 @@ export class KcClientService implements OnModuleInit {
 
             // Save to redis for avoid call keycloak api
             const redisExpiredTokenTime = dayjs(data.exp).subtract(20, "minutes").unix();
-            this.redis.set(`TOKEN_${token}`, JSON.stringify(data), "EX", redisExpiredTokenTime);
+            this.redis.set(`KC_TOKEN_${token}`, JSON.stringify(data), "EX", redisExpiredTokenTime);
 
             return data;
         } catch (e) {

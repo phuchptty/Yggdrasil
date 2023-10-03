@@ -6,10 +6,11 @@ import { GqlExecutionContext } from "@nestjs/graphql";
 export class AuthGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const ctx = GqlExecutionContext.create(context);
-        const headers = ctx.getContext().req.headers;
+        const contextObj = ctx.getContext();
 
-        console.log("Oh lalala ", headers);
+        const kcSub = contextObj.kcSub;
+        const kcRoles = contextObj.kcRoles;
 
-        return !!(headers["Keycloak-App-Roles"] || headers["keycloak-app-roles"] || headers["Keycloak-Sub"] || headers["keycloak-sub"]);
+        return !!(kcSub && kcRoles && kcRoles.length > 0);
     }
 }

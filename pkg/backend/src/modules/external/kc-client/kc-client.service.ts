@@ -98,13 +98,6 @@ export class KcClientService implements OnModuleInit {
     }
 
     public async introspectToken(token: string): Promise<undefined | KeyCloakTokenIntrospectRsp> {
-        // Check token already in redis
-        const redisToken = await this.redis.get(`KC_TOKEN_${token}`);
-
-        if (redisToken) {
-            return JSON.parse(redisToken);
-        }
-
         // If not call keycloak api
         const params = qs.stringify({
             token,
@@ -128,10 +121,6 @@ export class KcClientService implements OnModuleInit {
             if (!active || !sub) {
                 return undefined;
             }
-
-            // Save to redis for avoid call keycloak api
-            const redisExpiredTokenTime = dayjs(data.exp).subtract(20, "minutes").unix();
-            this.redis.set(`KC_TOKEN_${token}`, JSON.stringify(data), "EX", redisExpiredTokenTime);
 
             return data;
         } catch (e) {

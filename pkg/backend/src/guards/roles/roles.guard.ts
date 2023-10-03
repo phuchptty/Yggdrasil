@@ -2,8 +2,8 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { RoleEnum } from "@/commons/enums";
-import { ROLES_KEY } from "@/decorators/role/role.decorator";
+import { RoleEnum } from "../../commons/enums";
+import { ROLES_KEY } from "../../decorators/role/role.decorator";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -17,13 +17,14 @@ export class RolesGuard implements CanActivate {
         }
 
         const ctx = GqlExecutionContext.create(context);
+        const contextObj = ctx.getContext();
 
-        const headers = ctx.getContext().req.headers;
+        const kcRoles: string[] = contextObj.kcRoles;
 
-        if (headers["Keycloak-App-Roles"] || headers["keycloak-app-roles"]) {
-            const roles = headers["Keycloak-App-Roles"] || headers["keycloak-app-roles"];
-
-            return requiredRoles.some((role) => roles.includes(role));
+        if (kcRoles) {
+            return requiredRoles.some((role) => kcRoles.includes(role));
+        } else {
+            return false;
         }
     }
 }

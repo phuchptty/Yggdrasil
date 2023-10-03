@@ -2,9 +2,6 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
-import { GraphQLModule } from "@nestjs/graphql";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { LanguageModule } from "./modules/language/language.module";
 import { WorkspaceModule } from "./modules/workspace/workspace.module";
 import { QueueModule } from "./modules/queue/queue.module";
@@ -12,10 +9,8 @@ import { KubeApiModule } from "./modules/external/kube-api/kube-api.module";
 import { UserModule } from "./modules/user/user.module";
 import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
 import { keycloakConfig, appConfig, databaseConfig } from "./configs";
-import GraphQLJSON from "graphql-type-json";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
-import { APP_INTERCEPTOR } from "@nestjs/core";
-import { HeaderInterceptor } from "./interceptors/header/header.interceptor";
+import { GraphqlModule } from "./modules/graphql/graphql.module";
 
 @Module({
     imports: [
@@ -30,15 +25,6 @@ import { HeaderInterceptor } from "./interceptors/header/header.interceptor";
                 uri: config.get<string>("database.uri"),
                 dbName: config.get<string>("database.name"),
             }),
-        }),
-        GraphQLModule.forRoot<ApolloDriverConfig>({
-            driver: ApolloDriver,
-            plugins: [ApolloServerPluginLandingPageLocalDefault()],
-            playground: false,
-            sortSchema: true,
-            introspection: true,
-            autoSchemaFile: true, // Enable generate schemas on-the-fly
-            // resolvers: { JSON: GraphQLJSON },
         }),
         RedisModule.forRootAsync({
             imports: [ConfigModule],
@@ -58,6 +44,7 @@ import { HeaderInterceptor } from "./interceptors/header/header.interceptor";
                 };
             },
         }),
+        GraphqlModule,
         QueueModule,
         LanguageModule,
         WorkspaceModule,
@@ -66,11 +53,5 @@ import { HeaderInterceptor } from "./interceptors/header/header.interceptor";
         KcClientModule,
     ],
     controllers: [AppController],
-    providers: [
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: HeaderInterceptor,
-        },
-    ],
 })
 export class AppModule {}

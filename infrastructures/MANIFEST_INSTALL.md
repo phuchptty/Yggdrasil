@@ -97,6 +97,16 @@ kubectl -n longhorn-system create secret generic basic-auth --from-file=longhorn
 kubectl -n longhorn-system apply -f longhorn/ingress.yml
 ```
 
+## Kata Container (MicroVM)
+
+```shell
+git clone https://github.com/kata-containers/kata-containers.git
+cd kata-containers/tools/packaging/kata-deploy
+kubectl apply -f kata-rbac/base/kata-rbac.yaml
+kubectl apply -k kata-deploy/overlays/rke2
+kubectl apply -f https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/runtimeclasses/kata-runtimeClasses.yaml
+```
+
 # Step 2: Service Deploy
 
 ## Install Keycloak

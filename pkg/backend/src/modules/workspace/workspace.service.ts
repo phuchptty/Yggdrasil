@@ -12,12 +12,18 @@ import { mergeArrays, filterPreProcess } from "../../utils";
 import { WorkspaceFile } from "../../commons/schemas/workspaceFile.schema";
 import { WorkspacePermission } from "../../commons/enums";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
+import { KubeApiService } from "../external/kube-api/kube-api.service";
+import { ConfigService } from "@nestjs/config";
+import containerImagesConstant from "../../constants/containerImages.constant";
+import * as http from "http";
 
 @Injectable()
 export class WorkspaceService {
     constructor(
         @InjectModel(Workspace.name) private wsModel: PaginateModel<WorkspaceDocument>,
         private readonly languageService: LanguageService,
+        private readonly kubeApi: KubeApiService,
+        private readonly configService: ConfigService,
     ) {}
 
     // async findAll(): Promise<WorkspaceDocument[]> {
@@ -146,56 +152,120 @@ export class WorkspaceService {
     //         return doc;
     //     }
     // }
-    //
-    // async create(owner: string, ws: WorkspaceInput) {
-    //     try {
-    //         // Query language
-    //         const language = await this.languageService.findOneById(ws.workspaceLanguage);
-    //
-    //         if (!language) {
-    //             throw new GraphQLError("Language not found");
-    //         }
-    //
-    //         // Generate workspace id
-    //         const workspaceId = new Types.ObjectId();
-    //
-    //         // Get language specific start file
-    //         const { name: startFileName, mimeType } = languageStartFile[language.key];
-    //
-    //         // Construct playground path
-    //         const workspaceStorageBasePath = `workspaceFiles/${workspaceId}`;
-    //
-    //         // Create starter file
-    //         // const fileStat = await this.externalFileSystem.createBlankFile(workspaceStorageBasePath, startFileName, mimeType);
-    //
-    //         // Save to DB
-    //         const workspaceFile: WorkspaceFileInput = {
-    //             name: startFileName,
-    //             path: startFileName,
-    //             s3Path: `${workspaceStorageBasePath}/${startFileName}`,
-    //             // metadata: {
-    //                 // fileSize: fileStat.size,
-    //                 // mimeType: fileStat.metaData["content-type"],
-    //                 // etag: fileStat.etag,
-    //                 // lastModified: fileStat.lastModified,
-    //             // },
-    //         };
-    //
-    //         const wsInstance = new this.wsModel({
-    //             _id: workspaceId,
-    //             owner: {
-    //                 _id: owner,
-    //             },
-    //             workspaceFiles: [workspaceFile],
-    //             ...ws,
-    //         });
-    //
-    //         return wsInstance.save().then((t) => t.populate(["workspaceLanguage"]));
-    //     } catch (e) {
-    //         throw new GraphQLError(e);
-    //     }
-    // }
-    //
+
+    async create(owner: string, ws: WorkspaceInput) {
+        try {
+            // Query language
+            const language = await this.languageService.findOneById(ws.workspaceLanguage);
+
+            if (!language) {
+                throw new GraphQLError("Language not found");
+            }
+
+            // Generate workspace id
+            // const workspaceId = new Types.ObjectId();
+            const workspaceId = "test";
+
+            // Where magic start
+            const workspaceNamespace = `workspace-${workspaceId.toString()}`;
+            const workspaceStorageQuota = this.configService.get("workspace.defaultSpecs.storage");
+            const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
+            const workspaceBeaconImage = containerImagesConstant.beacon;
+            const workspaceBeaconVolumeName = `workspace-beacon`;
+
+            // Create namespace
+            // await this.kubeApi.createNamespace(
+            //     workspaceNamespace,
+            //     {
+            //         "workspace-id": workspaceId.toString(),
+            //     },
+            //     {
+            //         "field.cattle.io/projectId": "local:p-guest-vm",
+            //     },
+            // );
+
+            // Create persistent volume claim
+            // await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota);
+
+            // Create beacon deployment
+            const deployment = await this.kubeApi.createDeployment({
+                namespace: workspaceNamespace,
+                name: "beacon",
+                image: workspaceBeaconImage,
+                ports: [
+                    {
+                        containerPort: 3000,
+                    },
+                ],
+                volumeMounts: [
+                    {
+                        name: workspaceBeaconVolumeName,
+                        mountPath: "/mnt/workspace",
+                    },
+                ],
+                volumes: [
+                    {
+                        name: workspaceBeaconVolumeName,
+                        persistentVolumeClaim: {
+                            claimName: workspacePVCName,
+                        },
+                    },
+                ],
+                env: [
+                    {
+                        name: "NODE_ENV",
+                        value: "production",
+                    },
+                    {
+                        name: "FS_PATH",
+                        value: "/mnt/workspace",
+                    },
+                ],
+                labels: {
+                    "workspace-id": workspaceId.toString(),
+                    "workspace-type": "beacon",
+                },
+            });
+
+            // Get language specific start file
+            // const { name: startFileName, mimeType } = languageStartFile[language.key];
+
+            // Save to DB
+            // const workspaceFile: WorkspaceFileInput = {
+            //     name: startFileName,
+            //     path: startFileName,
+            //     s3Path: ``,
+            //     // metadata: {
+            //     // fileSize: fileStat.size,
+            //     // mimeType: fileStat.metaData["content-type"],
+            //     // etag: fileStat.etag,
+            //     // lastModified: fileStat.lastModified,
+            //     // },
+            // };
+
+            // const wsInstance = new this.wsModel({
+            //     _id: workspaceId,
+            //     owner: {
+            //         _id: owner,
+            //     },
+            //     workspaceFiles: [workspaceFile],
+            //     ...ws,
+            // });
+
+            // return wsInstance.save().then((t) => t.populate(["workspaceLanguage"]));
+
+            console.log(deployment.body);
+
+            return deployment;
+        } catch (e) {
+            if (e?.response?.body.status === "Failure") {
+                throw new GraphQLError(e?.response.body.message);
+            }
+
+            throw new GraphQLError(e);
+        }
+    }
+
     // async update(owner: string, id: string, ws: WorkspaceUpdateInput) {
     //     return this.wsModel
     //         .findOneAndUpdate(

@@ -78,13 +78,13 @@ export class WorkspaceResolver {
     // async getWorkspaceBySlug(@UserId() userId: string, @Args("slug") slug: string) {
     //     return this.workspaceService.findOneBySlug(userId, slug);
     // }
-    //
-    // @Mutation(() => Workspace, { name: "playground_createWorkspace" })
-    // @UseGuards(AuthGuard)
-    // async createWorkspace(@UserId() userId: string, @Args("input") input: WorkspaceInput) {
-    //     return this.workspaceService.create(userId, input);
-    // }
-    //
+
+    @Mutation(() => Workspace, { name: "playground_createWorkspace" })
+    @UseGuards(AuthGuard)
+    async createWorkspace(@UserId() userId: string, @Args("input") input: WorkspaceInput) {
+        return this.workspaceService.create(userId, input);
+    }
+
     // @Mutation(() => Workspace, { name: "playground_updateWorkspace" })
     // @UseGuards(AuthGuard)
     // async updateWorkspace(@UserId() userId: string, @Args("id") id: string, @Args("input") input: WorkspaceUpdateInput) {

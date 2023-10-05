@@ -1,5 +1,5 @@
 import { Field, ID, InputType, PartialType } from "@nestjs/graphql";
-import { WorkspacePermission, WorkspaceStatus } from "../../../commons/enums";
+import { WorkspacePermission } from "../../../commons/enums";
 import { WorkspaceFileInput } from "../../../commons/dto/workspaceFile.input";
 import { IsString } from "class-validator";
 
@@ -16,10 +16,6 @@ export class WorkspaceInput {
     @Field(() => String, { nullable: true })
     @IsString()
     description?: string;
-
-    @Field(() => WorkspaceStatus, { nullable: true })
-    @IsString()
-    status: WorkspaceStatus;
 
     @Field(() => WorkspacePermission, { nullable: true })
     @IsString()

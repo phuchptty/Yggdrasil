@@ -3,5 +3,6 @@ import { KubeApiService } from "./kube-api.service";
 
 @Module({
     providers: [KubeApiService],
+    exports: [KubeApiService],
 })
 export class KubeApiModule {}

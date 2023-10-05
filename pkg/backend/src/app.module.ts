@@ -8,14 +8,14 @@ import { QueueModule } from "./modules/queue/queue.module";
 import { KubeApiModule } from "./modules/external/kube-api/kube-api.module";
 import { UserModule } from "./modules/user/user.module";
 import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
-import { keycloakConfig, appConfig, databaseConfig } from "./configs";
+import { keycloakConfig, appConfig, databaseConfig, workspaceConfig } from "./configs";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { GraphqlModule } from "./modules/graphql/graphql.module";
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            load: [appConfig, databaseConfig, keycloakConfig],
+            load: [appConfig, databaseConfig, keycloakConfig, workspaceConfig],
             isGlobal: true,
         }),
         MongooseModule.forRootAsync({

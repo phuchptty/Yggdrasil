@@ -7,12 +7,12 @@ export class KubeApiService implements OnModuleInit {
     public k8sConfig: k8s.KubeConfig;
 
     onModuleInit() {
-        const kc = new k8s.KubeConfig();
-        kc.loadFromDefault();
-
-        this.k8sApi = kc.makeApiClient(k8s.CoreV1Api);
-        this.k8sConfig = kc;
-
-        console.log("KubeApiService initialized");
+        // const kc = new k8s.KubeConfig();
+        // kc.loadFromDefault();
+        //
+        // this.k8sApi = kc.makeApiClient(k8s.CoreV1Api);
+        // this.k8sConfig = kc;
+        //
+        // console.log("KubeApiService initialized");
     }
 }

@@ -3,14 +3,7 @@ import { GqlExecutionContext } from "@nestjs/graphql";
 
 export const UserId = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
     const gqlExecutionContext = GqlExecutionContext.create(ctx);
-    const request: Request = gqlExecutionContext.getContext().req;
-    const headers = request.headers;
+    const contextObj = gqlExecutionContext.getContext();
 
-    let userId = null;
-
-    if (headers["Keycloak-Sub"] || headers["keycloak.ts-sub"]) {
-        userId = headers["Keycloak-Sub"] || headers["keycloak.ts-sub"];
-    }
-
-    return userId;
+    return contextObj.kcSub || null;
 });

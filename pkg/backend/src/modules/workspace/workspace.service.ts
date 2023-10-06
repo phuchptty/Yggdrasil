@@ -16,6 +16,7 @@ import { KubeApiService } from "../external/kube-api/kube-api.service";
 import { ConfigService } from "@nestjs/config";
 import containerImagesConstant from "../../constants/containerImages.constant";
 import * as http from "http";
+import { Language, LanguageDocument } from "../language/schema/language.schema";
 
 @Injectable()
 export class WorkspaceService {
@@ -154,6 +155,10 @@ export class WorkspaceService {
     // }
 
     async create(owner: string, ws: WorkspaceInput) {
+        // Generate workspace id
+        const workspaceId = new Types.ObjectId();
+        // const workspaceId = "test";
+
         try {
             // Query language
             const language = await this.languageService.findOneById(ws.workspaceLanguage);
@@ -162,33 +167,66 @@ export class WorkspaceService {
                 throw new GraphQLError("Language not found");
             }
 
-            // Generate workspace id
-            // const workspaceId = new Types.ObjectId();
-            const workspaceId = "test";
+            // Deploy beacon
+            const beaconRsp = await this.deployBeacon(workspaceId.toString(), language);
 
-            // Where magic start
-            const workspaceNamespace = `workspace-${workspaceId.toString()}`;
-            const workspaceStorageQuota = this.configService.get("workspace.defaultSpecs.storage");
-            const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
-            const workspaceBeaconImage = containerImagesConstant.beacon;
-            const workspaceBeaconVolumeName = `workspace-beacon`;
+            // Save to DB
+            const wsInstance = new this.wsModel({
+                _id: workspaceId,
+                owner: {
+                    _id: owner,
+                },
+                ...ws,
+            });
 
+            let wsSave = await wsInstance.save();
+            wsSave = await wsSave.populate(["workspaceLanguage"]);
+            wsSave = wsSave.toObject();
+
+            return {
+                ...wsSave,
+                beaconHost: beaconRsp.beaconHost,
+            };
+        } catch (e) {
+            if (e?.response?.body.status === "Failure") {
+                throw new GraphQLError(e?.response.body.message);
+            }
+
+            // Delete beacon
+            await this.kubeApi.deleteNamespace(`workspace-${workspaceId.toString()}`);
+
+            throw new GraphQLError(e);
+        }
+    }
+
+    private async deployBeacon(workspaceId: string, language: LanguageDocument) {
+        // Where magic start
+        const workspaceNamespace = `workspace-${workspaceId.toString()}`;
+        const workspaceStorageQuota = this.configService.get("workspace.defaultSpecs.storage");
+        const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
+        const workspaceBeaconImage = containerImagesConstant.beacon;
+        const workspaceBeaconVolumeName = `workspace-beacon`;
+        const beaconHost = `beacon.${workspaceId}.vm.${this.configService.get("publicAppDomain")}`;
+
+        const { name: startFileName } = languageStartFile[language.key];
+
+        try {
             // Create namespace
-            // await this.kubeApi.createNamespace(
-            //     workspaceNamespace,
-            //     {
-            //         "workspace-id": workspaceId.toString(),
-            //     },
-            //     {
-            //         "field.cattle.io/projectId": "local:p-guest-vm",
-            //     },
-            // );
+            await this.kubeApi.createNamespace(
+                workspaceNamespace,
+                {
+                    "workspace-id": workspaceId.toString(),
+                },
+                {
+                    "field.cattle.io/projectId": "local:p-guest-vm",
+                },
+            );
 
             // Create persistent volume claim
-            // await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota);
+            await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota);
 
             // Create beacon deployment
-            const deployment = await this.kubeApi.createDeployment({
+            await this.kubeApi.createDeployment({
                 namespace: workspaceNamespace,
                 name: "beacon",
                 image: workspaceBeaconImage,
@@ -201,7 +239,7 @@ export class WorkspaceService {
                     {
                         name: workspaceBeaconVolumeName,
                         mountPath: "/mnt/workspace",
-                        subPath: "workspace"
+                        subPath: "workspace",
                     },
                 ],
                 volumes: [
@@ -226,6 +264,13 @@ export class WorkspaceService {
                     "workspace-id": workspaceId.toString(),
                     "workspace-type": "beacon",
                 },
+                lifecycle: {
+                    postStart: {
+                        exec: {
+                            command: ["/bin/sh", "-c", `touch /mnt/workspace/${startFileName}`],
+                        },
+                    },
+                },
             });
 
             // Create beacon service
@@ -237,43 +282,12 @@ export class WorkspaceService {
             ]);
 
             // Create beacon ingress
-            await this.kubeApi.createIngress(workspaceNamespace, "beacon", `beacon.${workspaceId}.vm.yds.cuterabbit.art`, "/", "beacon", 3000);
+            await this.kubeApi.createIngress(workspaceNamespace, "beacon", beaconHost, "/", "beacon", 3000);
 
-            // Get language specific start file
-            // const { name: startFileName, mimeType } = languageStartFile[language.key];
-
-            // Save to DB
-            // const workspaceFile: WorkspaceFileInput = {
-            //     name: startFileName,
-            //     path: startFileName,
-            //     s3Path: ``,
-            //     // metadata: {
-            //     // fileSize: fileStat.size,
-            //     // mimeType: fileStat.metaData["content-type"],
-            //     // etag: fileStat.etag,
-            //     // lastModified: fileStat.lastModified,
-            //     // },
-            // };
-
-            // const wsInstance = new this.wsModel({
-            //     _id: workspaceId,
-            //     owner: {
-            //         _id: owner,
-            //     },
-            //     workspaceFiles: [workspaceFile],
-            //     ...ws,
-            // });
-
-            // return wsInstance.save().then((t) => t.populate(["workspaceLanguage"]));
-
-            console.log(deployment.body);
-
-            return deployment;
+            return {
+                beaconHost,
+            };
         } catch (e) {
-            if (e?.response?.body.status === "Failure") {
-                throw new GraphQLError(e?.response.body.message);
-            }
-
             throw new GraphQLError(e);
         }
     }

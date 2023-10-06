@@ -1,4 +1,4 @@
-import { V1ContainerPort, V1EnvVar, V1Volume, V1VolumeMount } from "@kubernetes/client-node";
+import { V1ContainerPort, V1EnvVar, V1Lifecycle, V1Volume, V1VolumeMount } from "@kubernetes/client-node";
 
 export type KubeCreateDeployment = {
     namespace: string;
@@ -9,4 +9,5 @@ export type KubeCreateDeployment = {
     volumeMounts?: V1VolumeMount[];
     volumes?: V1Volume[];
     env?: V1EnvVar[];
+    lifecycle?: V1Lifecycle;
 };

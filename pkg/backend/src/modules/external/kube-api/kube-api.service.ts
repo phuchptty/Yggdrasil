@@ -80,6 +80,7 @@ export class KubeApiService implements OnModuleInit {
                                 imagePullPolicy: this.configService.get("env") === "production" ? "IfNotPresent" : "Always",
                                 volumeMounts: options.volumeMounts,
                                 env: options.env,
+                                lifecycle: options.lifecycle,
                             },
                         ],
                         volumes: options.volumes,
@@ -104,7 +105,7 @@ export class KubeApiService implements OnModuleInit {
         });
     }
 
-    public createIngress(namespace: string, name: string, host: string, path: string, serviceName: string, servicePort: number) {
+    public createIngress(namespace: string, name: string, host: string, path: string, serviceName: string, servicePort: number, enableTLS = true) {
         return this.kubeNetworkApi.createNamespacedIngress(namespace, {
             metadata: {
                 name: name,
@@ -133,7 +134,22 @@ export class KubeApiService implements OnModuleInit {
                         },
                     },
                 ],
+                tls: enableTLS
+                    ? [
+                          {
+                              hosts: [host],
+                          },
+                      ]
+                    : [],
             },
         });
+    }
+
+    public deleteDeployment(namespace: string, name: string) {
+        return this.kubeAppsApi.deleteNamespacedDeployment(name, namespace);
+    }
+
+    public deleteNamespace(namespace: string) {
+        return this.kubeApi.deleteNamespace(namespace);
     }
 }

@@ -1,6 +1,5 @@
 import { Field, ID, InputType, PartialType } from "@nestjs/graphql";
 import { WorkspacePermission } from "../../../commons/enums";
-import { WorkspaceFileInput } from "../../../commons/dto/workspaceFile.input";
 import { IsString } from "class-validator";
 
 @InputType("Playground_WorkspaceInput")
@@ -20,10 +19,6 @@ export class WorkspaceInput {
     @Field(() => WorkspacePermission, { nullable: true })
     @IsString()
     permission: WorkspacePermission;
-
-    // File storage
-    @Field(() => [WorkspaceFileInput], { nullable: true })
-    workspaceFiles: WorkspaceFileInput[];
 
     // Language
     @Field(() => ID, { nullable: false })

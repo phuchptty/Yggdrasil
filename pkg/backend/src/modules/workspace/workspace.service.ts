@@ -201,6 +201,7 @@ export class WorkspaceService {
                     {
                         name: workspaceBeaconVolumeName,
                         mountPath: "/mnt/workspace",
+                        subPath: "workspace"
                     },
                 ],
                 volumes: [
@@ -226,6 +227,17 @@ export class WorkspaceService {
                     "workspace-type": "beacon",
                 },
             });
+
+            // Create beacon service
+            await this.kubeApi.createService(workspaceNamespace, "beacon", [
+                {
+                    port: 3000,
+                    targetPort: 3000,
+                },
+            ]);
+
+            // Create beacon ingress
+            await this.kubeApi.createIngress(workspaceNamespace, "beacon", `beacon.${workspaceId}.vm.yds.cuterabbit.art`, "/", "beacon", 3000);
 
             // Get language specific start file
             // const { name: startFileName, mimeType } = languageStartFile[language.key];

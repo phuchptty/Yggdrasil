@@ -6,17 +6,13 @@ import { WorkspaceInput, WorkspaceUpdateInput } from "./dto/workspace.input";
 import { LanguageService } from "../language/language.service";
 import { GraphQLError } from "graphql/error";
 import languageStartFile from "../../constants/languageStartFile.constant";
-import { WorkspaceFileInput } from "../../commons/dto/workspaceFile.input";
-import { SaveWorkspaceFileInput } from "./dto/workspaceFile.input";
-import { mergeArrays, filterPreProcess } from "../../utils";
-import { WorkspaceFile } from "../../commons/schemas/workspaceFile.schema";
+import { filterPreProcess } from "../../utils";
 import { WorkspacePermission } from "../../commons/enums";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { KubeApiService } from "../external/kube-api/kube-api.service";
 import { ConfigService } from "@nestjs/config";
 import containerImagesConstant from "../../constants/containerImages.constant";
-import * as http from "http";
-import { Language, LanguageDocument } from "../language/schema/language.schema";
+import { LanguageDocument } from "../language/schema/language.schema";
 
 @Injectable()
 export class WorkspaceService {
@@ -27,132 +23,131 @@ export class WorkspaceService {
         private readonly configService: ConfigService,
     ) {}
 
-    // async findAll(): Promise<WorkspaceDocument[]> {
-    //     return this.wsModel.find().populate(["workspaceLanguage"]).exec();
-    // }
-    //
-    // async findOneById(id: string): Promise<WorkspaceDocument> {
-    //     return this.wsModel.findById(id).populate(["workspaceLanguage"]).exec();
-    // }
-    //
-    // async findOneByIdUser(owner: string, id: string): Promise<WorkspaceDocument> {
-    //     return this.wsModel
-    //         .findOne({
-    //             _id: id,
-    //             owner: {
-    //                 _id: owner,
-    //             },
-    //         })
-    //         .populate(["workspaceLanguage"])
-    //         .exec();
-    // }
-    //
-    // async findAllByUser(owner: string, options: PaginateInput) {
-    //     let query = {};
-    //
-    //     if (options?.search) {
-    //         query = {
-    //             $text: {
-    //                 $search: options?.search,
-    //             },
-    //         };
-    //     } else if (options?.fields) {
-    //         query = {
-    //             _id: options?.fields?.id.map((x) => x),
-    //         };
-    //     }
-    //
-    //     if (options?.filter) {
-    //         query = {
-    //             ...query,
-    //             ...filterPreProcess(options?.filter),
-    //         };
-    //     }
-    //
-    //     // Add owner
-    //     query = {
-    //         ...query,
-    //         owner: {
-    //             _id: owner,
-    //         },
-    //     };
-    //
-    //     try {
-    //         return this.wsModel.paginate(query, {
-    //             page: options?.page || 1,
-    //             limit: options?.perPage || 20,
-    //             sort: options?.sort || {},
-    //             populate: ["workspaceLanguage"],
-    //         });
-    //     } catch (e) {
-    //         throw new GraphQLError(e);
-    //     }
-    // }
-    //
-    // async findAllPublicWorkspace(options: PaginateInput) {
-    //     let query = {};
-    //
-    //     if (options?.search) {
-    //         query = {
-    //             $text: {
-    //                 $search: options?.search,
-    //             },
-    //         };
-    //     } else if (options?.fields) {
-    //         query = {
-    //             _id: options?.fields?.id.map((x) => x),
-    //         };
-    //     }
-    //
-    //     if (options?.filter) {
-    //         query = {
-    //             ...query,
-    //             ...filterPreProcess(options?.filter),
-    //         };
-    //     }
-    //
-    //     // Add filter public
-    //     query = {
-    //         ...query,
-    //         status: WorkspaceStatus.PUBLISHED,
-    //         permission: WorkspacePermission.PUBLIC,
-    //     };
-    //
-    //     try {
-    //         return this.wsModel.paginate(query, {
-    //             page: options?.page || 1,
-    //             limit: options?.perPage || 20,
-    //             sort: options?.sort || {},
-    //             populate: ["workspaceLanguage"],
-    //         });
-    //     } catch (e) {
-    //         throw new GraphQLError(e);
-    //     }
-    // }
-    //
-    // async findOneBySlug(owner: string, slug: string): Promise<WorkspaceDocument> {
-    //     const doc = await this.wsModel
-    //         .findOne({
-    //             slug,
-    //         })
-    //         .populate(["workspaceLanguage"])
-    //         .exec();
-    //
-    //     if (!doc) {
-    //         throw new GraphQLError("Không tìm thấy workspace!");
-    //     }
-    //
-    //     // If workspace is not published and not public -> check ownership
-    //     if (doc.status === WorkspaceStatus.PUBLISHED && doc.permission === WorkspacePermission.PUBLIC) {
-    //         return doc;
-    //     } else {
-    //         if (doc.owner._id.toString() !== owner) {
-    //             throw new GraphQLError("Bạn không có quyền truy cập workspace này!");
-    //         }
-    //
-    //         return doc;
-    //     }
-    // }
+    async findAll(): Promise<WorkspaceDocument[]> {
+        return this.wsModel.find().populate(["workspaceLanguage"]).exec();
+    }
+
+    async findOneById(id: string): Promise<WorkspaceDocument> {
+        return this.wsModel.findById(id).populate(["workspaceLanguage"]).exec();
+    }
+
+    async findOneByIdUser(owner: string, id: string): Promise<WorkspaceDocument> {
+        return this.wsModel
+            .findOne({
+                _id: id,
+                owner: {
+                    _id: owner,
+                },
+            })
+            .populate(["workspaceLanguage"])
+            .exec();
+    }
+
+    async findAllByUser(owner: string, options: PaginateInput) {
+        let query = {};
+
+        if (options?.search) {
+            query = {
+                $text: {
+                    $search: options?.search,
+                },
+            };
+        } else if (options?.fields) {
+            query = {
+                _id: options?.fields?.id.map((x) => x),
+            };
+        }
+
+        if (options?.filter) {
+            query = {
+                ...query,
+                ...filterPreProcess(options?.filter),
+            };
+        }
+
+        // Add owner
+        query = {
+            ...query,
+            owner: {
+                _id: owner,
+            },
+        };
+
+        try {
+            return this.wsModel.paginate(query, {
+                page: options?.page || 1,
+                limit: options?.perPage || 20,
+                sort: options?.sort || {},
+                populate: ["workspaceLanguage"],
+            });
+        } catch (e) {
+            throw new GraphQLError(e);
+        }
+    }
+
+    async findAllPublicWorkspace(options: PaginateInput) {
+        let query = {};
+
+        if (options?.search) {
+            query = {
+                $text: {
+                    $search: options?.search,
+                },
+            };
+        } else if (options?.fields) {
+            query = {
+                _id: options?.fields?.id.map((x) => x),
+            };
+        }
+
+        if (options?.filter) {
+            query = {
+                ...query,
+                ...filterPreProcess(options?.filter),
+            };
+        }
+
+        // Add filter public
+        query = {
+            ...query,
+            permission: WorkspacePermission.PUBLIC,
+        };
+
+        try {
+            return this.wsModel.paginate(query, {
+                page: options?.page || 1,
+                limit: options?.perPage || 20,
+                sort: options?.sort || {},
+                populate: ["workspaceLanguage"],
+            });
+        } catch (e) {
+            throw new GraphQLError(e);
+        }
+    }
+
+    async findOneBySlug(owner: string, slug: string): Promise<WorkspaceDocument> {
+        const doc = await this.wsModel
+            .findOne({
+                slug,
+            })
+            .populate(["workspaceLanguage"])
+            .exec();
+
+        if (!doc) {
+            throw new GraphQLError("Không tìm thấy workspace!");
+        }
+
+        // If workspace is not published and not public -> check ownership
+        if (doc.permission === WorkspacePermission.PUBLIC) {
+            return doc;
+        } else {
+            if (doc.owner._id.toString() !== owner) {
+                throw new GraphQLError("Bạn không có quyền truy cập workspace này!");
+            }
+
+            return doc;
+        }
+    }
 
     async create(owner: string, ws: WorkspaceInput) {
         // Generate workspace id
@@ -206,7 +201,7 @@ export class WorkspaceService {
         const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
         const workspaceBeaconImage = containerImagesConstant.beacon;
         const workspaceBeaconVolumeName = `workspace-beacon`;
-        const beaconHost = `beacon.${workspaceId}.vm.${this.configService.get("publicAppDomain")}`;
+        const beaconHost = `beacon-${workspaceId}.${this.configService.get("publicAppDomain")}`;
 
         const { name: startFileName } = languageStartFile[language.key];
 
@@ -292,38 +287,49 @@ export class WorkspaceService {
         }
     }
 
-    // async update(owner: string, id: string, ws: WorkspaceUpdateInput) {
-    //     return this.wsModel
-    //         .findOneAndUpdate(
-    //             {
-    //                 _id: id,
-    //                 owner: {
-    //                     _id: owner,
-    //                 },
-    //             },
-    //             {
-    //                 $set: {
-    //                     ...ws,
-    //                     status: WorkspaceStatus.PUBLISHED,
-    //                 },
-    //             },
-    //             { new: true },
-    //         )
-    //         .populate(["workspaceLanguage"])
-    //         .exec();
-    // }
-    //
-    // async delete(owner: string, id: string) {
-    //     return this.wsModel
-    //         .findOneAndDelete({
-    //             _id: id,
-    //             owner: {
-    //                 _id: owner,
-    //             },
-    //         })
-    //         .exec();
-    // }
-    //
+    async update(owner: string, id: string, ws: WorkspaceUpdateInput) {
+        return this.wsModel
+            .findOneAndUpdate(
+                {
+                    _id: id,
+                    owner: {
+                        _id: owner,
+                    },
+                },
+                {
+                    $set: ws,
+                },
+                { new: true },
+            )
+            .populate(["workspaceLanguage"])
+            .exec();
+    }
+
+    async delete(owner: string, id: string) {
+        try {
+            // Delete workspace
+            const workspace = await this.wsModel
+                .findOneAndDelete({
+                    _id: id,
+                    owner: {
+                        _id: owner,
+                    },
+                })
+                .exec();
+
+            if (!workspace) {
+                throw new GraphQLError("Không tìm thấy workspace hoặc bạn không có quyền truy cập workspace này!");
+            }
+
+            // Delete namespace
+            await this.kubeApi.deleteNamespace(`workspace-${id}`);
+
+            return workspace;
+        } catch (e) {
+            throw new GraphQLError(e);
+        }
+    }
+
     // async countPublicWorkspaceByLanguages() {
     //     const doc = await this.wsModel
     //         .aggregate([

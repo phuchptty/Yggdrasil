@@ -11,73 +11,73 @@ import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { GraphQLError } from "graphql/error";
 import { CountWorkspaceByLanguages, UserWorkspacesResponseType } from "./dto/workspace.response";
 
-@Resolver()
+@Resolver(() => Workspace)
 export class WorkspaceResolver {
     constructor(private readonly workspaceService: WorkspaceService) {}
 
-    // @Query(() => UserWorkspacesResponseType, { name: "playground_getAllUserWorkspaces" })
-    // @UseGuards(AuthGuard)
-    // async getAllUserWorkspace(
-    //     @UserId() userId: string,
-    //     @Args("option", {
-    //         type: () => PaginateInput,
-    //         nullable: true,
-    //     })
-    //     options: PaginateInput,
-    // ) {
-    //     try {
-    //         const allDocs = await this.workspaceService.findAllByUser(userId, options);
-    //
-    //         return {
-    //             node: allDocs.docs,
-    //             pageInfo: {
-    //                 totalCount: allDocs.totalDocs,
-    //                 currentPage: allDocs.page,
-    //                 totalPage: allDocs.totalPages,
-    //                 hasPrevPage: allDocs.hasPrevPage,
-    //                 hasNextPage: allDocs.hasNextPage,
-    //             },
-    //         };
-    //     } catch (e) {
-    //         throw new GraphQLError(e);
-    //     }
-    // }
-    //
-    // @Query(() => UserWorkspacesResponseType, { name: "playground_getAllPublicWorkspaces" })
-    // async getAllPublicWorkspace(
-    //     @Args("option", {
-    //         type: () => PaginateInput,
-    //         nullable: true,
-    //     })
-    //     options: PaginateInput,
-    // ) {
-    //     try {
-    //         const allDocs = await this.workspaceService.findAllPublicWorkspace(options);
-    //
-    //         return {
-    //             node: allDocs.docs,
-    //             pageInfo: {
-    //                 totalCount: allDocs.totalDocs,
-    //                 currentPage: allDocs.page,
-    //                 totalPage: allDocs.totalPages,
-    //                 hasPrevPage: allDocs.hasPrevPage,
-    //                 hasNextPage: allDocs.hasNextPage,
-    //             },
-    //         };
-    //     } catch (e) {
-    //         throw new GraphQLError(e);
-    //     }
-    // }
-    //
+    @Query(() => UserWorkspacesResponseType, { name: "playground_getAllUserWorkspaces" })
+    @UseGuards(AuthGuard)
+    async getAllUserWorkspace(
+        @UserId() userId: string,
+        @Args("option", {
+            type: () => PaginateInput,
+            nullable: true,
+        })
+        options: PaginateInput,
+    ) {
+        try {
+            const allDocs = await this.workspaceService.findAllByUser(userId, options);
+
+            return {
+                node: allDocs.docs,
+                pageInfo: {
+                    totalCount: allDocs.totalDocs,
+                    currentPage: allDocs.page,
+                    totalPage: allDocs.totalPages,
+                    hasPrevPage: allDocs.hasPrevPage,
+                    hasNextPage: allDocs.hasNextPage,
+                },
+            };
+        } catch (e) {
+            throw new GraphQLError(e);
+        }
+    }
+
+    @Query(() => UserWorkspacesResponseType, { name: "playground_getAllPublicWorkspaces" })
+    async getAllPublicWorkspace(
+        @Args("option", {
+            type: () => PaginateInput,
+            nullable: true,
+        })
+        options: PaginateInput,
+    ) {
+        try {
+            const allDocs = await this.workspaceService.findAllPublicWorkspace(options);
+
+            return {
+                node: allDocs.docs,
+                pageInfo: {
+                    totalCount: allDocs.totalDocs,
+                    currentPage: allDocs.page,
+                    totalPage: allDocs.totalPages,
+                    hasPrevPage: allDocs.hasPrevPage,
+                    hasNextPage: allDocs.hasNextPage,
+                },
+            };
+        } catch (e) {
+            throw new GraphQLError(e);
+        }
+    }
+
     // @Query(() => [CountWorkspaceByLanguages], { name: "playground_countPublicWorkspaceByLanguages" })
     // async countWorkspaceByLanguages() {
     //     return this.workspaceService.countPublicWorkspaceByLanguages();
     // }
-    //
-    // @Query(() => Workspace, { name: "playground_getWorkspaceBySlug" })
-    // async getWorkspaceBySlug(@UserId() userId: string, @Args("slug") slug: string) {
-    //     return this.workspaceService.findOneBySlug(userId, slug);
-    // }
+
+    @Query(() => Workspace, { name: "playground_getWorkspaceBySlug" })
+    async getWorkspaceBySlug(@UserId() userId: string, @Args("slug") slug: string) {
+        return this.workspaceService.findOneBySlug(userId, slug);
+    }
 
     @Mutation(() => Workspace, { name: "playground_createWorkspace" })
     @UseGuards(AuthGuard)
@@ -85,18 +85,18 @@ export class WorkspaceResolver {
         return this.workspaceService.create(userId, input);
     }
 
-    // @Mutation(() => Workspace, { name: "playground_updateWorkspace" })
-    // @UseGuards(AuthGuard)
-    // async updateWorkspace(@UserId() userId: string, @Args("id") id: string, @Args("input") input: WorkspaceUpdateInput) {
-    //     return this.workspaceService.update(userId, id, input);
-    // }
-    //
-    // @Mutation(() => Workspace, { name: "playground_deleteWorkspace" })
-    // @UseGuards(AuthGuard)
-    // async deleteWorkspace(@UserId() userId: string, @Args("id") id: string) {
-    //     return this.workspaceService.delete(userId, id);
-    // }
-    //
+    @Mutation(() => Workspace, { name: "playground_updateWorkspace" })
+    @UseGuards(AuthGuard)
+    async updateWorkspace(@UserId() userId: string, @Args("id") id: string, @Args("input") input: WorkspaceUpdateInput) {
+        return this.workspaceService.update(userId, id, input);
+    }
+
+    @Mutation(() => Workspace, { name: "playground_deleteWorkspace" })
+    @UseGuards(AuthGuard)
+    async deleteWorkspace(@UserId() userId: string, @Args("id") id: string) {
+        return this.workspaceService.delete(userId, id);
+    }
+
     // @Mutation(() => Workspace, { name: "playground_saveWorkspace" })
     // @UseGuards(AuthGuard)
     // async saveWorkspace(@UserId() userId: string, @Args("id") id: string, @Args("input", { type: () => [SaveWorkspaceFileInput] }) input: SaveWorkspaceFileInput[]) {

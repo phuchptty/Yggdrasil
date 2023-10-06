@@ -6,6 +6,8 @@ metadata:
 spec:
   dnsNames:
     - "*.cuterabbit.art"
+    - "*.yds.cuterabbit.art"
+    - "*.yvm.cuterabbit.art"
   issuerRef:
     kind: ClusterIssuer
     name: le-dns01

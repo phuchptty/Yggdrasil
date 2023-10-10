@@ -81,6 +81,16 @@ export class KubeApiService implements OnModuleInit {
                                 volumeMounts: options.volumeMounts,
                                 env: options.env,
                                 lifecycle: options.lifecycle,
+                                resources: {
+                                    limits: {
+                                        cpu: options.resourceLimits?.cpu,
+                                        memory: options.resourceLimits?.memory,
+                                    },
+                                    requests: {
+                                        cpu: options.resourceRequests?.cpu,
+                                        memory: options.resourceRequests?.memory,
+                                    },
+                                },
                             },
                         ],
                         volumes: options.volumes,

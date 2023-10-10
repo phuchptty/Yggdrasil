@@ -266,6 +266,10 @@ export class WorkspaceService {
                         },
                     },
                 },
+                resourceLimits: {
+                    cpu: "100m",
+                    memory: "164Mi",
+                },
             });
 
             // Create beacon service

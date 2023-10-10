@@ -97,14 +97,25 @@ kubectl -n longhorn-system create secret generic basic-auth --from-file=longhorn
 kubectl -n longhorn-system apply -f longhorn/ingress.yml
 ```
 
-## Kata Container (MicroVM)
-
+## Install NFS server (Use longhorn to provide 150Gi storage)
 ```shell
-git clone https://github.com/kata-containers/kata-containers.git
-cd kata-containers/tools/packaging/kata-deploy
-kubectl apply -f kata-rbac/base/kata-rbac.yaml
-kubectl apply -k kata-deploy/overlays/rke2
-kubectl apply -f https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/runtimeclasses/kata-runtimeClasses.yaml
+kubectl apply -f csi-nfs/nfs-server.yaml
+```
+
+## Install Snapshot CRDs & Common Snapshot Controller
+```shell
+kubectl kustomize client/config/crd | kubectl create -f -
+kubectl -n kube-system kustomize deploy/kubernetes/snapshot-controller | kubectl create -f -
+```
+
+## Install NFS client (Run on host server)
+```shell
+curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v4.4.0/deploy/install-driver.sh | bash -s v4.4.0 --
+```
+
+## Install Storage class
+```shell
+kubectl apply -f csi-nfs/storage-class.yaml
 ```
 
 # Step 2: Service Deploy

@@ -78,7 +78,7 @@ export class FileSystemService {
             name: basename(fsPath),
             path: filePath,
             size: stats.size,
-            mimeType: mimeType,
+            mimeType: mimeType ? mimeType : "application/octet-stream",
             created: stats.birthtime,
             modified: stats.mtime,
         };

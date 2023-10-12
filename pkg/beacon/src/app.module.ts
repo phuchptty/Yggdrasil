@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { FileSystemModule } from "./modules/file-system/file-system.module";
@@ -10,6 +10,8 @@ import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { WorkspaceModule } from "./modules/external/workspace/workspace.module";
 import { MongooseModule } from "@nestjs/mongoose";
+import { HealthModule } from "./modules/health/health.module";
+import { AuthMiddleware } from "./middlewares/auth/auth.middleware";
 
 @Module({
     imports: [
@@ -49,8 +51,13 @@ import { MongooseModule } from "@nestjs/mongoose";
         KubeApiModule,
         ContainerResourceModule,
         WorkspaceModule,
+        HealthModule,
     ],
     controllers: [AppController],
     providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(AuthMiddleware).forRoutes("*");
+    }
+}

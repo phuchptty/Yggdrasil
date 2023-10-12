@@ -15,7 +15,11 @@ export class KcClientService implements OnModuleInit {
     private readonly kcClientAdminRestApiUrl: string;
     private logger = new Logger(KcClientService.name);
 
-    constructor(private readonly httpService: HttpService, private configService: ConfigService, @InjectRedis() private readonly redis: Redis) {
+    constructor(
+        private readonly httpService: HttpService,
+        private configService: ConfigService,
+        @InjectRedis() private readonly redis: Redis,
+    ) {
         this.kcClientTokenApiUrl = `${this.configService.get("keycloak.baseUrl")}/realms/master/protocol/openid-connect/token`;
         this.kcClientAdminRestApiUrl = `${this.configService.get("keycloak.baseUrl")}/admin/realms/${this.configService.get("keycloak.realm")}`;
     }
@@ -105,11 +109,7 @@ export class KcClientService implements OnModuleInit {
             client_secret: this.configService.get<string>("keycloak.auth.clientSecret"),
         });
 
-        console.log(token)
-
         const apiUrl = `${this.configService.get("keycloak.baseUrl")}/realms/${this.configService.get("keycloak.realm")}/protocol/openid-connect/token/introspect`;
-
-        console.log(apiUrl)
 
         try {
             const { data }: { data: KeyCloakTokenIntrospectRsp } = await lastValueFrom(
@@ -119,8 +119,6 @@ export class KcClientService implements OnModuleInit {
                     },
                 }),
             );
-
-            console.log(data)
 
             const { active, sub } = data || {};
 

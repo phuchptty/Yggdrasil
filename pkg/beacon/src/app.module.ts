@@ -5,14 +5,16 @@ import { FileSystemModule } from "./modules/file-system/file-system.module";
 import { GatewayModule } from "./modules/gateway/gateway.module";
 import { KubeApiModule } from "./modules/external/kube-api/kube-api.module";
 import { ContainerResourceModule } from "./modules/container-resource/container-resource.module";
-import { appConfig, keycloakConfig, redisConfig } from "./configs";
+import { appConfig, databaseConfig, keycloakConfig, redisConfig } from "./configs";
 import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { WorkspaceModule } from "./modules/external/workspace/workspace.module";
+import { MongooseModule } from "@nestjs/mongoose";
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            load: [appConfig, keycloakConfig, redisConfig],
+            load: [appConfig, keycloakConfig, redisConfig, databaseConfig],
             isGlobal: true,
         }),
         RedisModule.forRootAsync({
@@ -33,11 +35,20 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
                 };
             },
         }),
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: async (config: ConfigService) => ({
+                uri: config.get<string>("database.uri"),
+                dbName: config.get<string>("database.name"),
+            }),
+        }),
         KcClientModule,
         FileSystemModule,
         GatewayModule,
         KubeApiModule,
         ContainerResourceModule,
+        WorkspaceModule,
     ],
     controllers: [AppController],
     providers: [],

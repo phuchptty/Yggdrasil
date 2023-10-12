@@ -4,9 +4,10 @@ import { GatewayGateway } from "./gateway.gateway";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "../../guards/auth/auth.guard";
 import { KcClientModule } from "../external/kc-client/kc-client.module";
+import { WorkspaceModule } from "../external/workspace/workspace.module";
 
 @Module({
-    imports: [KcClientModule],
+    imports: [KcClientModule, WorkspaceModule],
     providers: [
         GatewayService,
         GatewayGateway,

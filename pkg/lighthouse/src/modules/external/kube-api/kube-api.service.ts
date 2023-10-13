@@ -37,13 +37,13 @@ export class KubeApiService implements OnModuleInit {
         });
     }
 
-    public createPersistentVolumeClaim(namespace: string, name: string, storage?: string) {
+    public createPersistentVolumeClaim(namespace: string, name: string, storage?: string, accessModes?: string[]) {
         return this.kubeApi.createNamespacedPersistentVolumeClaim(namespace, {
             metadata: {
                 name: name,
             },
             spec: {
-                accessModes: ["ReadWriteOnce"],
+                accessModes: accessModes || ["ReadWriteMany"],
                 resources: {
                     requests: {
                         storage: storage || this.configService.get("workspace.defaultSpecs.storage"),

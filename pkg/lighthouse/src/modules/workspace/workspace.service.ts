@@ -162,50 +162,10 @@ export class WorkspaceService {
                 throw new GraphQLError("Language not found");
             }
 
-            // Deploy beacon
-            const beaconRsp = await this.deployBeacon(workspaceId.toString(), language);
+            const workspaceNamespace = `workspace-${workspaceId.toString()}`;
+            const workspaceStorageQuota = this.configService.get("workspace.defaultSpecs.storage");
+            const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
 
-            // Save to DB
-            const wsInstance = new this.wsModel({
-                _id: workspaceId,
-                owner: {
-                    _id: owner,
-                },
-                ...ws,
-            });
-
-            let wsSave = await wsInstance.save();
-            wsSave = await wsSave.populate(["workspaceLanguage"]);
-            wsSave = wsSave.toObject();
-
-            return {
-                ...wsSave,
-                beaconHost: beaconRsp.beaconHost,
-            };
-        } catch (e) {
-            if (e?.response?.body.status === "Failure") {
-                throw new GraphQLError(e?.response.body.message);
-            }
-
-            // Delete beacon
-            await this.kubeApi.deleteNamespace(`workspace-${workspaceId.toString()}`);
-
-            throw new GraphQLError(e);
-        }
-    }
-
-    private async deployBeacon(workspaceId: string, language: LanguageDocument) {
-        // Where magic start
-        const workspaceNamespace = `workspace-${workspaceId.toString()}`;
-        const workspaceStorageQuota = this.configService.get("workspace.defaultSpecs.storage");
-        const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
-        const workspaceBeaconImage = containerImagesConstant.beacon;
-        const workspaceBeaconVolumeName = `workspace-beacon`;
-        const beaconHost = `beacon-${workspaceId}.${this.configService.get("publicAppDomain")}`;
-
-        const { name: startFileName } = languageStartFile[language.key];
-
-        try {
             // Create namespace
             await this.kubeApi.createNamespace(
                 workspaceNamespace,
@@ -220,75 +180,34 @@ export class WorkspaceService {
             // Create persistent volume claim
             await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota);
 
-            // Create beacon deployment
-            await this.kubeApi.createDeployment({
-                namespace: workspaceNamespace,
-                name: "beacon",
-                image: workspaceBeaconImage,
-                ports: [
-                    {
-                        containerPort: 3000,
-                    },
-                ],
-                volumeMounts: [
-                    {
-                        name: workspaceBeaconVolumeName,
-                        mountPath: "/mnt/workspace",
-                        subPath: "workspace",
-                    },
-                ],
-                volumes: [
-                    {
-                        name: workspaceBeaconVolumeName,
-                        persistentVolumeClaim: {
-                            claimName: workspacePVCName,
-                        },
-                    },
-                ],
-                env: [
-                    {
-                        name: "NODE_ENV",
-                        value: "production",
-                    },
-                    {
-                        name: "FS_PATH",
-                        value: "/mnt/workspace",
-                    },
-                ],
-                labels: {
-                    "workspace-id": workspaceId.toString(),
-                    "workspace-type": "beacon",
+            // Save to DB
+            const wsInstance = new this.wsModel({
+                _id: workspaceId,
+                owner: {
+                    _id: owner,
                 },
-                lifecycle: {
-                    postStart: {
-                        exec: {
-                            command: ["/bin/sh", "-c", `touch /mnt/workspace/${startFileName}`],
-                        },
-                    },
-                },
-                resourceLimits: {
-                    cpu: "100m",
-                    memory: "164Mi",
-                },
+                ...ws,
             });
 
-            // Create beacon service
-            await this.kubeApi.createService(workspaceNamespace, "beacon", [
-                {
-                    port: 3000,
-                    targetPort: 3000,
-                },
-            ]);
+            let wsSave = await wsInstance.save();
+            wsSave = await wsSave.populate(["workspaceLanguage"]);
+            wsSave = wsSave.toObject();
 
-            // Create beacon ingress
-            await this.kubeApi.createIngress(workspaceNamespace, "beacon", beaconHost, "/", "beacon", 3000);
-
-            return {
-                beaconHost,
-            };
+            return wsSave;
         } catch (e) {
+            if (e?.response?.body.status === "Failure") {
+                throw new GraphQLError(e?.response.body.message);
+            }
+
+            // Delete beacon
+            await this.kubeApi.deleteNamespace(`workspace-${workspaceId.toString()}`);
+
             throw new GraphQLError(e);
         }
+    }
+
+    getBeaconHost() {
+        return this.configService.get<string>("publicBeaconUrl");
     }
 
     async update(owner: string, id: string, ws: WorkspaceUpdateInput) {

@@ -45,7 +45,7 @@ export class Workspace {
     @Field(() => GraphQLISODateTime)
     updatedAt: Date;
 
-    @Field(() => String, { nullable: true })
+    @Field(() => String, { nullable: false })
     beaconHost?: string;
 }
 

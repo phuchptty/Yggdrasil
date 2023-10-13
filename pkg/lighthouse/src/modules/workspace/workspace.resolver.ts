@@ -1,15 +1,13 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Args, Mutation, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { WorkspaceService } from "./workspace.service";
 import { Workspace } from "./schema/workspace.schema";
 import { UserId } from "../../decorators/user-id/user-id.decorator";
 import { WorkspaceInput, WorkspaceUpdateInput } from "./dto/workspace.input";
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "../../guards/auth/auth.guard";
-import { SaveWorkspaceFileInput } from "./dto/workspaceFile.input";
-import { WorkspaceScatteredFileResponse } from "./dto/scatteredFile.response";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { GraphQLError } from "graphql/error";
-import { CountWorkspaceByLanguages, UserWorkspacesResponseType } from "./dto/workspace.response";
+import { UserWorkspacesResponseType } from "./dto/workspace.response";
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
@@ -95,6 +93,11 @@ export class WorkspaceResolver {
     @UseGuards(AuthGuard)
     async deleteWorkspace(@UserId() userId: string, @Args("id") id: string) {
         return this.workspaceService.delete(userId, id);
+    }
+
+    @ResolveField("beaconHost", () => String)
+    beaconHost() {
+        return this.workspaceService.getBeaconHost();
     }
 
     // @Mutation(() => Workspace, { name: "playground_saveWorkspace" })

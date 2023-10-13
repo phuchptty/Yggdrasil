@@ -9,6 +9,12 @@ keycloak:
 
   proxy: edge
 
+  extraEnv: |
+    - name: PROXY_ADDRESS_FORWARDING
+      value: "true"
+    - name: KEYCLOAK_FRONTEND_URL
+      value: https://auth.yds.cuterabbit.art
+
   ingress:
     enabled: true
     ingressClassName: nginx

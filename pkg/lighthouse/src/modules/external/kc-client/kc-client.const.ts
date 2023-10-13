@@ -1,0 +1,3 @@
+export const KC_ACCESS_TOKEN = "KC_ACCESS_TOKEN";
+export const KC_REFRESH_TOKEN = "KC_REFRESH_TOKEN";
+export const KC_EXPIRES_TS = "KC_EXPIRES_TS";

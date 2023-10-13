@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  playground_service:
+    container_name: playground_service
+    restart: unless-stopped
+    image: "git.hisoft.com.vn:5050/tek4vn/playground-service"
+    ports:
+      - ${APP_PORT}:3000
+    env_file:
+      - ./.env

@@ -9,6 +9,7 @@ async function bootstrap() {
     await app.listen(3000, "0.0.0.0");
 
     Logger.log(`🚀  Server running on ${await app.getUrl()}`, "Bootstrap");
+    Logger.log(`🚀  Queue Board running on ${await app.getUrl()}/queues`, "Bootstrap");
     Logger.log(`🚀  Graphql running on ${await app.getUrl()}/graphql`, "Bootstrap");
 }
 

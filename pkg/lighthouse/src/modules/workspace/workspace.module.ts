@@ -23,5 +23,6 @@ import { KubeApiModule } from "../external/kube-api/kube-api.module";
         LanguageModule,
         KubeApiModule,
     ],
+    exports: [WorkspaceService],
 })
 export class WorkspaceModule {}

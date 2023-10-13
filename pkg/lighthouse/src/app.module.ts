@@ -11,6 +11,7 @@ import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
 import { keycloakConfig, appConfig, databaseConfig, workspaceConfig } from "./configs";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { GraphqlModule } from "./modules/graphql/graphql.module";
+import { VmManagerModule } from './modules/vm-manager/vm-manager.module';
 
 @Module({
     imports: [
@@ -51,6 +52,7 @@ import { GraphqlModule } from "./modules/graphql/graphql.module";
         KubeApiModule,
         UserModule,
         KcClientModule,
+        VmManagerModule,
     ],
     controllers: [AppController],
 })

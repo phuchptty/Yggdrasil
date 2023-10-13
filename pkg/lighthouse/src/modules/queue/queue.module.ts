@@ -2,6 +2,8 @@ import { Module } from "@nestjs/common";
 import { QueueService } from "./queue.service";
 import { BullModule } from "@nestjs/bull";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { BullBoardModule } from "@bull-board/nestjs";
+import { ExpressAdapter } from "@bull-board/express";
 
 @Module({
     imports: [
@@ -13,8 +15,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
                     port: configService.get("redis.port"),
                 };
 
-                if (configService.get("redis.password")) {
-                    config["password"] = configService.get("redis.password");
+                if (configService.get("redis.pass")) {
+                    config["password"] = configService.get("redis.pass");
                 }
 
                 return {
@@ -22,6 +24,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
                 };
             },
             inject: [ConfigService],
+        }),
+        BullBoardModule.forRoot({
+            route: "/queues",
+            adapter: ExpressAdapter,
         }),
     ],
     providers: [QueueService],

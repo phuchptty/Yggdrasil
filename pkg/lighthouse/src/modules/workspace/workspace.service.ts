@@ -5,14 +5,11 @@ import { Workspace, WorkspaceDocument } from "./schema/workspace.schema";
 import { WorkspaceInput, WorkspaceUpdateInput } from "./dto/workspace.input";
 import { LanguageService } from "../language/language.service";
 import { GraphQLError } from "graphql/error";
-import languageStartFile from "../../constants/languageStartFile.constant";
 import { filterPreProcess } from "../../utils";
 import { WorkspacePermission } from "../../commons/enums";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { KubeApiService } from "../external/kube-api/kube-api.service";
 import { ConfigService } from "@nestjs/config";
-import containerImagesConstant from "../../constants/containerImages.constant";
-import { LanguageDocument } from "../language/schema/language.schema";
 
 @Injectable()
 export class WorkspaceService {
@@ -152,7 +149,6 @@ export class WorkspaceService {
     async create(owner: string, ws: WorkspaceInput) {
         // Generate workspace id
         const workspaceId = new Types.ObjectId();
-        // const workspaceId = "test";
 
         try {
             // Query language

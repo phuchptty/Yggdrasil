@@ -49,21 +49,21 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
 
             if (workspace.permission === WorkspacePermission.PRIVATE) {
                 if (!authHeader) {
-                    this.forceDisconnect(client);
+                    this.forceDisconnect(client, "Missing authorization token");
                     return;
                 }
 
                 const token = authHeader.trim().replace("Bearer ", "");
 
                 if (!token) {
-                    this.forceDisconnect(client);
+                    this.forceDisconnect(client, "Missing post authorization token");
                     return;
                 }
 
                 const user = await this.kcClient.introspectToken(token);
 
                 if (!user) {
-                    this.forceDisconnect(client);
+                    this.forceDisconnect(client, "Invalid token");
                     return;
                 }
 

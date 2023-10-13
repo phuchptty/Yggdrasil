@@ -1,0 +1,83 @@
+replicaCount: 1
+
+appConfig:
+  env: production
+  fsPath: "/mnt/workspace"
+  service:
+    mongodb:
+      uri: "mongodb+srv://yggdrasil-pc:ciZYtbaZFkNnnIHm@cluster0.cwnwsdr.mongodb.net/?retryWrites=true&w=majority"
+      name: "yggdrasil-dev"
+  
+  keycloak:
+    base: "http://keycloak.keycloak.svc.cluster.local"
+    realm: "yggdrasil"
+    clientId: "backend-client"
+    clientSecret: "0k1fvLaL6DrYizXTufOxzdVJUHT7fUXr"
+    clientAuthId: "yggdrasil-auth-client"
+    clientAuthSecret: "SNVixwqR8qP1VCKwnNoGacEkO2bVnZnh"
+
+image:
+  repository: ghcr.io/phuchptty/yggdrasil/beacon
+  pullPolicy: Always
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: beacon.yds.cuterabbit.art
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: chart-example-tls
+      hosts:
+        - beacon.yds.cuterabbit.art
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# securityContext:
+#   readOnlyRootFilesystem: true
+#   runAsNonRoot: true
+#   runAsUser: 1000
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# Subchart config
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: false

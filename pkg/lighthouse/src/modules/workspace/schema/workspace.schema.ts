@@ -37,7 +37,7 @@ export class Workspace {
     // Language
     @Field(() => Language, { nullable: false })
     @Prop({ required: true, type: Types.ObjectId, ref: Language.name })
-    workspaceLanguage: Types.ObjectId;
+    workspaceLanguage: Language;
 
     @Field(() => GraphQLISODateTime)
     createdAt: Date;

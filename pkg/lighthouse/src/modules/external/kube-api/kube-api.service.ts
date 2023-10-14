@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1ContainerPort, V1ServicePort } from "@kubernetes/client-node";
+import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1ContainerPort, V1Pod, V1ServicePort } from "@kubernetes/client-node";
 import { ConfigService } from "@nestjs/config";
 import { KubeCreateDeployment } from "./types/deployment.type";
 
@@ -37,7 +37,7 @@ export class KubeApiService implements OnModuleInit {
         });
     }
 
-    public createPersistentVolumeClaim(namespace: string, name: string, storage?: string, accessModes?: string[]) {
+    public createPersistentVolumeClaim(namespace: string, name: string, storage?: string, accessModes?: string[], storageClassName?: string) {
         return this.kubeApi.createNamespacedPersistentVolumeClaim(namespace, {
             metadata: {
                 name: name,
@@ -49,6 +49,7 @@ export class KubeApiService implements OnModuleInit {
                         storage: storage || this.configService.get("workspace.defaultSpecs.storage"),
                     },
                 },
+                storageClassName: storageClassName || "",
             },
         });
     }
@@ -153,6 +154,10 @@ export class KubeApiService implements OnModuleInit {
                     : [],
             },
         });
+    }
+
+    public createPod(namespace: string, data: V1Pod) {
+        return this.kubeApi.createNamespacedPod(namespace, data);
     }
 
     public deleteDeployment(namespace: string, name: string) {

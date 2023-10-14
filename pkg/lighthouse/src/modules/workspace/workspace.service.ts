@@ -174,7 +174,7 @@ export class WorkspaceService {
             );
 
             // Create persistent volume claim
-            await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota);
+            await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota, undefined, "nfs-csi");
 
             // Save to DB
             const wsInstance = new this.wsModel({

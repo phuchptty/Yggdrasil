@@ -6,6 +6,7 @@ import { BullModule } from "@nestjs/bull";
 import { VM_MANAGER_QUEUE_NAME } from "./vm-manager.constant";
 import { BullBoardModule } from "@bull-board/nestjs";
 import { BullAdapter } from "@bull-board/api/bullAdapter";
+import { KubeApiModule } from "../external/kube-api/kube-api.module";
 
 @Module({
     providers: [VmManagerService, VmManagerResolver],
@@ -18,6 +19,7 @@ import { BullAdapter } from "@bull-board/api/bullAdapter";
             name: VM_MANAGER_QUEUE_NAME,
             adapter: BullAdapter,
         }),
+        KubeApiModule,
     ],
 })
 export class VmManagerModule {}

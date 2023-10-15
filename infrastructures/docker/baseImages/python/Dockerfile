@@ -8,30 +8,31 @@ ENV GID=1234
 
 RUN apk update && apk add bash
 
-RUN addgroup --gid 1024 app-group
+RUN addgroup --gid ${GID} hk3d
 
 RUN adduser \
     --disabled-password \
     --gecos "" \
     --uid "$UID" \
-    --gid "$GID" \
+    --ingroup "hk3d" \
     --home "/home/$USER" \
-    --none-unique \
+    --no-create-home \
     "$USER"
 
 RUN sed -i '/^alixia:/!d' /etc/passwd
 
-RUN chown 1024:1024 /home/${USER}
+RUN mkdir /home/${USER}
+RUN chown ${GID}:${GID} /home/${USER}
 RUN chmod 775 /home/${USER}
 RUN chmod g+s /home/${USER}
 
-WORKDIR /home/alixia
-USER alixia
-
 # Create a directory for the database and expose as a volume for persistence
 RUN mkdir /home/${USER}/runner
-RUN chown 1024:1024 /home/${USER}/runner
+RUN chown ${GID}:${GID} /home/${USER}/runner
 VOLUME /home/${USER}/runner
+
+WORKDIR /home/alixia
+USER alixia
 
 # Install dependencies
 COPY requirements.txt .

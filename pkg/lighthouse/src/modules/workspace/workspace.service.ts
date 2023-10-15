@@ -5,7 +5,7 @@ import { Workspace, WorkspaceDocument } from "./schema/workspace.schema";
 import { WorkspaceInput, WorkspaceUpdateInput } from "./dto/workspace.input";
 import { LanguageService } from "../language/language.service";
 import { GraphQLError } from "graphql/error";
-import { filterPreProcess } from "../../utils";
+import { filterPreProcess, generateK8sNamespace, generateK8sPvcName } from "../../utils";
 import { WorkspacePermission } from "../../commons/enums";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { KubeApiService } from "../external/kube-api/kube-api.service";
@@ -158,9 +158,9 @@ export class WorkspaceService {
                 throw new GraphQLError("Language not found");
             }
 
-            const workspaceNamespace = `workspace-${workspaceId.toString()}`;
+            const workspaceNamespace = generateK8sNamespace(workspaceId.toString());
             const workspaceStorageQuota = this.configService.get("workspace.defaultSpecs.storage");
-            const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
+            const workspacePVCName = generateK8sPvcName(workspaceId.toString());
 
             // Create namespace
             await this.kubeApi.createNamespace(

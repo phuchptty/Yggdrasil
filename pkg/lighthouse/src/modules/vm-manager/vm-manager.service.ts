@@ -8,7 +8,8 @@ import { WorkspaceService } from "../workspace/workspace.service";
 import { KubeApiService } from "../external/kube-api/kube-api.service";
 import { Workspace } from "../workspace/schema/workspace.schema";
 import containerImagesConstant from "../../constants/containerImages.constant";
-import { shortenUUID } from "../../utils";
+import { generateK8sNamespace, generateK8sPodName, generateK8sPvcName, generateK8sVolumeName } from "../../utils";
+import urlJoin from "url-join";
 
 @Injectable()
 export class VmManagerService {
@@ -34,13 +35,8 @@ export class VmManagerService {
 
             if (vmTrashCheck) {
             } else {
-                // Push to queue
-                const vm = await this.provisionVm(owner, workspace);
-
-                console.log(vm.response);
+                return await this.provisionVm(owner, workspace);
             }
-
-            // If not push to queue
         } catch (e) {
             throw new GraphQLError(e);
         }
@@ -48,19 +44,18 @@ export class VmManagerService {
 
     async provisionVm(ownerId: string, workspaceData: Workspace) {
         try {
-            const minifiedOwnerId = shortenUUID(ownerId);
             const workspaceId = workspaceData._id.toString();
-            const namespace = `workspace-${workspaceData._id.toString()}`;
+            const namespace = generateK8sNamespace(workspaceId);
 
-            const podName = `vm-${workspaceId}-${minifiedOwnerId}`;
-            const volumeName = `volume-${workspaceId}-${minifiedOwnerId}`;
-            const pvcName = `pvc-sandbox-${workspaceId}`;
+            const podName = generateK8sPodName(workspaceId, ownerId);
+            const volumeName = generateK8sVolumeName(workspaceId, ownerId);
+            const pvcName = generateK8sPvcName(workspaceId);
 
             // Get language
             const language = workspaceData.workspaceLanguage;
             const containerImage = containerImagesConstant["baseImage"][language.key];
 
-            const kubeRsp = await this.kubeApi.createPod(namespace, {
+            await this.kubeApi.createPod(namespace, {
                 metadata: {
                     name: podName,
                     labels: {
@@ -68,6 +63,7 @@ export class VmManagerService {
                     },
                 },
                 spec: {
+                    automountServiceAccountToken: false,
                     containers: [
                         {
                             name: podName,
@@ -77,7 +73,6 @@ export class VmManagerService {
                                 {
                                     name: volumeName,
                                     mountPath: "/home/alixia/runner",
-                                    subPath: workspaceId,
                                 },
                             ],
                         },
@@ -90,10 +85,17 @@ export class VmManagerService {
                             },
                         },
                     ],
+                    securityContext: {
+                        fsGroup: 1234,
+                    },
                 },
             });
 
-            return kubeRsp;
+            return {
+                workspaceId: workspaceId,
+                podName: podName,
+                ownerId: ownerId,
+            };
         } catch (e) {
             if (e?.response?.body.status === "Failure") {
                 throw new GraphQLError(e?.response.body.message);
@@ -101,5 +103,14 @@ export class VmManagerService {
 
             throw new GraphQLError(e);
         }
+    }
+
+    generateBeaconUrl(workspaceId: string) {
+        return `${this.configService.get("publicBeaconUrl")}/?workspace=${workspaceId}`;
+    }
+
+    generateExecUrl(workspaceId: string, podName: string) {
+        const namespace = generateK8sNamespace(workspaceId);
+        return urlJoin(this.configService.get("publicK8sExecUrl"), `/api/v1/namespaces`, namespace, "pods", podName, "exec", `?container=${podName}`);
     }
 }

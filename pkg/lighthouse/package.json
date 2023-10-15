@@ -53,6 +53,7 @@
         "random-word-slugs": "^0.1.7",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.1",
+        "url-join": "4.0.1",
         "uuid": "^9.0.0"
     },
     "devDependencies": {
@@ -65,6 +66,7 @@
         "@types/jest": "^29.5.2",
         "@types/node": "^20.3.1",
         "@types/supertest": "^2.0.12",
+        "@types/url-join": "^4.0.1",
         "@typescript-eslint/eslint-plugin": "^5.59.11",
         "@typescript-eslint/parser": "^5.59.11",
         "eslint": "^8.42.0",

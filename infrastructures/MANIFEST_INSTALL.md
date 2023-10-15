@@ -120,6 +120,11 @@ kubectl apply -f csi-nfs/storage-class.yaml
 
 # Step 2: Service Deploy
 
+## Apply cluster role for beacon and lighthouse
+```shell
+kubectl apply -f cluster-role/beacon-cluster-role.yaml
+```
+
 ## Install Keycloak
 
 ```shell

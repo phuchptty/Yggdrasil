@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1ContainerPort, V1Pod, V1ServicePort } from "@kubernetes/client-node";
+import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod, V1ServicePort } from "@kubernetes/client-node";
 import { ConfigService } from "@nestjs/config";
 import { KubeCreateDeployment } from "./types/deployment.type";
 
@@ -25,6 +25,10 @@ export class KubeApiService implements OnModuleInit {
         this.kubeConfig = kc;
 
         this.logger.log("KubeApiService initialized");
+    }
+
+    public getPod(namespace: string, name: string) {
+        return this.kubeApi.readNamespacedPod(name, namespace);
     }
 
     public createNamespace(namespace: string, labels?: Record<string, string>, annotations?: Record<string, string>) {

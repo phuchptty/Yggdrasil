@@ -1,7 +1,8 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import { BaseOneAbstractResult } from "../../../commons/dto/base-one.abstract-result";
 
-@ObjectType("Playground_VmManagerBaseResponse")
-export class VmManagerBaseResponse {
+@ObjectType("Playground_RequestForVmBaseResponse")
+export class RequestForVmBaseResponse {
     @Field(() => String)
     workspaceId: string;
 
@@ -17,3 +18,6 @@ export class VmManagerBaseResponse {
     @Field(() => String)
     execHost: string;
 }
+
+@ObjectType("Playground_RequestForVmResponse")
+export class RequestForVmResponse extends BaseOneAbstractResult(RequestForVmBaseResponse) {}

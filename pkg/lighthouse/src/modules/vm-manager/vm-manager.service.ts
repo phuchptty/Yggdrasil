@@ -10,6 +10,7 @@ import { Workspace } from "../workspace/schema/workspace.schema";
 import containerImagesConstant from "../../constants/containerImages.constant";
 import { generateK8sNamespace, generateK8sPodName, generateK8sPvcName, generateK8sVolumeName } from "../../utils";
 import urlJoin from "url-join";
+import dayjs from "dayjs";
 
 @Injectable()
 export class VmManagerService {
@@ -17,7 +18,9 @@ export class VmManagerService {
 
     private logger = new Logger(VmManagerService.name);
 
-    async requestVmForWorkspace(owner: string, workspaceSlug: string) {
+    async requestVmForWorkspace(owner: string, workspaceSlug: string, socketId: string) {
+        console.log("socketId", socketId);
+
         try {
             // Query workspace
             const workspace = await this.wsService.findOneBySlug(owner, workspaceSlug);
@@ -50,6 +53,13 @@ export class VmManagerService {
             const podName = generateK8sPodName(workspaceId, ownerId);
             const volumeName = generateK8sVolumeName(workspaceId, ownerId);
             const pvcName = generateK8sPvcName(workspaceId);
+
+            // Since we only allow one pod active per workspace per user. Check if pod is already exist or not
+            const podCheck = await this.kubeApi.getPod(namespace, podName);
+
+            if (podCheck.body.status.phase === "Running") {
+                throw new GraphQLError("Hệ thống chỉ có phép 1 tài khoản 1 Workspace chạy đồng thời!");
+            }
 
             // Get language
             const language = workspaceData.workspaceLanguage;
@@ -112,5 +122,48 @@ export class VmManagerService {
     generateExecUrl(workspaceId: string, podName: string) {
         const namespace = generateK8sNamespace(workspaceId);
         return urlJoin(this.configService.get("publicK8sExecUrl"), `/api/v1/namespaces`, namespace, "pods", podName, "exec", `?container=${podName}`);
+    }
+
+    async trashVmForWorkspace(ownerId: string, workspaceSlug: string) {
+        try {
+            // Query workspace
+            const workspace = await this.wsService.findOneBySlug(ownerId, workspaceSlug);
+
+            if (!workspace) {
+                throw new GraphQLError("Không tìm thấy workspace hoặc bạn không có quyền truy cập workspace này!");
+            }
+
+            if (workspace.permission === WorkspacePermission.PRIVATE && workspace.owner._id.toString() !== ownerId) {
+                throw new GraphQLError("Bạn không có quyền truy cập Workspace này!");
+            }
+
+            const namespace = generateK8sNamespace(workspace._id.toString());
+            const podName = generateK8sPodName(workspace._id.toString(), ownerId);
+
+            // Check exist vm in trash
+            const vmTrashCheck = await this.redis.get(`vm:trash:${podName}`);
+
+            if (vmTrashCheck) {
+                throw new GraphQLError("Workspace này đã được xóa!");
+            }
+
+            const redisPersistData = {
+                workspaceId: workspace._id.toString(),
+                ownerId: ownerId,
+                podName: podName,
+                namespace: namespace,
+                deletedAt: dayjs().unix(),
+            };
+
+            await this.redis.hset(`vm:trash:${podName}`, redisPersistData);
+
+            return true;
+        } catch (e) {
+            if (e?.response?.body.status === "Failure") {
+                throw new GraphQLError(e?.response.body.message);
+            }
+
+            throw new GraphQLError(e);
+        }
     }
 }

@@ -4,10 +4,9 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { KcClientModule } from "../external/kc-client/kc-client.module";
-import { GraphqlResolver } from "./graphql.resolver";
 
 @Module({
-    providers: [GraphqlService, GraphqlResolver],
+    providers: [GraphqlService],
     imports: [
         KcClientModule,
         GraphQLModule.forRootAsync<ApolloDriverConfig>({

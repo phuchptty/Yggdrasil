@@ -12,15 +12,7 @@
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
-        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:cov": "jest --coverage",
-        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json",
-        "rover": "rover subgraph introspect http://localhost:3000/graphql | rover subgraph publish Tek4vn-z0xflg@current --name playground-svc --schema - --routing-url \"http://10.0.0.251:4000/graphql\"",
-        "rover:prod": "rover subgraph introspect http://localhost:3000/graphql | rover subgraph publish Tek4vn-z0xflg@production --name playground-svc --schema - --routing-url \"http://payment-service.payment-service:3000/graphql\"",
-        "hive": "hive schema:publish --service playground-svc --url http://10.0.0.251:4000/graphql schema.graphql --registry.endpoint=https://hive-cdn.tek4.vn/graphql --registry.accessToken=6bb8c8fafb736ae25235183058132759"
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
     },
     "dependencies": {
         "@apollo/federation": "^0.38.1",
@@ -46,9 +38,7 @@
         "class-validator": "^0.14.0",
         "dayjs": "^1.11.9",
         "graphql": "^16.7.1",
-        "graphql-subscriptions": "^2.0.0",
         "graphql-type-json": "^0.3.2",
-        "graphql-ws": "^5.14.1",
         "ioredis": "^5.3.2",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^7.4.1",

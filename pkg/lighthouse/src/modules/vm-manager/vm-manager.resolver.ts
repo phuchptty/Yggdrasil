@@ -9,7 +9,7 @@ import { RequestForVmBaseResponse, RequestForVmResponse } from "./dto/vm-manager
 export class VmManagerResolver {
     constructor(private readonly vmManagerService: VmManagerService) {}
 
-    @Mutation(() => RequestForVmResponse, { name: "Playground_RequestVmForWorkspace" })
+    @Mutation(() => RequestForVmResponse, { name: "Playground_requestVmForWorkspace" })
     @UseGuards(AuthGuard)
     async requestVmForWorkspace(@UserId() userId: string, @Args("workspaceSlug", { type: () => String }) workspaceSlug: string) {
         return {
@@ -17,7 +17,7 @@ export class VmManagerResolver {
         };
     }
 
-    @Mutation(() => RequestForVmResponse, { name: "Playground_RequestReCreateVM" })
+    @Mutation(() => RequestForVmResponse, { name: "Playground_requestReCreateVM" })
     @UseGuards(AuthGuard)
     async requestReCreateVm(@UserId() userId: string, @Args("workspaceSlug", { type: () => String }) workspaceSlug: string) {
         return {

@@ -4,7 +4,6 @@ import { UserId } from "../../decorators/user-id/user-id.decorator";
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "../../guards/auth/auth.guard";
 import { RequestForVmBaseResponse, RequestForVmResponse } from "./dto/vm-manager.dto";
-import { SocketId } from "../../decorators/socket-id/socket-id.decorator";
 
 @Resolver(() => RequestForVmBaseResponse)
 export class VmManagerResolver {
@@ -12,9 +11,17 @@ export class VmManagerResolver {
 
     @Mutation(() => RequestForVmResponse, { name: "Playground_RequestVmForWorkspace" })
     @UseGuards(AuthGuard)
-    async requestVmForWorkspace(@UserId() userId: string, @SocketId() socketId: string, @Args("workspaceSlug", { type: () => String }) workspaceSlug: string) {
+    async requestVmForWorkspace(@UserId() userId: string, @Args("workspaceSlug", { type: () => String }) workspaceSlug: string) {
         return {
-            node: await this.vmManagerService.requestVmForWorkspace(userId, workspaceSlug, socketId),
+            node: await this.vmManagerService.requestVmForWorkspace(userId, workspaceSlug),
+        };
+    }
+
+    @Mutation(() => RequestForVmResponse, { name: "Playground_RequestReCreateVM" })
+    @UseGuards(AuthGuard)
+    async requestReCreateVm(@UserId() userId: string, @Args("workspaceSlug", { type: () => String }) workspaceSlug: string) {
+        return {
+            node: await this.vmManagerService.requestReCreateVm(userId, workspaceSlug),
         };
     }
 

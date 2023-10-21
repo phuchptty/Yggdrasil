@@ -171,4 +171,8 @@ export class KubeApiService implements OnModuleInit {
     public deleteNamespace(namespace: string) {
         return this.kubeApi.deleteNamespace(namespace);
     }
+
+    public deletePod(namespace: string, name: string) {
+        return this.kubeApi.deleteNamespacedPod(name, namespace);
+    }
 }

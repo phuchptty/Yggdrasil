@@ -21,5 +21,6 @@ import { KubeApiModule } from "../external/kube-api/kube-api.module";
         }),
         KubeApiModule,
     ],
+    exports: [VmManagerService],
 })
 export class VmManagerModule {}

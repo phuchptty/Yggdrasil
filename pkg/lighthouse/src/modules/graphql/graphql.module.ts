@@ -4,8 +4,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { KcClientModule } from "../external/kc-client/kc-client.module";
-import { Context } from "graphql-ws";
-import { GraphqlResolver } from './graphql.resolver';
+import { GraphqlResolver } from "./graphql.resolver";
 
 @Module({
     providers: [GraphqlService, GraphqlResolver],
@@ -22,13 +21,7 @@ import { GraphqlResolver } from './graphql.resolver';
                 introspection: true,
                 autoSchemaFile: true, // Enable generate schemas on-the-fly
                 // resolvers: { JSON: GraphQLJSON },
-                context: async ({ req, extra }) => graphqlService.handleContext(req || extra.request),
-                subscriptions: {
-                    "graphql-ws": {
-                        onConnect: async (context: Context<any>) => graphqlService.handleSubscriptionOnConnect(context),
-                        onDisconnect: async (context: Context<any>) => graphqlService.handleSubscriptionOnDisconnect(context),
-                    },
-                },
+                context: async ({ req }) => graphqlService.handleContext(req),
             }),
         }),
     ],

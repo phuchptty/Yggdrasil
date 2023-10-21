@@ -18,9 +18,7 @@ export class VmManagerService {
 
     private logger = new Logger(VmManagerService.name);
 
-    async requestVmForWorkspace(owner: string, workspaceSlug: string, socketId: string) {
-        console.log("socketId", socketId);
-
+    async requestVmForWorkspace(owner: string, workspaceSlug: string) {
         try {
             // Query workspace
             const workspace = await this.wsService.findOneBySlug(owner, workspaceSlug);
@@ -33,10 +31,21 @@ export class VmManagerService {
                 throw new GraphQLError("Bạn không có quyền truy cập Workspace này!");
             }
 
-            // Check exist vm in trash
-            const vmTrashCheck = await this.redis.get(`vm:trash:${workspace._id}`);
+            const workspaceId = workspace._id.toString();
+            const podName = generateK8sPodName(workspaceId, owner);
 
-            if (vmTrashCheck) {
+            // Check exist vm exist
+            const vmPersistCheck = await this.redis.hgetall(`vm:provision:${podName}`);
+
+            if (vmPersistCheck) {
+                // Extend expired time
+                await this.redis.hset(`vm:provision:${podName}`, "expiredAt", dayjs().add(4, "hour").unix());
+
+                return {
+                    workspaceId: workspaceId,
+                    podName: podName,
+                    ownerId: owner,
+                };
             } else {
                 return await this.provisionVm(owner, workspace);
             }
@@ -101,6 +110,16 @@ export class VmManagerService {
                 },
             });
 
+            // Save to redis
+            const redisPersistData = {
+                workspaceId: workspaceId,
+                ownerId: ownerId,
+                podName: podName,
+                expiredAt: dayjs().add(4, "hour").unix(),
+            };
+
+            await this.redis.hset(`vm:provision:${podName}`, JSON.stringify(redisPersistData));
+
             return {
                 workspaceId: workspaceId,
                 podName: podName,
@@ -124,7 +143,7 @@ export class VmManagerService {
         return urlJoin(this.configService.get("publicK8sExecUrl"), `/api/v1/namespaces`, namespace, "pods", podName, "exec", `?container=${podName}`);
     }
 
-    async trashVmForWorkspace(ownerId: string, workspaceSlug: string) {
+    async requestReCreateVm(ownerId: string, workspaceSlug: string) {
         try {
             // Query workspace
             const workspace = await this.wsService.findOneBySlug(ownerId, workspaceSlug);
@@ -140,24 +159,18 @@ export class VmManagerService {
             const namespace = generateK8sNamespace(workspace._id.toString());
             const podName = generateK8sPodName(workspace._id.toString(), ownerId);
 
-            // Check exist vm in trash
-            const vmTrashCheck = await this.redis.get(`vm:trash:${podName}`);
+            // Check exist vm
+            const vmTrashCheck = await this.redis.hgetall(`vm:provision:${podName}`);
 
-            if (vmTrashCheck) {
+            if (!vmTrashCheck) {
                 throw new GraphQLError("Workspace này đã được xóa!");
             }
 
-            const redisPersistData = {
-                workspaceId: workspace._id.toString(),
-                ownerId: ownerId,
-                podName: podName,
-                namespace: namespace,
-                deletedAt: dayjs().unix(),
-            };
+            // Delete pod
+            await this.kubeApi.deletePod(namespace, podName);
 
-            await this.redis.hset(`vm:trash:${podName}`, redisPersistData);
-
-            return true;
+            // Recreate pod
+            return await this.provisionVm(ownerId, workspace);
         } catch (e) {
             if (e?.response?.body.status === "Failure") {
                 throw new GraphQLError(e?.response.body.message);

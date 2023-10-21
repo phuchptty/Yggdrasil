@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Document } from "mongoose";
 import { RoleEnum } from "../../../commons/enums";
+import { Schema as MongooseSchema, Document } from "mongoose";
 
-@Schema({ timestamps: false })
-@ObjectType("Playground_User", { description: "The user model" })
+@Schema({ timestamps: false, _id: false })
+@ObjectType("Profile_User", { description: "The user model" })
 export class User {
-    @Prop()
     @Field(() => String, { nullable: false })
+    @Prop({ required: true, type: MongooseSchema.Types.UUID })
     _id!: string;
 
     @Field(() => String, { nullable: false })

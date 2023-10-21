@@ -64,3 +64,9 @@ export type RealmAccess = {
 export type ResourceAccess = {
     account: RealmAccess;
 };
+
+export type KeyCloakGroup = {
+    id: string;
+    name: string;
+    path: string;
+}

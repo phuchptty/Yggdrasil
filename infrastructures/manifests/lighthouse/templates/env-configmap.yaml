@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ .Release.Name }}-app-env-configmap'
+
+data:
+  NODE_ENV: {{ .Values.appConfig.env }}
+  PUBLIC_APP_DOMAIN: {{ .Values.appConfig.publicAppDomain }}
+  PUBLIC_BEACON_URL: {{ .Values.appConfig.publicBeaconUrl }}
+  PUBLIC_K8S_EXEC_URL: {{ .Values.appConfig.publicK8sExecUrl }}
+
+  DATABASE_URI: {{ .Values.appConfig.service.mongodb.uri }}
+  DATABASE_NAME: {{ .Values.appConfig.service.mongodb.name }}
+
+  REDIS_HOST: {{ .Release.Name }}-redis-master-0.{{ .Release.Name }}-redis-headless.{{ .Release.Namespace }}.svc.cluster.local
+  REDIS_PORT: "6379"
+
+  KEYCLOAK_BASE: {{ .Values.appConfig.keycloak.base }}
+  KEYCLOAK_REALM: {{ .Values.appConfig.keycloak.realm }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.appConfig.keycloak.clientId }}
+  KEYCLOAK_CLIENT_SECRET: {{ .Values.appConfig.keycloak.clientSecret }}
+  KEYCLOAK_AUTH_CLIENT_ID: {{ .Values.appConfig.keycloak.clientAuthId }}
+  KEYCLOAK_AUTH_CLIENT_SECRET: {{ .Values.appConfig.keycloak.clientAuthSecret }}

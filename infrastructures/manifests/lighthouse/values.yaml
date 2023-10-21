@@ -1,0 +1,103 @@
+# Default values for lighthouse.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+appConfig:
+  env: production
+  publicAppDomain: "yds.cuterabbit.art"
+  publicBeaconUrl: "https://beacon.yds.cuterabbit.art"
+  publicK8sExecUrl: "https://exec.yds.cuterabbit.art"
+
+  service:
+    mongodb:
+      uri: "mongodb+srv://yggdrasil-pc:ciZYtbaZFkNnnIHm@cluster0.cwnwsdr.mongodb.net/?retryWrites=true&w=majority"
+      name: "yggdrasil-dev"
+
+  keycloak:
+    base: "http://keycloak.keycloak.svc.cluster.local"
+    realm: "yggdrasil"
+    clientId: "backend-client"
+    clientSecret: "0k1fvLaL6DrYizXTufOxzdVJUHT7fUXr"
+    clientAuthId: "yggdrasil-auth-client"
+    clientAuthSecret: "SNVixwqR8qP1VCKwnNoGacEkO2bVnZnh"
+
+image:
+  repository: ghcr.io/phuchptty/yggdrasil/lighthouse
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: lighthouse.yds.cuterabbit.art
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: chart-example-tls
+      hosts:
+        - lighthouse.yds.cuterabbit.art
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: false

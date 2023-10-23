@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "./schema/user.schema";
 import { KcClientModule } from "../external/kc-client/kc-client.module";
-import { UserResolver } from './user.resolver';
+import { UserResolver } from "./user.resolver";
 
 @Module({
     providers: [UserService, UserResolver],
@@ -16,5 +16,6 @@ import { UserResolver } from './user.resolver';
         ]),
         KcClientModule,
     ],
+    exports: [UserService],
 })
 export class UserModule {}

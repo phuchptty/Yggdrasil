@@ -22,8 +22,8 @@ export class User {
     @Field(() => String, { nullable: true })
     lastName: string;
 
-    @Field(() => RoleEnum, { nullable: true })
-    roles: RoleEnum;
+    @Field(() => [RoleEnum], { nullable: true })
+    roles: RoleEnum[];
 }
 
 export type UserDocument = User & Document;

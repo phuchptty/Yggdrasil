@@ -9,6 +9,16 @@ export class UserService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private readonly kcClient: KcClientService) {}
 
     async queryMe(userId: string) {
-        return this.userModel.findOne({ _id: userId }).lean().exec();
+        const user = await this.kcClient.getUser(userId);
+        const userGroups = await this.kcClient.getUserGroups(userId);
+
+        return {
+            _id: user.id,
+            email: user.email,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            roles: userGroups.map((group) => group.name),
+        };
     }
 }

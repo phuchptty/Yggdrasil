@@ -97,7 +97,7 @@ export class KcClientService implements OnModuleInit {
         }
     }
 
-    public async getUserGroups(userId: string): Promise<KeyCloakGroup | undefined> {
+    public async getUserGroups(userId: string): Promise<KeyCloakGroup[] | undefined> {
         try {
             const serverToken = await this.getAccessToken();
 

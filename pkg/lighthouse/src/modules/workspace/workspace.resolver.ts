@@ -7,7 +7,7 @@ import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "../../guards/auth/auth.guard";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { GraphQLError } from "graphql/error";
-import { UserWorkspacesResponseType } from "./dto/workspace.response";
+import { CountWorkspaceByLanguages, UserWorkspacesResponseType } from "./dto/workspace.response";
 import { UserService } from "../user/user.service";
 
 @Resolver(() => Workspace)
@@ -68,10 +68,10 @@ export class WorkspaceResolver {
         }
     }
 
-    // @Query(() => [CountWorkspaceByLanguages], { name: "playground_countPublicWorkspaceByLanguages" })
-    // async countWorkspaceByLanguages() {
-    //     return this.workspaceService.countPublicWorkspaceByLanguages();
-    // }
+    @Query(() => [CountWorkspaceByLanguages], { name: "playground_countPublicWorkspaceByLanguages" })
+    async countWorkspaceByLanguages() {
+        return this.workspaceService.countPublicWorkspaceByLanguages();
+    }
 
     @Query(() => Workspace, { name: "playground_getWorkspaceBySlug" })
     async getWorkspaceBySlug(@UserId() userId: string, @Args("slug") slug: string) {

@@ -248,4 +248,29 @@ export class WorkspaceService {
             throw new GraphQLError(e);
         }
     }
+
+    async countPublicWorkspaceByLanguages() {
+        const doc = await this.wsModel
+            .aggregate([
+                {
+                    $match: {
+                        permission: WorkspacePermission.PUBLIC,
+                    },
+                },
+                {
+                    $group: {
+                        _id: "$workspaceLanguage",
+                        count: { $sum: 1 },
+                    },
+                },
+            ])
+            .exec();
+
+        return doc.map((x) => {
+            return {
+                languageId: x._id,
+                count: x.count,
+            };
+        });
+    }
 }

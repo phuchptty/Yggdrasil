@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Playground_FileType, Playground_SaveWorkspaceFileInput, WorkspaceScatteredFileResponse } from '@/graphql/generated/types';
 
 type WorkspaceFileState = {
     openFiles: string[]; // file path

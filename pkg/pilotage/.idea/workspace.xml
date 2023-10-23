@@ -6,17 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/workspaceHeader/index.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/workspaceHeader/index.module.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/workspaceHeader/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/workspaceHeader/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/workspaceHeader/rightBtn.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/workspaceHeader/rightBtn.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/workspaceHeader/workspaceTitle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/workspaceHeader/workspaceTitle.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/workspace/[slug].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/workspace/[slug].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/manageTab/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/manageTab/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/manageTab/subTab/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/manageTab/subTab/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/manageTab/subTab/itemCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/manageTab/subTab/itemCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/editorCol/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/editorCol/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stores/slices/workspace.slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/slices/workspace.slice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stores/slices/workspaceFile.slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/slices/workspaceFile.slice.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/infoColTabs/info/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/info/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +117,7 @@
       <workItem from="1698059095767" duration="615000" />
       <workItem from="1698059755333" duration="3380000" />
       <workItem from="1698063530376" duration="1127000" />
-      <workItem from="1698089994929" duration="3639000" />
+      <workItem from="1698089994929" duration="5747000" />
     </task>
     <servers />
   </component>

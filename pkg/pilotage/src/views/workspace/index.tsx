@@ -38,11 +38,11 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
     }, []);
 
     const infoColTabs = [
-        // {
-        //     key: '0',
-        //     label: `Quản lý file`,
-        //     children: <InfoColTabFile />,
-        // },
+        {
+            key: '0',
+            label: `Quản lý file`,
+            children: <InfoColTabFile />,
+        },
         {
             key: '1',
             label: `Thông in`,

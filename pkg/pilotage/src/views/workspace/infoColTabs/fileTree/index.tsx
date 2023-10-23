@@ -4,17 +4,12 @@ import { convertDataToAntDesignTree } from '@/utils';
 import { useEffect, useState } from 'react';
 import { DataNode } from 'antd/es/tree';
 import { v4 as uuidV4 } from 'uuid';
-
 const { DirectoryTree } = Tree;
 import styles from './index.module.scss';
 import * as React from 'react';
 import { addNewFile, addWorkspaceFile, closeFile, openNewFile, removeMemorizeFile } from '@/stores/slices/workspaceFile.slice';
-import {
-    usePlayground_DeleteWorkspaceFileMutation,
-    usePlayground_GetScatteredWorkspaceFileLazyQuery,
-} from '@/graphql/generated/playground.generated';
-import { deleteWorkspaceFile } from '@/stores/slices/workspace.slice';
 import { FileAddOutlined } from '@ant-design/icons';
+import { io } from "socket.io-client";
 
 enum ContextMenuAction {
     RENAME = 'RENAME',
@@ -27,8 +22,6 @@ export default function InfoColTabFile() {
 
     const [fileLoading, setFileLoading] = useState<boolean>(false);
 
-    const [fetchQueryScatteredFile, scatteredFileRsp] = usePlayground_GetScatteredWorkspaceFileLazyQuery();
-
     const workspaceData = useAppSelector((state) => state.workspaceSlice);
     const workspaceFileData = useAppSelector((state) => state.workspaceFileSlice);
 
@@ -40,48 +33,54 @@ export default function InfoColTabFile() {
 
     // Context menu
     const [contextMenuFile, setContextMenuFile] = useState<any>(null);
-    const [deleteWorkspaceFileMutation] = usePlayground_DeleteWorkspaceFileMutation();
 
+    // First time connect with beacon
     useEffect(() => {
-        // This filter out files that already exist in workspace (new file only)
-        const filteredFiles = workspaceFileData.workspaceFiles
-            .filter((file) => !(workspaceData.workspaceFiles || []).some((workspaceFile) => workspaceFile.path === file.path))
-            .map((x) => ({
-                _id: x._id,
-                name: x.name,
-                path: x.path,
-            }));
+        console.log(workspaceData);
+    }, []);
 
-        const mapWorkspaceFile = (workspaceData.workspaceFiles || []).map((x) => ({
-            _id: x._id,
-            name: x.name,
-            path: x.path,
-        }));
 
-        const fileStructure = [...mapWorkspaceFile, ...filteredFiles];
+    // useEffect(() => {
+    //     // This filter out files that already exist in workspace (new file only)
+    //     const filteredFiles = workspaceFileData.workspaceFiles
+    //         .filter((file) => !(workspaceData.workspaceFiles || []).some((workspaceFile) => workspaceFile.path === file.path))
+    //         .map((x) => ({
+    //             _id: x._id,
+    //             name: x.name,
+    //             path: x.path,
+    //         }));
+    //
+    //     const mapWorkspaceFile = (workspaceData.workspaceFiles || []).map((x) => ({
+    //         _id: x._id,
+    //         name: x.name,
+    //         path: x.path,
+    //     }));
+    //
+    //     const fileStructure = [...mapWorkspaceFile, ...filteredFiles];
+    //
+    //     setStructure(convertDataToAntDesignTree(fileStructure));
+    // }, [workspaceData.workspaceFiles, workspaceFileData.workspaceFiles]);
 
-        setStructure(convertDataToAntDesignTree(fileStructure));
-    }, [workspaceData.workspaceFiles, workspaceFileData.workspaceFiles]);
-
-    useEffect(() => {
-        if (!scatteredFileRsp.data) return;
-
-        const fileData = scatteredFileRsp.data.playground_getScatteredWorkspaceFile;
-
-        if (!fileData) {
-            console.log('File not found');
-            return;
-        }
-
-        const checkExist = workspaceFileData.workspaceFiles.find((item) => item.path === fileData.path);
-
-        if (checkExist) return;
-
-        dispatch(addWorkspaceFile(fileData));
-        dispatch(openNewFile(fileData.path));
-
-        setFileLoading(false);
-    }, [scatteredFileRsp]);
+    // Fetch file from server
+    // useEffect(() => {
+    //     if (!scatteredFileRsp.data) return;
+    //
+    //     const fileData = scatteredFileRsp.data.playground_getScatteredWorkspaceFile;
+    //
+    //     if (!fileData) {
+    //         console.log('File not found');
+    //         return;
+    //     }
+    //
+    //     const checkExist = workspaceFileData.workspaceFiles.find((item) => item.path === fileData.path);
+    //
+    //     if (checkExist) return;
+    //
+    //     dispatch(addWorkspaceFile(fileData));
+    //     dispatch(openNewFile(fileData.path));
+    //
+    //     setFileLoading(false);
+    // }, [scatteredFileRsp]);
 
     const onDoubleClick = (_: any, node: any) => {
         setFileLoading(true);
@@ -105,12 +104,12 @@ export default function InfoColTabFile() {
         }
 
         // If not fetch file from server
-        fetchQueryScatteredFile({
-            variables: {
-                workspaceId: workspaceData._id,
-                filePath: node.key,
-            },
-        });
+        // fetchQueryScatteredFile({
+        //     variables: {
+        //         workspaceId: workspaceData._id,
+        //         filePath: node.key,
+        //     },
+        // });
 
         // Close loading in useEffect not here
     };
@@ -130,9 +129,9 @@ export default function InfoColTabFile() {
 
     const onRightClick = (e: any) => {
         // Save temp
-        const file = (workspaceData.workspaceFiles || []).find((item) => item.path === e.node.key);
-        if (!file) return;
-        setContextMenuFile(file);
+        // const file = (workspaceData.workspaceFiles || []).find((item) => item.path === e.node.key);
+        // if (!file) return;
+        // setContextMenuFile(file);
 
         // Open context menu
         const el = document.getElementById('ctxMenu');
@@ -171,39 +170,39 @@ export default function InfoColTabFile() {
     // Context MENU start
 
     const deleteFile = async () => {
-        try {
-            const rsp = await deleteWorkspaceFileMutation({
-                variables: {
-                    playgroundDeleteWorkspaceFileId: workspaceData._id,
-                    filePath: contextMenuFile.path,
-                },
-            });
-
-            if (rsp.errors) {
-                throw rsp.errors;
-            }
-
-            if (rsp.data?.playground_deleteWorkspaceFile) {
-                // close file
-                dispatch(closeFile(contextMenuFile.path));
-                dispatch(removeMemorizeFile(contextMenuFile.path));
-
-                // Remove file from tree
-                dispatch(deleteWorkspaceFile(contextMenuFile.path));
-
-                setStructure(
-                    convertDataToAntDesignTree(rsp.data.playground_deleteWorkspaceFile.workspaceFiles || workspaceData.workspaceFiles || []),
-                );
-
-                // close context menu
-                closeContextMenu();
-
-                messageApi.success('Xoá file thành công');
-            }
-        } catch (e) {
-            console.error(e);
-            messageApi.error('Không thể xoá file');
-        }
+        // try {
+        //     const rsp = await deleteWorkspaceFileMutation({
+        //         variables: {
+        //             playgroundDeleteWorkspaceFileId: workspaceData._id,
+        //             filePath: contextMenuFile.path,
+        //         },
+        //     });
+        //
+        //     if (rsp.errors) {
+        //         throw rsp.errors;
+        //     }
+        //
+        //     if (rsp.data?.playground_deleteWorkspaceFile) {
+        //         // close file
+        //         dispatch(closeFile(contextMenuFile.path));
+        //         dispatch(removeMemorizeFile(contextMenuFile.path));
+        //
+        //         // Remove file from tree
+        //         dispatch(deleteWorkspaceFile(contextMenuFile.path));
+        //
+        //         setStructure(
+        //             convertDataToAntDesignTree(rsp.data.playground_deleteWorkspaceFile.workspaceFiles || workspaceData.workspaceFiles || []),
+        //         );
+        //
+        //         // close context menu
+        //         closeContextMenu();
+        //
+        //         messageApi.success('Xoá file thành công');
+        //     }
+        // } catch (e) {
+        //     console.error(e);
+        //     messageApi.error('Không thể xoá file');
+        // }
     };
 
     const onClickMenu = (e: any) => {

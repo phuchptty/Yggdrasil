@@ -12,18 +12,9 @@ export const workspaceSlice = createSlice({
             state = action.payload;
             return state;
         },
-        deleteWorkspaceFile: (state, action: PayloadAction<string>) => {
-            if (!state.workspaceFiles) return;
-
-            const index = state.workspaceFiles.findIndex((f) => f.path === action.payload);
-
-            if (index > -1) {
-                state.workspaceFiles.splice(index, 1);
-            }
-        },
     },
 });
 
-export const { reset, setWorkspace, deleteWorkspaceFile } = workspaceSlice.actions;
+export const { reset, setWorkspace } = workspaceSlice.actions;
 
 export default workspaceSlice.reducer;

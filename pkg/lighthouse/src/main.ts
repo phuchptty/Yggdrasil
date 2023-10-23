@@ -6,6 +6,9 @@ async function bootstrap() {
     process.env.TZ = "Asia/Ho_Chi_Minh";
 
     const app = await NestFactory.create(AppModule);
+
+    app.enableCors()
+
     await app.listen(3000, "0.0.0.0");
 
     Logger.log(`🚀  Server running on ${await app.getUrl()}`, "Bootstrap");

@@ -41,6 +41,7 @@
         "graphql-type-json": "^0.3.2",
         "ioredis": "^5.3.2",
         "jsonwebtoken": "^9.0.2",
+        "mongodb": "^6.2.0",
         "mongoose": "^7.4.1",
         "mongoose-paginate-v2": "^1.7.31",
         "random-word-slugs": "^0.1.7",

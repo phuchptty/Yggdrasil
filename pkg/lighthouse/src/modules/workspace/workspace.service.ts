@@ -71,7 +71,7 @@ export class WorkspaceService {
         };
 
         try {
-            return this.wsModel.paginate(query, {
+            return await this.wsModel.paginate(query, {
                 page: options?.page || 1,
                 limit: options?.perPage || 20,
                 sort: options?.sort || {},
@@ -187,8 +187,7 @@ export class WorkspaceService {
 
             let wsSave = await wsInstance.save();
             wsSave = await wsSave.populate(["workspaceLanguage"]);
-            wsSave = wsSave.toObject();
-
+          
             return wsSave;
         } catch (e) {
             if (e?.response?.body.status === "Failure") {

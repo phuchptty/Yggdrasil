@@ -7,6 +7,7 @@ import { LanguageModule } from "../language/language.module";
 import { BullModule } from "@nestjs/bull";
 import { WORKSPACE_QUEUE_NAME } from "./workspace.const";
 import { KubeApiModule } from "../external/kube-api/kube-api.module";
+import { UserModule } from "../user/user.module";
 
 @Module({
     providers: [WorkspaceService, WorkspaceResolver],
@@ -22,6 +23,7 @@ import { KubeApiModule } from "../external/kube-api/kube-api.module";
         }),
         LanguageModule,
         KubeApiModule,
+        UserModule,
     ],
     exports: [WorkspaceService],
 })

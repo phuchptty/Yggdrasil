@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { WorkspaceService } from "./workspace.service";
 import { Workspace } from "./schema/workspace.schema";
 import { UserId } from "../../decorators/user-id/user-id.decorator";
@@ -8,10 +8,11 @@ import { AuthGuard } from "../../guards/auth/auth.guard";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { GraphQLError } from "graphql/error";
 import { UserWorkspacesResponseType } from "./dto/workspace.response";
+import { UserService } from "../user/user.service";
 
 @Resolver(() => Workspace)
 export class WorkspaceResolver {
-    constructor(private readonly workspaceService: WorkspaceService) {}
+    constructor(private readonly workspaceService: WorkspaceService, private readonly userService: UserService) {}
 
     @Query(() => UserWorkspacesResponseType, { name: "playground_getAllUserWorkspaces" })
     @UseGuards(AuthGuard)
@@ -100,33 +101,8 @@ export class WorkspaceResolver {
         return this.workspaceService.getBeaconHost();
     }
 
-    // @Mutation(() => Workspace, { name: "playground_saveWorkspace" })
-    // @UseGuards(AuthGuard)
-    // async saveWorkspace(@UserId() userId: string, @Args("id") id: string, @Args("input", { type: () => [SaveWorkspaceFileInput] }) input: SaveWorkspaceFileInput[]) {
-    //     return this.workspaceService.saveWorkspaceFile(userId, id, input);
-    // }
-    //
-    // @Mutation(() => Workspace, { name: "playground_deleteWorkspaceFile" })
-    // @UseGuards(AuthGuard)
-    // async deleteWorkspaceFile(@UserId() userId: string, @Args("id") id: string, @Args("filePath") filePath: string) {
-    //     return this.workspaceService.deleteWorkspaceFile(userId, id, filePath);
-    // }
-    //
-    // // file system
-    //
-    // @Query(() => WorkspaceScatteredFileResponse, { name: "playground_getScatteredWorkspaceFile" })
-    // async getWorkspaceScatteredFile(@UserId() userId: string, @Args("workspaceId") id: string, @Args("filePath") filePath: string) {
-    //     return this.workspaceService.getScatteredWorkspaceFile(userId, id, filePath);
-    // }
-    //
-    // @Query(() => [WorkspaceScatteredFileResponse], { name: "playground_getScatteredWorkspaceFiles" })
-    // async getWorkspaceScatteredFiles(@UserId() userId: string, @Args("workspaceId") id: string, @Args("filePath", { type: () => [String] }) filePath: string[]) {
-    //     return this.workspaceService.getScatteredWorkspaceFiles(userId, id, filePath);
-    // }
-    //
-    // @Mutation(() => String, { name: "playground_generatePreSignedUploadUrl" })
-    // @UseGuards(AuthGuard)
-    // async generatePreSignedUploadUrl(@Args("workspaceId") id: string, @Args("filePath") filePath: string) {
-    //     return this.workspaceService.generateUploadPreSignedUrl(id, filePath);
-    // }
+    @ResolveField("owner", () => Number)
+    async owner(@Parent() ws: Workspace) {
+        return this.userService.queryMe(ws.owner._id.toString());
+    }
 }

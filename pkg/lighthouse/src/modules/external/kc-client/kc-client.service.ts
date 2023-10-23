@@ -7,7 +7,7 @@ import qs from "querystring";
 import { lastValueFrom } from "rxjs";
 import dayjs from "dayjs";
 import { KC_ACCESS_TOKEN, KC_EXPIRES_TS } from "./kc-client.const";
-import { KeyCloakTokenIntrospectRsp, KeyCloakUser } from "../../../types/keycloak";
+import { KeyCloakGroup, KeyCloakTokenIntrospectRsp, KeyCloakUser } from "../../../types/keycloak";
 
 @Injectable()
 export class KcClientService implements OnModuleInit {
@@ -84,6 +84,25 @@ export class KcClientService implements OnModuleInit {
 
             const { data } = await lastValueFrom(
                 this.httpService.get(`${this.kcClientAdminRestApiUrl}/users/${userId}`, {
+                    headers: {
+                        Authorization: `Bearer ${serverToken}`,
+                    },
+                }),
+            );
+
+            return data;
+        } catch (e) {
+            this.logger.error(`User Id ${userId} - ${e.message}`);
+            return undefined;
+        }
+    }
+
+    public async getUserGroups(userId: string): Promise<KeyCloakGroup[] | undefined> {
+        try {
+            const serverToken = await this.getAccessToken();
+
+            const { data } = await lastValueFrom(
+                this.httpService.get(`${this.kcClientAdminRestApiUrl}/users/${userId}/groups`, {
                     headers: {
                         Authorization: `Bearer ${serverToken}`,
                     },

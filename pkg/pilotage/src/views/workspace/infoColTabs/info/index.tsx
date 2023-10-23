@@ -61,7 +61,7 @@ export default function InfoColTabInfo() {
             }
 
             if (res.data?.playground_updateWorkspace) {
-                messageApi.success('Lưu template thành công');
+                messageApi.success('Lưu workspace thành công');
 
                 // update workspace data to redux
                 // @ts-ignore
@@ -128,13 +128,13 @@ export default function InfoColTabInfo() {
                             ]}
                         />
 
-                        <p className={styles.workSpacePermissionSubtitle}>Mọi người có thể chỉnh sửa file này</p>
+                        <p className={styles.workSpacePermissionSubtitle}>Mọi người có thể xem nội dung workspace này!</p>
                     </Space>
                 </div>
 
                 {isLogin && (
                     <Button onClick={saveTemplate} className={styles.saveTemplateBtn} size={'large'} loading={saveTemplateBtnLoading}>
-                        Lưu template
+                        Lưu cài đặt
                     </Button>
                 )}
             </Space>

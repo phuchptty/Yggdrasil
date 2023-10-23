@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { usePlayground_GetAllUserWorkspacesLazyQuery, usePlayground_GetAllUserWorkspacesQuery } from '@/graphql/generated/playground.generated';
+import React, { useEffect, useRef } from 'react';
+import { usePlayground_GetAllUserWorkspacesLazyQuery } from '@/graphql/generated/playground.generated';
 import { Button, message, Spin } from 'antd';
 import ItemCard from '@/views/home/manageTab/subTab/itemCard';
 import Image from 'next/image';
 import { register } from 'swiper/element/bundle';
-import { Playground_WorkspacePermission, Playground_WorkspaceStatus } from '@/graphql/generated/types';
+import { Playground_WorkspacePermission } from '@/graphql/generated/types';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import styles from './index.module.scss';
 import chevronLeft from '@/assets/icons/home/chevron-left.svg';
@@ -15,7 +15,6 @@ import { useAppSelector } from '@/stores/hook';
 import { doLogin } from '@/utils';
 
 type Filter = {
-    status?: Playground_WorkspaceStatus;
     permission?: Playground_WorkspacePermission;
 };
 

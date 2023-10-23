@@ -8,7 +8,7 @@ import WorkspaceTitle from '@/components/workspaceHeader/workspaceTitle';
 import WorkspaceHeaderRightBtn from '@/components/workspaceHeader/rightBtn';
 
 // Images & icons
-import logoImage from '@/assets/images/logo-full.png';
+import logoImage from '@/assets/images/logo.png';
 
 export default function WorkspaceHeader() {
     return (
@@ -17,21 +17,9 @@ export default function WorkspaceHeader() {
                 <div className={styles.headerContainer}>
                     <Row align="middle" justify="space-between" className={styles.headerRow}>
                         <Col xl={6} lg={6} md={4} sm={4} xs={4} className="display--flex justify-content--flexStart flex-direction--row">
-                            <div className={`${styles.logo}`}>
-                                <Link passHref legacyBehavior href="/">
-                                    <a>
-                                        <Image
-                                            src={logoImage}
-                                            alt="TEK4.VN-logo"
-                                            className="cursor--pointer"
-                                            style={{
-                                                maxWidth: '100%',
-                                                height: 'auto',
-                                            }}
-                                        />
-                                    </a>
-                                </Link>
-                            </div>
+                            <Link href="/">
+                                <Image src={logoImage} className={`${styles.logo}`} alt="Elysia xink vl" />
+                            </Link>
                         </Col>
 
                         <Col

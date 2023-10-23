@@ -1,12 +1,10 @@
-import { Playground_Workspace, Playground_WorkspaceStatus } from '@/graphql/generated/types';
+import { Playground_WorkspacePermission } from '@/graphql/generated/types';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { Dropdown, message, Modal } from 'antd';
 import type { MenuProps } from 'antd';
-
 import relativeTime from 'dayjs/plugin/relativeTime';
 import Link from 'next/link';
-
 import styles from './index.module.scss';
 import moreIcon from '@/assets/icons/home/More_Vertical.svg';
 import workspacePreview from '@/assets/images/workspacePreview.png';
@@ -22,7 +20,31 @@ enum MenuItem {
     DELETE = 'DELETE',
 }
 
-export default function ItemCard({ data }: { data: Partial<Playground_Workspace> }) {
+type Props = {
+    data: {
+        __typename?: 'Playground_Workspace';
+        _id: string;
+        beaconHost: string;
+        createdAt: any;
+        description?: string | null;
+        permission: Playground_WorkspacePermission;
+        slug?: string | null;
+        title: string;
+        updatedAt: any;
+        owner: { __typename?: 'Profile_User'; _id: string };
+        workspaceLanguage: {
+            __typename?: 'Playground_Language';
+            _id: string;
+            createdAt: any;
+            editorKey: string;
+            key: string;
+            name: string;
+            updatedAt: any;
+        };
+    };
+};
+
+export default function ItemCard({ data }: Props) {
     const [messageApi, messageContext] = message.useMessage();
     const { emitter } = useMitt();
     const [deleteWorkspaceMutation] = usePlayground_DeleteWorkspaceMutation();
@@ -139,7 +161,6 @@ export default function ItemCard({ data }: { data: Partial<Playground_Workspace>
 
                 <div className={styles.subTitleZone}>
                     <p title={data.updatedAt}>{dayjs(data.updatedAt).fromNow()}</p>
-                    <p>{data.status === Playground_WorkspaceStatus.Published ? 'Xuất bản' : 'Nháp'}</p>
                 </div>
             </div>
         </div>

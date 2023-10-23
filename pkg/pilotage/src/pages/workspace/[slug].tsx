@@ -2,8 +2,8 @@ import React, { ReactNode, useEffect } from 'react';
 import WorkspaceHeader from '@/components/workspaceHeader';
 import styles from './index.module.scss';
 import ViewWorkspace from '@/views/workspace';
-import { Playground_FileType, Playground_Workspace } from '@/graphql/generated/types';
-import { Playground_GetWorkspaceBySlugDocument, usePlayground_SaveWorkspaceMutation } from '@/graphql/generated/playground.generated';
+import { Playground_Workspace } from '@/graphql/generated/types';
+import { Playground_GetWorkspaceBySlugDocument } from '@/graphql/generated/playground.generated';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import apolloClient from '@/lib/apolloClientSSR';
@@ -65,11 +65,11 @@ export default function WorkspacePage({ data, accessToken }: { data: Playground_
     const title = `${data.title} | Tek4 Playground`;
 
     const router = useRouter();
-    const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice);
+    // const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice);
     const [messageApi, messageContext] = message.useMessage();
     const dispatch = useDispatch();
 
-    const [saveWorkspaceMutation] = usePlayground_SaveWorkspaceMutation();
+    // const [saveWorkspaceMutation] = usePlayground_SaveWorkspaceMutation();
 
     // Save file on leave and interval
     const saveFileToServer = async () => {
@@ -77,29 +77,29 @@ export default function WorkspacePage({ data, accessToken }: { data: Playground_
         if (!accessToken) return;
 
         try {
-            const inputs = workspaceFiles.workspaceFiles
-                .filter((x) => x.fileType === Playground_FileType.Text)
-                .map((file) => {
-                    return {
-                        _id: file._id,
-                        name: file.name,
-                        path: file.path,
-                        content: file.content,
-                    };
-                });
+            // const inputs = workspaceFiles.workspaceFiles
+            //     .filter((x) => x.fileType === Playground_FileType.Text)
+            //     .map((file) => {
+            //         return {
+            //             _id: file._id,
+            //             name: file.name,
+            //             path: file.path,
+            //             content: file.content,
+            //         };
+            //     });
+            //
+            // if (inputs.length === 0) return;
+            //
+            // const rsp = await saveWorkspaceMutation({
+            //     variables: {
+            //         input: inputs,
+            //         playgroundSaveWorkspaceId: data._id,
+            //     },
+            // });
 
-            if (inputs.length === 0) return;
-
-            const rsp = await saveWorkspaceMutation({
-                variables: {
-                    input: inputs,
-                    playgroundSaveWorkspaceId: data._id,
-                },
-            });
-
-            if (rsp.errors) {
-                throw rsp.errors;
-            }
+            // if (rsp.errors) {
+            //     throw rsp.errors;
+            // }
         } catch (e) {
             console.error(e);
             messageApi.error('Failed to save workspace');
@@ -115,24 +115,24 @@ export default function WorkspacePage({ data, accessToken }: { data: Playground_
     };
 
     useEffect(() => {
-        router.events.on('routeChangeStart', onTick);
-        window.addEventListener('beforeunload', (event) => {
-            event.preventDefault();
-            event.returnValue = '';
-
-            onTick();
-        });
-
-        const timer = setInterval(() => {
-            saveFileToServer();
-        }, 60 * 1000); // a minute
-
-        return () => {
-            router.events.off('routeChangeStart', saveFileToServer);
-            window.removeEventListener('beforeunload', saveFileToServer);
-
-            clearInterval(timer);
-        };
+        // router.events.on('routeChangeStart', onTick);
+        // window.addEventListener('beforeunload', (event) => {
+        //     event.preventDefault();
+        //     event.returnValue = '';
+        //
+        //     onTick();
+        // });
+        //
+        // const timer = setInterval(() => {
+        //     saveFileToServer();
+        // }, 60 * 1000); // a minute
+        //
+        // return () => {
+        //     router.events.off('routeChangeStart', saveFileToServer);
+        //     window.removeEventListener('beforeunload', saveFileToServer);
+        //
+        //     clearInterval(timer);
+        // };
     });
 
     return (

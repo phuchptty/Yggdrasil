@@ -57,11 +57,11 @@ export default function ManageTab() {
                         </button>
 
                         <button className={`${styles.button} ${tabActive === '1' ? styles.active : ''}`} onClick={() => setTabActive('1')}>
-                            Công khai
+                            Riêng tư
                         </button>
 
                         <button className={`${styles.button} ${tabActive === '2' ? styles.active : ''}`} onClick={() => setTabActive('2')}>
-                            Riêng tư
+                            Công khai
                         </button>
                     </Space>
                 </Col>

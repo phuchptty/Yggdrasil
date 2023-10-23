@@ -38,11 +38,11 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
     }, []);
 
     const infoColTabs = [
-        {
-            key: '0',
-            label: `Quản lý file`,
-            children: <InfoColTabFile />,
-        },
+        // {
+        //     key: '0',
+        //     label: `Quản lý file`,
+        //     children: <InfoColTabFile />,
+        // },
         {
             key: '1',
             label: `Thông in`,
@@ -77,14 +77,14 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             <Resizable sizes={[20, 40, 40]} direction={'horizontal'} minSize={[0, 400, 0]} gutterSize={1} className={`split ${styles.split}`}>
                 <Tabs animated tabBarStyle={{ display: 'none' }} items={infoColTabs} activeKey={infoColActiveTab} />
 
-                <EditorColumn onRunClick={handleRunCode} isExecuting={isExecuting} />
+                {/*<EditorColumn onRunClick={handleRunCode} isExecuting={isExecuting} />*/}
 
-                <WorkspaceThirdCol
-                    workspaceData={workspaceData}
-                    accessToken={accessToken}
-                    isExecuting={isExecuting}
-                    setIsExecuting={setIsExecuting}
-                />
+                {/*<WorkspaceThirdCol*/}
+                {/*    workspaceData={workspaceData}*/}
+                {/*    accessToken={accessToken}*/}
+                {/*    isExecuting={isExecuting}*/}
+                {/*    setIsExecuting={setIsExecuting}*/}
+                {/*/>*/}
             </Resizable>
         </div>
     );

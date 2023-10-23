@@ -5,7 +5,7 @@ import Image from 'next/image';
 import chevronRight from '@/assets/icons/workspace/navigate-next.svg';
 import shareIcon from '@/assets/icons/workspace/mdi_share.svg';
 import { useAppSelector } from '@/stores/hook';
-import { Playground_WorkspacePermission, Playground_WorkspaceStatus } from '@/graphql/generated/types';
+import { Playground_WorkspacePermission } from '@/graphql/generated/types';
 import {Button, Input, message, Modal, Tooltip} from 'antd';
 import { usePlayground_UpdateWorkspaceMutation } from '@/graphql/generated/playground.generated';
 import getConfig from 'next/config';
@@ -24,14 +24,14 @@ export default function WorkspaceHeaderRightBtn() {
     const [updateWorkspaceMutation] = usePlayground_UpdateWorkspaceMutation();
 
     const handleShareWorkspace = () => {
-        if (workspaceData.permission === Playground_WorkspacePermission.Public && workspaceData.status === Playground_WorkspaceStatus.Published) {
+        if (workspaceData.permission === Playground_WorkspacePermission.Public) {
             setIsShareModalOpen(true);
             return;
         }
 
         modal.confirm({
             title: 'Bạn có chắc muốn chia sẻ workspace này?',
-            content: 'Để chia sẻ workspace này, workspace sẽ được chuyển sang ở trạng thái công khai và sẽ được lưu template!',
+            content: 'Để chia sẻ workspace này, workspace sẽ được chuyển sang trạng thái công khai!',
             okText: 'OK',
             cancelText: 'Huỷ',
             onOk: async () => {
@@ -40,7 +40,6 @@ export default function WorkspaceHeaderRightBtn() {
                         playgroundUpdateWorkspaceId: workspaceData._id,
                         input: {
                             permission: Playground_WorkspacePermission.Public,
-                            status: Playground_WorkspaceStatus.Published,
                         },
                     },
                 });

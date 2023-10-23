@@ -12,7 +12,6 @@ import playIcon from '@/assets/icons/workspace/el_play.svg';
 import reloadIcon from '@/assets/icons/workspace/mdi_reload.svg';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
 import { closeFile, setCurrentFile } from '@/stores/slices/workspaceFile.slice';
-import { Playground_FileType, Playground_PlaygroundType } from '@/graphql/generated/types';
 import FilePreview from '@/components/filePreview';
 
 interface DraggableTabPaneProps extends React.HTMLAttributes<HTMLDivElement> {

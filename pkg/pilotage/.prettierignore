@@ -1,0 +1,6 @@
+.next/*
+node_modules/*
+yarn.lock
+package.json
+src/graphql/graphql.tsx
+src/graphql/generated/*

@@ -1,0 +1,531 @@
+@import '@styles/colors.scss';
+@import '@styles/mixins.scss';
+
+.header {
+    //padding: 0 3rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    background-color: $bg-bg-2;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 4.825rem;
+    // padding: 0 2rem;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+    @include sm {
+        height: 4rem;
+        padding: 0 0.5rem;
+    }
+
+    .logo {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    a {
+        color: $neutral-100;
+        font-size: 0.875rem;
+    }
+
+    .headerRow {
+        width: 100%;
+
+        @include sm {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    .searchButton {
+        width: 15rem;
+        background-color: $neutral-900;
+        border-radius: 0.5rem;
+        border: none;
+        height: 2.375rem;
+        margin: 0 1.25rem;
+
+        input {
+            background-color: $neutral-900;
+            color: $neutral-300;
+            cursor: pointer;
+        }
+    }
+
+    .iconWrapper {
+        gap: 0 4rem;
+        // justify-content: space-around;
+        @include lg {
+            gap: 0 2rem;
+        }
+
+        @include md {
+            gap: 0 1.5rem;
+        }
+
+        @include sm {
+            gap: 0 0.5rem;
+        }
+    }
+
+    .sectionWrapper {
+        gap: 0 1rem;
+
+        @include md {
+            gap: 0 0.5rem;
+        }
+        @include sm {
+            gap: 0 0.25rem;
+        }
+
+        .btnLogin {
+            background-color: transparent;
+            width: fit-content !important;
+            border: none !important;
+            box-shadow: none !important;
+            cursor: pointer;
+            @media ((min-width: 0) and (max-width: 767px)) {
+                display: none;
+            }
+        }
+
+        .divider {
+            width: 2px;
+            height: 1.5rem;
+            background-color: $neutral-700;
+        }
+    }
+
+    .registerBtn {
+        border-radius: 0.5rem;
+        background: linear-gradient(180deg, rgba(219, 76, 92, 0.94949) 0%, #d54253 90%, rgba(228, 91, 107, 0.87) 100%);
+    }
+
+    .menuBtn {
+        // width: 1.75rem;
+        // height: 1.75rem;
+        background-color: transparent;
+        border: none;
+        padding: 0.375rem;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            background-color: $branding-500;
+        }
+
+        @media ((min-width: 0) and (max-width: 767px)) {
+            display: none;
+        }
+    }
+
+    .optionBtn {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .search {
+        position: absolute;
+        top: 5rem;
+        left: 50%;
+        transform: translate(-50%, 0);
+        z-index: 999;
+        padding: 2rem 1rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $bg-bg-2;
+        border: 1px solid $blue-700;
+        width: 75%;
+        box-shadow: 0px 16px 32px rgba(27, 31, 39, 0.56);
+
+        @include md {
+            width: 90%;
+        }
+
+        @include sm {
+            top: 4rem;
+            padding: 3rem 0.5rem 0.5rem 0.5rem;
+        }
+
+        .checkboxGroup {
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+
+            @include md {
+                font-size: 0.875rem;
+            }
+
+            @include sm {
+                text-align: left;
+            }
+
+            .checkbox {
+                color: $neutral-100;
+                font-size: 1.25rem;
+
+                @include md {
+                    font-size: 0.875rem;
+                }
+
+                @include sm {
+                    font-size: 0.75rem;
+                }
+            }
+        }
+
+        .close {
+            position: absolute;
+            top: 0.2rem;
+            right: 0.2rem;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+        }
+
+        .searchChild {
+            width: 70%;
+
+            @include md {
+                width: 90%;
+            }
+
+            @include sm {
+                width: 100%;
+            }
+
+            :global {
+                .ant-input-affix-wrapper {
+                    background-color: $neutral-800;
+                    border: none !important;
+                    box-shadow: none !important;
+                    height: 3.5rem;
+                    border-radius: 0.5rem;
+
+                    .ant-input {
+                        background-color: $neutral-800 !important;
+                        color: $neutral-900 !important;
+                    }
+                }
+
+                .ant-checkbox-group {
+                    @include sm {
+                        display: flex;
+                        flex-direction: column;
+
+                        .ant-checkbox-wrapper {
+                            margin-bottom: 1.5rem;
+                        }
+                    }
+
+                    .ant-checkbox-wrapper {
+                        color: $neutral-300;
+                        margin-right: 1.5rem;
+
+                        &.ant-checkbox-wrapper-checked {
+                            .ant-checkbox-inner {
+                                background-color: $branding-500;
+                                border: none;
+                            }
+                        }
+
+                        .ant-checkbox-checked::after {
+                            border: none;
+                        }
+
+                        .ant-checkbox-inner {
+                            background-color: $neutral-300;
+                            border: none;
+                        }
+                    }
+                }
+            }
+
+            .tag {
+                padding: 0.75rem 1rem;
+                border: 1px solid $neutral-700;
+                border-radius: 0.5rem;
+                color: $neutral-600;
+                display: inline-block;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.resource {
+    .active {
+        background: #e5e5e5;
+        color: $black !important;
+    }
+}
+
+.dropdownMenu {
+    background-color: $bg-bg-2;
+    box-sizing: border-box;
+    padding: 1rem;
+    margin-left: -2rem;
+    margin-top: 1rem;
+    color: $neutral-100;
+    border-radius: 0.25rem;
+
+    @include sm {
+        width: 15rem;
+        margin-left: -0.5rem;
+    }
+
+    @include md {
+        width: 24rem;
+    }
+
+    .menu {
+        color: $neutral-100;
+
+        .item {
+            padding: 0.3rem;
+            border-radius: 8px;
+            display: flex;
+
+            .icon {
+                text-align: center;
+
+                .image {
+                    width: 2rem;
+                    height: 2rem;
+
+                    @include sm {
+                        width: 1.5rem;
+                        height: 1.5rem;
+                    }
+                }
+            }
+
+            .name {
+                font-weight: 400;
+                font-size: 1.25rem;
+                margin-left: 1rem;
+                color: $neutral-100;
+
+                @include sm {
+                    font-size: 0.875rem;
+                }
+            }
+        }
+
+        .item:hover {
+            cursor: pointer;
+            background: rgba(196, 196, 196, 0.2);
+        }
+
+        .divider {
+            margin: 0.5rem 0;
+            border-top: 1px solid $neutral-bg;
+        }
+    }
+}
+
+.subMenu {
+    background-color: $neutral-800;
+    border-radius: 0.5rem;
+    padding: 0.75rem 0;
+    width: 13.25rem;
+
+    :global {
+        .ant-dropdown-menu-item {
+            padding: 0.75rem 1rem;
+
+            &:hover {
+                background-color: $neutral-bg;
+
+                a {
+                    color: $neutral-100;
+                }
+            }
+        }
+    }
+
+    a {
+        color: $neutral-100;
+        font-size: 1rem;
+    }
+}
+
+.username {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: $neutral-200;
+    margin-bottom: 0.25rem !important;
+}
+
+.mobileMenu {
+    position: fixed;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: $bg-bg-1;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    font-weight: 400;
+
+    :global {
+        .ant-space-item {
+            color: $neutral-400 !important;
+        }
+
+        .ant-divider {
+            color: $neutral-700;
+            background-color: $neutral-700;
+        }
+
+        .ant-dropdown-menu-item {
+            &:hover {
+                background-color: transparent;
+            }
+        }
+    }
+
+    .btnShowMenu {
+        background-color: transparent;
+        width: fit-content !important;
+        border: none !important;
+        box-shadow: none !important;
+        cursor: pointer;
+        color: $neutral-400;
+
+        span {
+            margin-left: 0.5rem;
+        }
+    }
+
+    .btnLogin {
+        background-color: transparent;
+        width: fit-content !important;
+        border: none !important;
+        box-shadow: none !important;
+        cursor: pointer;
+    }
+}
+
+.registerBtn {
+    background-color: $neutral-100;
+    border-color: $neutral-100;
+    border-radius: 0.5rem;
+    color: $neutral-800;
+    padding: 0.625rem 1.5rem;
+    font-size: 1rem;
+    height: unset;
+    line-height: unset;
+
+    &:hover,
+    &:active,
+    &:focus {
+        color: $neutral-800;
+        border-color: $neutral-100;
+    }
+}
+
+.menuMobile {
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+
+    a {
+        color: $neutral-100;
+        width: 100%;
+        display: block;
+    }
+}
+
+.menuNoti {
+    background-color: $bg-bg-1;
+    border: 1px solid $blue-700;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+    padding: 1.125rem 1.5rem;
+    width: 40rem;
+
+    .logo {
+        position: absolute;
+        top: 15%;
+        right: 10%;
+    }
+
+    :global {
+        .ant-dropdown-menu-item {
+            padding: 0.75rem 2rem;
+
+            &:hover {
+                background-color: $neutral-bg;
+
+                a {
+                    color: $neutral-100;
+                }
+            }
+        }
+
+        .ant-dropdown-menu-item-divider {
+            margin-left: 2rem;
+            margin-right: 2rem;
+            background-color: $neutral-700;
+        }
+    }
+
+    a {
+        color: $neutral-100;
+        font-size: 1rem;
+    }
+
+    .buttonGroup {
+        background-color: $bg-bg-2;
+        border: 1px solid #3d4048;
+        box-sizing: border-box;
+        border-radius: 4px;
+
+        :global {
+            .ant-radio-button-wrapper {
+                background: none;
+                border: none;
+                font-weight: 700;
+                font-size: 1rem;
+                color: $neutral-100;
+            }
+
+            .ant-radio-button-wrapper:not(:first-child)::before {
+                display: none;
+            }
+
+            .ant-radio-button-wrapper:hover {
+                color: $branding-500;
+            }
+
+            .ant-radio-button-wrapper-checked {
+                border: none !important;
+                background: $neutral-100;
+                color: $neutral-900;
+                border-radius: 4px;
+            }
+        }
+    }
+}
+
+.dropdown {
+    :global {
+        .ant-dropdown {
+            left: 0 !important;
+        }
+    }
+}
+
+.drawer {
+    margin-top: 4rem;
+    max-width: 80vw;
+}

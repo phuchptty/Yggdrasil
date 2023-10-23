@@ -1,0 +1,59 @@
+@import '@styles/colors';
+
+.firstCol {
+    width: 4.94rem;
+    height: 100%;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: $neutral-700;
+}
+
+.toolBarSpace {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 1rem;
+    padding: 1.56rem 0;
+
+    & {
+        .active {
+            border-color: #8a96ff !important;
+        }
+    }
+}
+
+.toolBarBtn:hover {
+    border-color: #8a96ff !important;
+}
+
+.split {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+}
+
+.splitBorder {
+    height: 100%;
+    border: 1px solid $neutral-700;
+    border-bottom-width: 0;
+    border-top-width: 0;
+    width: 100%;
+}
+
+.midCol {
+    height: 100%;
+    width: calc((100% - 4.94rem - 2px) / 12 * 2.5);
+}
+
+.codeCol {
+    height: 100%;
+    width: calc((100% - 4.94rem - 2px) / 12 * 5.5);
+}
+
+.lastCol {
+    flex: 1;
+}

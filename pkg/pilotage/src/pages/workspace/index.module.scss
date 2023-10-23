@@ -1,0 +1,34 @@
+@import "@styles/colors";
+
+.superBody {
+    background-color: $bg-bg-2;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainContent {
+    height: 100%;
+    width: 100%;
+}
+
+.ctxMenu {
+    background-color: transparent;
+    z-index: 1000;
+    position: absolute;
+    width: 7rem;
+    display: none;
+
+    :global {
+        .ant-menu-dark {
+            background: $bg-bg-1 !important;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 0.5rem 0.25rem rgba(0, 0, 0, 0.1);
+        }
+
+        .ant-menu > li :hover {
+            color: $branding-500 !important;
+        }
+    }
+}

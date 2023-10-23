@@ -1,0 +1,144 @@
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation {
+    Playground_requestReCreateVM(workspaceSlug: String!): Playground_RequestForVmResponse!
+    Playground_requestVmForWorkspace(workspaceSlug: String!): Playground_RequestForVmResponse!
+    playground_createLanguage(input: Playground_CreateLanguageInput!): Playground_Language!
+    playground_createWorkspace(input: Playground_WorkspaceInput!): Playground_Workspace!
+    playground_deleteLanguage(id: ID!): Boolean!
+    playground_deleteWorkspace(id: String!): Playground_Workspace!
+    playground_updateLanguage(id: ID!, input: Playground_UpdateLanguageInput!): Playground_Language!
+    playground_updateWorkspace(id: String!, input: Playground_WorkspaceUpdateInput!): Playground_Workspace!
+}
+
+input Playground_CreateLanguageInput {
+    editorKey: String!
+    key: String!
+    name: String!
+}
+
+type Playground_Language {
+    _id: ID!
+    createdAt: DateTime!
+    editorKey: String!
+    key: String!
+    name: String!
+    updatedAt: DateTime!
+}
+
+input Playground_OptionInput {
+    id: [String!]
+}
+
+type Playground_PaginateInfo {
+    currentPage: Float
+    hasNextPage: Boolean
+    hasPrevPage: Boolean
+    totalCount: Float!
+    totalPage: Float!
+}
+
+input Playground_ProfilePaginateInput {
+    fields: Playground_OptionInput
+    filter: JSON
+    page: Float
+    perPage: Float
+    search: String
+    sort: JSON
+}
+
+type Playground_RequestForVmBaseResponse {
+    beaconHost: String!
+    execHost: String!
+    ownerId: String!
+    podName: String!
+    workspaceId: String!
+}
+
+type Playground_RequestForVmResponse {
+    message: String
+    node: Playground_RequestForVmBaseResponse
+}
+
+input Playground_UpdateLanguageInput {
+    editorKey: String
+    key: String
+    name: String
+}
+
+type Playground_Workspace {
+    _id: ID!
+    beaconHost: String!
+    createdAt: DateTime!
+    description: String
+    owner: Profile_User!
+    permission: Playground_WorkspacePermission!
+    slug: String
+    title: String!
+    updatedAt: DateTime!
+    workspaceLanguage: Playground_Language!
+}
+
+input Playground_WorkspaceInput {
+    description: String
+    permission: Playground_WorkspacePermission
+    slug: String
+    title: String
+    workspaceLanguage: ID!
+}
+
+enum Playground_WorkspacePermission {
+    PRIVATE
+    PUBLIC
+}
+
+input Playground_WorkspaceUpdateInput {
+    description: String
+    permission: Playground_WorkspacePermission
+    slug: String
+    title: String
+    workspaceLanguage: ID
+}
+
+type Playgrounds_CountWorkspaceByLanguages {
+    count: Float!
+    languageId: String!
+}
+
+type Playgrounds_UserWorkspaces {
+    node: [Playground_Workspace!]
+    pageInfo: Playground_PaginateInfo
+}
+
+"""The user model"""
+type Profile_User {
+    _id: String!
+    email: String!
+    firstName: String
+    lastName: String
+    roles: [RoleEnum!]
+    username: String!
+}
+
+type Query {
+    Profile_me: Profile_User!
+    playground_countPublicWorkspaceByLanguages: [Playgrounds_CountWorkspaceByLanguages!]!
+    playground_getAllPublicWorkspaces(option: Playground_ProfilePaginateInput): Playgrounds_UserWorkspaces!
+    playground_getAllUserWorkspaces(option: Playground_ProfilePaginateInput): Playgrounds_UserWorkspaces!
+    playground_getWorkspaceBySlug(slug: String!): Playground_Workspace!
+    playground_language(id: ID!): Playground_Language!
+    playground_languages: [Playground_Language!]!
+}
+
+enum RoleEnum {
+    ADMIN
+    MEMBER
+}

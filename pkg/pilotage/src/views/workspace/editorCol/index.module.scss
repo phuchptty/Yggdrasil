@@ -1,0 +1,61 @@
+@import '@styles/colors.scss';
+
+.runBtn {
+    margin-right: 0.81rem;
+    margin-bottom: 0.63rem;
+    background-image: linear-gradient(180deg, rgba(219, 76, 92, 0.95) 0%, rgb(213, 66, 83) 90%, rgba(228, 91, 107, 0.87) 100%) !important;
+    border: none !important;
+}
+
+.reloadBtn {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    margin-bottom: 0.63rem;
+}
+
+.reloadBtn:hover {
+    border-color: #424242 !important;
+    box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+.tabBarExtra {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1.25rem;
+}
+
+.tabContent {
+    height: 100%;
+    width: 100%;
+
+    :global {
+        .ant-tabs-tab {
+            .ant-tabs-tab-btn {
+                color: $neutral-300 !important;
+                font-size: 0.875rem;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 1.25rem; /* 142.857% */
+
+                // Disable selection text
+                -webkit-user-select: none; /* Safari */
+                -ms-user-select: none; /* IE 10 and IE 11 */
+                user-select: none; /* Standard syntax */
+            }
+        }
+
+        .ant-tabs-tab-active {
+            background-color: #111319 !important;
+            color: #fff !important;
+        }
+
+        .ant-tabs-tab-active .ant-tabs-tab-btn {
+            color: $neutral-400 !important;
+        }
+
+        .ant-tabs-content, .ant-tabs-tabpane {
+            height: 100%;
+        }
+    }
+}

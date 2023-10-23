@@ -1,0 +1,67 @@
+@import '@styles/colors.scss';
+
+.zone {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.5rem;
+}
+
+.zoneTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.zoneTitleLeft {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+
+.languageZoneTitleIcon {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.languageZoneTitleText {
+    color: $neutral-100;
+    font-feature-settings:
+        'clig' off,
+        'liga' off;
+    font-weight: 700;
+    line-height: 24px; /* 150% */
+    letter-spacing: 0.5px;
+    font-size: 1rem;
+}
+
+.zoneTitleRight {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 0.75rem;
+}
+
+.titleBtn {
+    border-radius: 0.25rem;
+    border: 1px solid $neutral-700;
+    padding: 0.5rem;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.zoneContent {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    column-gap: 1.5rem;
+}
+
+.swiperContainer {
+    width: 100% !important;
+
+    // Disable selection text
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}

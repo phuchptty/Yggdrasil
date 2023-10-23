@@ -1,0 +1,415 @@
+@import '@styles/colors.scss';
+@import '@styles/mixins.scss';
+
+@for $i from 0 through 1000 {
+    .border-radius--#{$i} {
+        border-radius: 0px + $i !important;
+    }
+    .font-size--#{$i} {
+        font-size: 0px + $i !important;
+    }
+    .w--#{$i} {
+        width: 0px + $i !important;
+    }
+    .h--#{$i} {
+        height: 0px + $i !important;
+    }
+    .pt--#{$i} {
+        padding-top: 0px + $i !important;
+    }
+    .pr--#{$i} {
+        padding-right: 0px + $i !important;
+    }
+    .pb--#{$i} {
+        padding-bottom: 0px + $i !important;
+    }
+    .pl--#{$i} {
+        padding-left: 0px + $i !important;
+    }
+    .px--#{$i} {
+        padding-left: 0px + $i !important;
+        padding-right: 0px + $i !important;
+    }
+    .py--#{$i} {
+        padding-top: 0px + $i !important;
+        padding-bottom: 0px + $i !important;
+    }
+    .p--#{$i} {
+        padding: 0px + $i !important;
+    }
+    .mt--#{$i} {
+        margin-top: 0px + $i !important;
+    }
+    .mr--#{$i} {
+        margin-right: 0px + $i !important;
+    }
+    .mb--#{$i} {
+        margin-bottom: 0px + $i !important;
+    }
+    .ml--#{$i} {
+        margin-left: 0px + $i !important;
+    }
+    .mx--#{$i} {
+        margin-left: 0px + $i !important;
+        margin-right: 0px + $i !important;
+    }
+    .my--#{$i} {
+        margin-top: 0px + $i !important;
+        margin-bottom: 0px + $i !important;
+    }
+    .m--#{$i} {
+        margin: 0px + $i !important;
+    }
+    .line-height--#{$i} {
+        line-height: 0px + $i !important;
+    }
+}
+
+.w--full {
+    width: 100%;
+}
+
+.h--full {
+    height: 100%;
+}
+
+.w--fitContent {
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.display--flex {
+    display: flex !important;
+}
+
+.display--none {
+    display: none !important;
+}
+
+.flex-direction--column {
+    flex-direction: column;
+}
+
+.flex-direction--row {
+    flex-direction: row;
+}
+
+.flex-wrap--wrap {
+    flex-wrap: wrap;
+}
+
+.flex--1 {
+    flex: 1;
+}
+
+.align-items--flexStart {
+    align-items: flex-start;
+}
+
+.align-items--center {
+    align-items: center;
+}
+
+.justify-content--flexStart {
+    justify-content: flex-start;
+}
+
+.justify-content--flexEnd {
+    justify-content: flex-end;
+}
+
+.justify-content--center {
+    justify-content: center;
+}
+
+.justify-content--spaceBetween {
+    justify-content: space-between;
+}
+
+.text-align--center {
+    text-align: center;
+}
+
+.text-align--right {
+    text-align: right;
+}
+
+.text-align--left {
+    text-align: left;
+}
+
+.hide--xs {
+    @include xs {
+        display: none;
+    }
+}
+
+.hide--sm {
+    @include sm {
+        display: none !important;
+    }
+}
+
+.hide--md {
+    @include md {
+        display: none;
+    }
+}
+
+.hide--lg {
+    @include lg {
+        display: none;
+    }
+}
+
+.hide--xl {
+    @include xl {
+        display: none;
+    }
+}
+
+.fill--branding-500 {
+    fill: $branding-500;
+}
+
+.bgColor--branding-500 {
+    background-color: $branding-500;
+}
+
+.bgColor--bg-bg-2 {
+    background-color: $bg-bg-2;
+}
+
+.color--branding-500 {
+    color: $branding-500;
+}
+
+.bgColor--neutral-500 {
+    background-color: $neutral-500;
+}
+
+.bgColor--neutral-bg {
+    background-color: $neutral-bg;
+}
+
+.bgColor--neutral-bg3 {
+    background-color: $neutral-bg3;
+}
+
+.color--neutral-800 {
+    color: $neutral-800 !important;
+}
+
+.color--neutral-700 {
+    color: $neutral-700;
+}
+
+.color--blue-800 {
+    color: $blue-800;
+}
+
+.color--neutral-600 {
+    color: $neutral-600;
+}
+
+.color--neutral-500 {
+    color: $neutral-500;
+}
+
+.color--neutral-400 {
+    color: $neutral-400;
+}
+
+.color--neutral-300 {
+    color: $neutral-300;
+}
+
+.color--neutral-200 {
+    color: $neutral-200;
+}
+
+.color--neutral-100 {
+    color: $neutral-100 !important;
+}
+
+.color--neutral-bg {
+    color: $neutral-bg;
+}
+
+.color--neutral-color1 {
+    color: $neutral-color1;
+}
+
+.color--neutral-color3 {
+    color: $neutral-color3;
+}
+
+.color--gray-1 {
+    color: $gray-1;
+}
+
+.color--bg-bg-2 {
+    color: $bg-bg-2;
+}
+
+.color--blue-300 {
+    color: $blue-300;
+}
+
+.color--neutral-color8 {
+    color: $neutral-color8;
+}
+
+.color--functional-link-500 {
+    color: $functional-link-500;
+}
+
+.color--functional-success-500 {
+    color: $functional-success-500;
+}
+
+.color--functional-info-500 {
+    color: $functional-info-500;
+}
+
+.color--functional-info-400 {
+    color: $functional-info-400;
+}
+
+.color--functional-error-500 {
+    color: $functional-error-500;
+}
+
+.color--blue-700 {
+    color: $blue-700;
+}
+
+.color--blue-1000 {
+    color: $blue-1000;
+}
+
+.color--branding-star {
+    color: $branding-star;
+}
+
+.color--blue-700 {
+    color: $blue-700;
+}
+
+.color--night-100 {
+    color: $night-100;
+}
+
+.color--blue-800 {
+    color: $blue-800;
+}
+
+.color--blue-600 {
+    color: $blue-600;
+}
+
+.color--night {
+    color: $night;
+}
+
+.color--bg-grey {
+    color: $bg-bg-grey;
+}
+
+.font-weight--normal {
+    font-weight: normal;
+}
+
+.font-weight--bold {
+    font-weight: bold;
+}
+
+.font-weight--400 {
+    font-weight: 400;
+}
+
+.font-weight--500 {
+    font-weight: 500;
+}
+
+.cursor--pointer {
+    cursor: pointer;
+
+    &.active {
+        color: $branding-500 !important;
+    }
+
+    &.hover {
+        &:hover {
+            color: $branding-500 !important;
+            transition: 0.2s;
+
+            * {
+                color: $branding-500 !important;
+                transition: 0.2s;
+            }
+        }
+    }
+}
+
+.cursor--notAllowed {
+    cursor: not-allowed !important;
+}
+
+.text-decoration--underline {
+    text-decoration: underline;
+}
+
+.text-decoration--lineThrough {
+    text-decoration: line-through;
+}
+
+.overflow--hidden {
+    overflow: hidden;
+}
+
+.float--right {
+    float: right;
+}
+
+.object-fit--cover {
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.position--relative {
+    position: relative;
+}
+
+.user-select--none {
+    user-select: none;
+}
+
+.opacity--0 {
+    opacity: 0;
+}
+
+.white-space--nowrap {
+    white-space: nowrap;
+}
+
+.color--link-hover:hover {
+    color: $branding-500;
+    cursor: pointer;
+}
+
+// .scale--60 {
+//   transform: scale(0.5);
+// }
+.font-style--italic {
+    font-style: italic;
+}
+
+.w--fit-content {
+    width: fit-content;
+}
+
+.m--0-auto {
+    margin: 0 auto;
+}

@@ -1,0 +1,13 @@
+@import '@styles/colors';
+
+.w-split-vertical > .w-split-line-bar div::after,
+.w-split-horizontal > .w-split-line-bar div::after {
+    background-color: $neutral-700;
+    width: 2px;
+}
+
+.w-split-horizontal > .w-split-line-bar div:hover::after,
+.w-split-horizontal > .w-split-line-bar div:active::after,
+.w-split-horizontal > .w-split-line-bar div:focus::after {
+    background-color: $neutral-800;
+}

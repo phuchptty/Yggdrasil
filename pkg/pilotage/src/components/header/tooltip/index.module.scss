@@ -1,0 +1,22 @@
+@import '@styles/colors.scss';
+@import '@styles/mixins.scss';
+
+.customTooltip {
+    cursor: pointer;
+    a {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+    }
+}
+
+.overlay {
+    :global {
+        .ant-tooltip-content {
+            & .ant-tooltip-inner {
+                border-radius: 4px;
+                color: $neutral-600;
+                background: rgba(214, 230, 255, 0.26) !important;
+            }
+        }
+    }
+}

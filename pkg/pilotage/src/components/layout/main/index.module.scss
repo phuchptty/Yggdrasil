@@ -1,0 +1,10 @@
+@import '@styles/mixins.scss';
+
+.bg {
+    margin-top: 6rem;
+    width: 100% !important;
+
+    @include sm {
+        margin-top: 4rem;
+    }
+}

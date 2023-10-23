@@ -1,0 +1,36 @@
+@import '@styles/colors.scss';
+
+.itemCard {
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid $neutral-700;
+    background: transparent;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &:hover {
+        box-shadow: 0px 0px 15px 7px $neutral-1000;
+    }
+}
+
+.itemCardContent {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.5rem;
+}
+
+.image {
+    height: 2.25rem;
+    width: 2.25rem;
+    object-fit: cover;
+}
+
+.text {
+    color: $neutral-600;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 142.857% */
+    letter-spacing: 0.5px;
+}

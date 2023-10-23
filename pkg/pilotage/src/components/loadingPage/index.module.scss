@@ -1,0 +1,23 @@
+@import '@styles/colors.scss';
+@import '@styles/mixins.scss';
+
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: radial-gradient(48% 48% at 49.24% 56.98%, #82acca 0%, rgba(77, 99, 119, 0.604167) 48.81%, rgba(33, 42, 50, 0) 100%) #111a21;
+    opacity: 0.5;
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    align-self: center;
+    z-index: 999998;
+    .gif {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 160px;
+        height: 160px;
+    }
+}

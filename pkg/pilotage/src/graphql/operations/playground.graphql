@@ -1,0 +1,160 @@
+query Playground_languages {
+    playground_languages {
+        _id
+        name
+        key
+        editorKey
+        createdAt
+        updatedAt
+    }
+}
+
+query Playground_getWorkspaceBySlug($slug: String!) {
+    playground_getWorkspaceBySlug(slug: $slug) {
+        _id
+        beaconHost
+        createdAt
+        description
+        permission
+        slug
+        title
+        updatedAt
+        workspaceLanguage {
+            _id
+            createdAt
+            editorKey
+            key
+            name
+            updatedAt
+        }
+        owner {
+            _id
+        }
+    }
+}
+
+query Playground_getAllUserWorkspaces($option: Playground_ProfilePaginateInput) {
+    playground_getAllUserWorkspaces(option: $option) {
+        node {
+            _id
+            beaconHost
+            createdAt
+            description
+            owner {
+                _id
+            }
+            permission
+            slug
+            title
+            updatedAt
+            workspaceLanguage {
+                _id
+                createdAt
+                editorKey
+                key
+                name
+                updatedAt
+            }
+        }
+        pageInfo {
+            currentPage
+            hasNextPage
+            hasPrevPage
+            totalCount
+            totalPage
+        }
+    }
+}
+
+query Playground_getAllPublicWorkspaces($option: Playground_ProfilePaginateInput) {
+    playground_getAllPublicWorkspaces(option: $option) {
+        node {
+            _id
+            title
+            slug
+            description
+            permission
+            createdAt
+            updatedAt
+            workspaceLanguage {
+                _id
+                name
+                key
+                editorKey
+                createdAt
+                updatedAt
+            }
+            owner {
+                _id
+                firstName
+                lastName
+            }
+        }
+        pageInfo {
+            totalCount
+            currentPage
+            totalPage
+            hasPrevPage
+            hasNextPage
+        }
+    }
+}
+
+query playground_countPublicWorkspaceByLanguages {
+    playground_countPublicWorkspaceByLanguages {
+        languageId
+        count
+    }
+}
+
+mutation Playground_createWorkspace($input: Playground_WorkspaceInput!) {
+    playground_createWorkspace(input: $input) {
+        _id
+        beaconHost
+        createdAt
+        description
+        permission
+        slug
+        title
+        updatedAt
+        workspaceLanguage {
+            _id
+            createdAt
+            editorKey
+            key
+            name
+            updatedAt
+        }
+    }
+}
+
+mutation Playground_updateWorkspace($playgroundUpdateWorkspaceId: String!, $input: Playground_WorkspaceUpdateInput!) {
+    playground_updateWorkspace(id: $playgroundUpdateWorkspaceId, input: $input) {
+        _id
+        description
+        permission
+        slug
+        title
+        updatedAt
+        owner {
+            _id
+            firstName
+            lastName
+        }
+        workspaceLanguage {
+            _id
+            name
+            key
+            editorKey
+            createdAt
+            updatedAt
+        }
+        createdAt
+    }
+}
+
+mutation Playground_deleteWorkspace($playgroundDeleteWorkspaceId: String!) {
+    playground_deleteWorkspace(id: $playgroundDeleteWorkspaceId) {
+        _id
+    }
+}

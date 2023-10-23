@@ -1,0 +1,77 @@
+@import '@styles/colors.scss';
+
+.mainZone {
+    margin-top: 8rem;
+    border-radius: 0.5rem;
+    border: 1px solid $neutral-700;
+    position: relative;
+    padding: 1.5rem 0;
+}
+
+// Variable
+$tabBarButtonBorderRadius: 0.5rem;
+
+.btnTabBar {
+    width: fit-content;
+    height: 3rem;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: $tabBarButtonBorderRadius;
+    backdrop-filter: blur(11px);
+
+    // Flying
+    position: absolute;
+    top: -1.5rem;
+    left: 0.25rem;
+    right: 0;
+    z-index: 10;
+}
+
+.tabBarButton {
+    padding: 0.875rem 1.5rem;
+    background-color: transparent;
+    color: $neutral-300;
+    display: inline-block;
+
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.25rem;
+
+    // Style
+    cursor: pointer;
+    transition: 0.3s;
+
+    // Disable selection text
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.tabBarButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: $neutral-100;
+}
+
+// Variant first and last
+.tabBarButton:first-child {
+    border-top-left-radius: $tabBarButtonBorderRadius;
+    border-bottom-left-radius: $tabBarButtonBorderRadius;
+}
+
+.tabBarButton:last-child {
+    border-top-right-radius: $tabBarButtonBorderRadius;
+    border-bottom-right-radius: $tabBarButtonBorderRadius;
+}
+
+.tabBarButtonActive {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: $neutral-100;
+    text-align: center;
+    border-bottom: 2px solid #8a96ff;
+}
+
+// Better main zone
+.mainContent {
+    margin-top: 2rem;
+    padding: 0 1.75rem;
+}

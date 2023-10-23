@@ -1,0 +1,10 @@
+query Profile_me {
+    Profile_me {
+        _id
+        email
+        firstName
+        lastName
+        roles
+        username
+    }
+}

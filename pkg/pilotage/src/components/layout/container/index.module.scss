@@ -1,0 +1,33 @@
+@import '@styles/mixins.scss';
+
+.container {
+    position: relative;
+    margin: 0 auto;
+    // padding: 0 1rem;
+    width: 100%;
+    @include sm {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    @include md {
+        max-width: 1000px;
+        padding: 1rem;
+    }
+
+    @include lg {
+        max-width: 1320px;
+        padding: 0;
+    }
+
+    @include xl {
+        max-width: 1430px;
+    }
+}
+
+.containerFluid {
+    position: relative;
+    margin: auto;
+    // padding: 0 1.5rem;
+    width: 100%;
+}

@@ -1,10 +1,7 @@
 import Image from 'next/image';
-import { Playground_Language, Playground_WorkspacePermission, Playground_WorkspaceStatus } from '@/graphql/generated/types';
+import { Playground_Language, Playground_WorkspacePermission } from '@/graphql/generated/types';
 import styles from './index.module.scss';
 import { usePlayground_CreateWorkspaceMutation } from '@/graphql/generated/playground.generated';
-import { showErr } from '@/utils';
-import { redirect } from 'next/navigation';
-import { RedirectType } from 'next/dist/client/components/redirect';
 
 import languageImage from '@/assets/images/language.jpg';
 import { message } from 'antd';
@@ -24,7 +21,6 @@ export default function ItemCard({ language }: { language: Playground_Language }
                 variables: {
                     input: {
                         permission: Playground_WorkspacePermission.Private,
-                        status: Playground_WorkspaceStatus.Draft,
                         workspaceLanguage: language._id,
                     },
                 },

@@ -2,29 +2,43 @@ import { Button, Input, Menu, message, Modal, Spin, Tooltip, Tree } from 'antd';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
 import { convertDataToAntDesignTree } from '@/utils';
 import { useEffect, useState } from 'react';
-import { DataNode } from 'antd/es/tree';
+import { DataNode, EventDataNode } from 'antd/es/tree';
 import { v4 as uuidV4 } from 'uuid';
+
 const { DirectoryTree } = Tree;
 import styles from './index.module.scss';
 import * as React from 'react';
 import { addNewFile, addWorkspaceFile, closeFile, openNewFile, removeMemorizeFile } from '@/stores/slices/workspaceFile.slice';
 import { FileAddOutlined } from '@ant-design/icons';
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
+import { Playground_Workspace } from '@/graphql/generated/types';
+import { BeaconConnectionMessage, DirFlatTreeResponse, DirTreeResponse, FileContentResponse, ListFileResponse } from '@/types';
+import { Socket } from 'socket.io-client';
+import { BeaconEvent } from '@/constants/beaconEvent';
 
 enum ContextMenuAction {
     RENAME = 'RENAME',
     DELETE = 'DELETE',
 }
 
-export default function InfoColTabFile() {
+type Props = {
+    workspaceData: Playground_Workspace;
+    accessToken: string;
+};
+
+export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     const dispatch = useAppDispatch();
     const [messageApi, messageContext] = message.useMessage();
 
     const [fileLoading, setFileLoading] = useState<boolean>(false);
 
-    const workspaceData = useAppSelector((state) => state.workspaceSlice);
+    // workspace file redux store
     const workspaceFileData = useAppSelector((state) => state.workspaceFileSlice);
 
+    // Socket client
+    const [socket, setSocket] = useState<Socket | undefined>();
+
+    // File tree structure
     const [structure, setStructure] = useState<DataNode[]>([]);
 
     // Add new file
@@ -36,30 +50,69 @@ export default function InfoColTabFile() {
 
     // First time connect with beacon
     useEffect(() => {
-        console.log(workspaceData);
+        if (socket) {
+            socket.disconnect();
+        }
+
+        const beaconUrl = new URL(workspaceData.beaconHost);
+        beaconUrl.searchParams.append('workspace', workspaceData._id);
+
+        const ioCon = io(beaconUrl.toString(), {
+            reconnection: true,
+            extraHeaders: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        setSocket(ioCon);
+
+        ioCon.on('connect', () => {
+            console.log('connected to beacon');
+        });
+
+        ioCon.on('disconnect', () => {
+            console.log('disconnected to beacon');
+        });
+
+        ioCon.on('CONNECTION_MESSAGE', (value: BeaconConnectionMessage) => {
+            messageApi.error(value.message);
+        });
+
+        ioCon.on('exception', (value: any) => {
+            console.error(value);
+        });
+
+        return () => {
+            if (ioCon) {
+                ioCon.disconnect();
+            }
+        };
     }, []);
 
+    useEffect(() => {
+        if (!socket) return;
 
-    // useEffect(() => {
-    //     // This filter out files that already exist in workspace (new file only)
-    //     const filteredFiles = workspaceFileData.workspaceFiles
-    //         .filter((file) => !(workspaceData.workspaceFiles || []).some((workspaceFile) => workspaceFile.path === file.path))
-    //         .map((x) => ({
-    //             _id: x._id,
-    //             name: x.name,
-    //             path: x.path,
-    //         }));
-    //
-    //     const mapWorkspaceFile = (workspaceData.workspaceFiles || []).map((x) => ({
-    //         _id: x._id,
-    //         name: x.name,
-    //         path: x.path,
-    //     }));
-    //
-    //     const fileStructure = [...mapWorkspaceFile, ...filteredFiles];
-    //
-    //     setStructure(convertDataToAntDesignTree(fileStructure));
-    // }, [workspaceData.workspaceFiles, workspaceFileData.workspaceFiles]);
+        // Get list file from server
+        socket.emit(
+            BeaconEvent.DIR_FLAT_TREE,
+            {
+                params: {
+                    path: '',
+                },
+            },
+            (res: DirFlatTreeResponse) => {
+                if (!res.success) {
+                    messageApi.error('Lỗi khi lấy danh sách file');
+                    return;
+                }
+
+                const data = res.data;
+                const structure = convertDataToAntDesignTree(data);
+
+                setStructure(structure);
+            },
+        );
+    }, [socket]);
 
     // Fetch file from server
     // useEffect(() => {
@@ -104,12 +157,32 @@ export default function InfoColTabFile() {
         }
 
         // If not fetch file from server
-        // fetchQueryScatteredFile({
-        //     variables: {
-        //         workspaceId: workspaceData._id,
-        //         filePath: node.key,
-        //     },
-        // });
+        if (!socket) {
+            setFileLoading(false);
+            return;
+        }
+
+        socket.emit(
+            BeaconEvent.GET_FILE_CONTENT,
+            {
+                params: {
+                    path: node.key,
+                },
+            },
+            (res: FileContentResponse) => {
+                if (!res.success) {
+                    messageApi.error('Lỗi khi lấy nội dung file');
+                    return;
+                }
+
+                const data = res.data;
+
+                // dispatch(addWorkspaceFile(fileData));
+                // dispatch(openNewFile(fileData.path));
+
+                setFileLoading(false);
+            },
+        );
 
         // Close loading in useEffect not here
     };

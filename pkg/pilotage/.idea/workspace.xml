@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stores/slices/workspace.slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/slices/workspace.slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stores/slices/workspaceFile.slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/slices/workspaceFile.slice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constants/beaconEvent.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/beaconEvent.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/beaconSocket.type.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/beaconSocket.type.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/tree.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/tree.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" afterDir="false" />
     </list>
@@ -15,6 +17,13 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
@@ -117,7 +126,15 @@
       <workItem from="1698059095767" duration="615000" />
       <workItem from="1698059755333" duration="3380000" />
       <workItem from="1698063530376" duration="1127000" />
-      <workItem from="1698089994929" duration="5747000" />
+      <workItem from="1698089994929" duration="5776000" />
+      <workItem from="1698117550238" duration="77000" />
+      <workItem from="1698230049688" duration="44000" />
+      <workItem from="1698232640381" duration="80000" />
+      <workItem from="1698257222448" duration="2519000" />
+      <workItem from="1698259811044" duration="1963000" />
+      <workItem from="1698267013449" duration="935000" />
+      <workItem from="1698268290717" duration="918000" />
+      <workItem from="1698270587026" duration="691000" />
     </task>
     <servers />
   </component>

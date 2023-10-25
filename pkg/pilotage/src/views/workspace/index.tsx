@@ -41,7 +41,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
         {
             key: '0',
             label: `Quản lý file`,
-            children: <InfoColTabFile />,
+            children: <InfoColTabFile workspaceData={workspaceData} accessToken={accessToken} />,
         },
         {
             key: '1',

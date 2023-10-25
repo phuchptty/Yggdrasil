@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import fs from "fs-extra";
 import { basename, join } from "path";
 import { ConfigService } from "@nestjs/config";
-import { FilePropertiesResponseDto, FolderTreeResponseDto, ListFileResponseDto } from "./dto/response.dto";
+import { FilePropertiesResponseDto, FolderFlatTreeResponseDto, FolderTreeResponseDto, ListFileResponseDto } from "./dto/response.dto";
 import { FileTypeEnum } from "../../types/enum/file.enum";
 import { toUnixPath } from "../../utils";
 import mime from "mime-types";
@@ -89,6 +89,7 @@ export class FileSystemService {
                         path: toUnixPath(join(folderPath, file)),
                         mimeType: mimeType,
                         size: fileStats.size,
+                        type: FileTypeEnum.FILE,
                     });
                 }
             }
@@ -103,7 +104,7 @@ export class FileSystemService {
         }
     }
 
-    async getFolderFlatTree(folderPath: string) {
+    async getFolderFlatTree(folderPath: string): Promise<FolderFlatTreeResponseDto[]> {
         try {
             const fsPath = this.getFsPath(folderPath);
             const stats = await fs.stat(fsPath);
@@ -111,6 +112,34 @@ export class FileSystemService {
             if (!stats.isDirectory()) {
                 return null;
             }
+
+            const result = [];
+
+            function traverseFolder(currentFolder: string, currentPath = "") {
+                const files = fs.readdirSync(currentFolder);
+
+                files.forEach((file) => {
+                    const filePath = join(currentFolder, file);
+                    const stats = fs.statSync(filePath);
+                    const mimeType = mime.lookup(filePath);
+
+                    if (stats.isFile()) {
+                        result.push({
+                            name: file,
+                            path: toUnixPath(join(currentPath, file)),
+                            mimeType: mimeType,
+                            size: stats.size,
+                            type: FileTypeEnum.FILE,
+                        });
+                    } else if (stats.isDirectory()) {
+                        traverseFolder(filePath, join(currentPath, file));
+                    }
+                });
+            }
+
+            traverseFolder(fsPath);
+
+            return result;
         } catch (e) {
             if (e.code !== "ENOENT") {
                 throw new Error(e);

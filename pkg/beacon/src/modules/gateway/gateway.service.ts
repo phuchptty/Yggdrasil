@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { FileSystemService } from "../file-system/file-system.service";
 import { GatewayResponseBlock } from "./dto/response.dto";
-import { FilePropertiesResponseDto, FolderTreeResponseDto, ListFileResponseDto } from "../file-system/dto/response.dto";
+import { FilePropertiesResponseDto, FolderFlatTreeResponseDto, FolderTreeResponseDto, ListFileResponseDto } from "../file-system/dto/response.dto";
 import { Socket } from "socket.io";
 import GatewayPackage from "./gatewayPackage";
 import { WorkspacePermission } from "../../common/enums";
@@ -116,7 +116,7 @@ export class GatewayService {
         }
     }
 
-    async dirFlatTree(path: string) {
+    async dirFlatTree(path: string): Promise<GatewayResponseBlock<FolderFlatTreeResponseDto[]>> {
         try {
             const tree = await this.fsService.getFolderFlatTree(path);
 

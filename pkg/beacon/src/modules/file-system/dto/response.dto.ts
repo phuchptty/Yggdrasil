@@ -20,3 +20,11 @@ export class FilePropertiesResponseDto {
     created: Date;
     modified: Date;
 }
+
+export class FolderFlatTreeResponseDto {
+    name: string;
+    path: string;
+    mimeType?: string;
+    size?: number;
+    type: FileTypeEnum;
+}

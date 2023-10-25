@@ -116,6 +116,19 @@ export class GatewayService {
         }
     }
 
+    async dirFlatTree(path: string) {
+        try {
+            const tree = await this.fsService.getFolderFlatTree(path);
+
+            return {
+                success: true,
+                data: tree,
+            };
+        } catch (e) {
+            throw new WsException(e.message);
+        }
+    }
+
     async fileProperties(path: string): Promise<GatewayResponseBlock<FilePropertiesResponseDto>> {
         try {
             const properties = await this.fsService.getFileProperties(path);

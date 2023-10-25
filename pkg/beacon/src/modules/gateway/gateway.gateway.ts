@@ -36,6 +36,15 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
         return this.gatewayService.dirTree(params.path);
     }
 
+    @SubscribeMessage(GatewayPackage.DIR_FLAT_TREE)
+    packageDirFlatTree(@MessageBody("params") params: ListDirDto) {
+        if (params.path === undefined || params.path === null) {
+            throw new WsException("Thiếu đường dẫn");
+        }
+
+        return this.gatewayService.dirFlatTree(params.path);
+    }
+
     @SubscribeMessage(GatewayPackage.FILE_PROPERTIES)
     packageFileProperties(@MessageBody("params") params: ListDirDto) {
         if (params.path === undefined || params.path === null) {

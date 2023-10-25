@@ -14,7 +14,9 @@ export class FileSystemService {
     private baseDir = "";
 
     setBaseDir(baseDir: string) {
-        this.baseDir = baseDir;
+        if (this.configService.get("env") !== "development") {
+            this.baseDir = baseDir;
+        }
     }
 
     private getFsPath(filePath: string): string {
@@ -26,10 +28,25 @@ export class FileSystemService {
             const fsPath = this.getFsPath(folderPath);
             const files = await fs.readdir(fsPath, { withFileTypes: true });
 
-            return files.map((file) => ({
-                name: file.name,
-                type: file.isDirectory() ? FileTypeEnum.DIRECTORY : FileTypeEnum.FILE,
-            }));
+            return files.map((file) => {
+                const mimeType = mime.lookup(file.path);
+                const fileStats = fs.statSync(file.path);
+
+                const rsp = {
+                    name: file.name,
+                    path: toUnixPath(join(folderPath, file.name)),
+                    mimeType: mimeType ? mimeType : "text/plain",
+                    size: fileStats.size || 0,
+                    type: file.isDirectory() ? FileTypeEnum.DIRECTORY : FileTypeEnum.FILE,
+                };
+
+                if (file.isDirectory()) {
+                    delete rsp.mimeType;
+                    delete rsp.size;
+                }
+
+                return rsp;
+            });
         } catch (e) {
             if (e.code !== "ENOENT") {
                 throw new Error(e);
@@ -81,6 +98,25 @@ export class FileSystemService {
             if (e.code !== "ENOENT") {
                 throw new Error(e);
             }
+
+            throw new Error(`Đường dẫn ${folderPath} không tồn tại`);
+        }
+    }
+
+    async getFolderFlatTree(folderPath: string) {
+        try {
+            const fsPath = this.getFsPath(folderPath);
+            const stats = await fs.stat(fsPath);
+
+            if (!stats.isDirectory()) {
+                return null;
+            }
+        } catch (e) {
+            if (e.code !== "ENOENT") {
+                throw new Error(e);
+            }
+
+            console.error(e);
 
             throw new Error(`Đường dẫn ${folderPath} không tồn tại`);
         }

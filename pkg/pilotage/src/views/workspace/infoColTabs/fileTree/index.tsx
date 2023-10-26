@@ -28,6 +28,7 @@ type Props = {
 export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     const dispatch = useAppDispatch();
     const [messageApi, messageContext] = message.useMessage();
+    const [modalApi, modalContext] = Modal.useModal();
 
     const [fileLoading, setFileLoading] = useState<boolean>(false);
 
@@ -266,7 +267,7 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
                 break;
 
             case ContextMenuAction.DELETE:
-                Modal.confirm({
+                modalApi.confirm({
                     title: 'Xác nhận',
                     content: 'Bạn có chắc chắn muốn xoá?',
                     okText: 'Đồng ý',
@@ -310,6 +311,7 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     return (
         <div id="fileTree">
             {messageContext}
+            {modalContext}
 
             <div className={styles.columnHeader}>
                 <div className={styles.columnHeaderContent}>

@@ -1,5 +1,5 @@
 import { DataNode } from 'rc-tree/lib/interface';
-import { ListFileItem } from '@/types';
+import { FileType, ListFileItem } from '@/types';
 
 export function convertDataToAntDesignTree(data: ListFileItem[]) {
     const treeStruct = data.reduce((acc: DataNode[], item) => {
@@ -22,7 +22,7 @@ export function convertDataToAntDesignTree(data: ListFileItem[]) {
                 const newNode = {
                     title: part,
                     key: fullPath,
-                    isLeaf: index === pathParts.length - 1,
+                    isLeaf: index === pathParts.length - 1 && item.type === FileType.FILE,
                     children: [],
                 };
 

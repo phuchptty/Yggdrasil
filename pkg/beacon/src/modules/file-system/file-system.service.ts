@@ -200,4 +200,80 @@ export class FileSystemService {
             throw new Error(`Tập tin ${filePath} không tồn tại`);
         }
     }
+
+    async createFolder(path: string): Promise<string> {
+        try {
+            const fsPath = this.getFsPath(path);
+            await fs.ensureDir(fsPath);
+
+            return path;
+        } catch (e) {
+            if (e.code !== "ENOENT") {
+                throw new Error(e);
+            }
+
+            throw new Error(`Đường dẫn ${path} không tồn tại`);
+        }
+    }
+
+    async createFile(path: string): Promise<string> {
+        try {
+            const fsPath = this.getFsPath(path);
+            await fs.ensureFile(fsPath);
+
+            return path;
+        } catch (e) {
+            if (e.code !== "ENOENT") {
+                throw new Error(e);
+            }
+
+            throw new Error(`Đường dẫn ${path} không tồn tại`);
+        }
+    }
+
+    async deletePath(path: string): Promise<boolean> {
+        try {
+            const fsPath = this.getFsPath(path);
+            await fs.remove(fsPath);
+
+            return true;
+        } catch (e) {
+            if (e.code !== "ENOENT") {
+                throw new Error(e);
+            }
+
+            throw new Error(`Đường dẫn ${path} không tồn tại`);
+        }
+    }
+
+    async renamePath(oldPath: string, newPath: string): Promise<string> {
+        try {
+            const fsOldPath = this.getFsPath(oldPath);
+            const fsNewPath = this.getFsPath(newPath);
+            await fs.rename(fsOldPath, fsNewPath);
+
+            return newPath;
+        } catch (e) {
+            if (e.code !== "ENOENT") {
+                throw new Error(e);
+            }
+
+            throw new Error(`Tập tin ${oldPath} không tồn tại`);
+        }
+    }
+
+    async saveFileContent(path: string, content: string): Promise<string> {
+        try {
+            const fsPath = this.getFsPath(path);
+            await fs.writeFile(fsPath, content);
+
+            return path;
+        } catch (e) {
+            if (e.code !== "ENOENT") {
+                throw new Error(e);
+            }
+
+            throw new Error(`Tập tin ${path} không tồn tại`);
+        }
+    }
 }

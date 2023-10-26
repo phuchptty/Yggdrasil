@@ -158,4 +158,69 @@ export class GatewayService {
             throw new WsException(e.message);
         }
     }
+
+    async createFolder(path: string): Promise<GatewayResponseBlock<string>> {
+        try {
+            await this.fsService.createFolder(path);
+
+            return {
+                success: true,
+                data: "Created",
+            };
+        } catch (e) {
+            throw new WsException(e.message);
+        }
+    }
+
+    async createFile(path: string): Promise<GatewayResponseBlock<string>> {
+        try {
+            await this.fsService.createFile(path);
+
+            return {
+                success: true,
+                data: "Created",
+            };
+        } catch (e) {
+            throw new WsException(e.message);
+        }
+    }
+
+    async deletePath(path: string): Promise<GatewayResponseBlock<string>> {
+        try {
+            await this.fsService.deletePath(path);
+
+            return {
+                success: true,
+                data: "Deleted",
+            };
+        } catch (e) {
+            throw new WsException(e.message);
+        }
+    }
+
+    async renamePath(path: string, newPath: string): Promise<GatewayResponseBlock<string>> {
+        try {
+            await this.fsService.renamePath(path, newPath);
+
+            return {
+                success: true,
+                data: "Renamed",
+            };
+        } catch (e) {
+            throw new WsException(e.message);
+        }
+    }
+
+    async saveFileContent(path: string, content: string): Promise<GatewayResponseBlock<string>> {
+        try {
+            await this.fsService.saveFileContent(path, content);
+
+            return {
+                success: true,
+                data: "Written",
+            };
+        } catch (e) {
+            throw new WsException(e.message);
+        }
+    }
 }

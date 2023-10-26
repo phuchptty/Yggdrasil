@@ -2,7 +2,7 @@ import { MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, W
 import GatewayPackage from "./gatewayPackage";
 import { GatewayService } from "./gateway.service";
 import { UsePipes, ValidationPipe } from "@nestjs/common";
-import { ListDirDto } from "./dto/input.dto";
+import { ListDirDto, RenameDto, SaveFileContentDto } from "./dto/input.dto";
 import { Socket } from "socket.io";
 
 @WebSocketGateway({
@@ -61,5 +61,56 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
         }
 
         return this.gatewayService.getFileContent(params.path);
+    }
+
+    @SubscribeMessage(GatewayPackage.CREATE_FILE)
+    packageCreateFile(@MessageBody("params") params: ListDirDto) {
+        if (params.path === undefined || params.path === null) {
+            throw new WsException("Thiếu đường dẫn");
+        }
+
+        return this.gatewayService.createFile(params.path);
+    }
+
+    @SubscribeMessage(GatewayPackage.CREATE_FOLDER)
+    packageCreateFolder(@MessageBody("params") params: ListDirDto) {
+        if (params.path === undefined || params.path === null) {
+            throw new WsException("Thiếu đường dẫn");
+        }
+
+        return this.gatewayService.createFolder(params.path);
+    }
+
+    @SubscribeMessage(GatewayPackage.RENAME)
+    packageRenameFile(@MessageBody("params") params: RenameDto) {
+        if (params.path === undefined || params.path === null) {
+            throw new WsException("Thiếu đường dẫn");
+        }
+        if (params.newPath === undefined || params.newPath === null) {
+            throw new WsException("Thiếu tên mới");
+        }
+
+        return this.gatewayService.renamePath(params.path, params.newPath);
+    }
+
+    @SubscribeMessage(GatewayPackage.DELETE)
+    packageDeletePath(@MessageBody("params") params: ListDirDto) {
+        if (params.path === undefined || params.path === null) {
+            throw new WsException("Thiếu đường dẫn");
+        }
+
+        return this.gatewayService.deletePath(params.path);
+    }
+
+    @SubscribeMessage(GatewayPackage.SAVE_FILE_CONTENT)
+    packageSaveFileContent(@MessageBody("params") params: SaveFileContentDto) {
+        if (params.path === undefined || params.path === null) {
+            throw new WsException("Thiếu đường dẫn");
+        }
+        if (params.content === undefined || params.content === null) {
+            throw new WsException("Thiếu nội dung");
+        }
+
+        return this.gatewayService.saveFileContent(params.path, params.content);
     }
 }

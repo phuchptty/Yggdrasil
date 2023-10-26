@@ -28,3 +28,7 @@ export class FolderFlatTreeResponseDto {
     size?: number;
     type: FileTypeEnum;
 }
+
+export class GetFileContentResponseDto extends FilePropertiesResponseDto {
+    content: string;
+}

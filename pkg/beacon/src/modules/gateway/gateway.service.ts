@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { FileSystemService } from "../file-system/file-system.service";
 import { GatewayResponseBlock } from "./dto/response.dto";
-import { FilePropertiesResponseDto, FolderFlatTreeResponseDto, FolderTreeResponseDto, ListFileResponseDto } from "../file-system/dto/response.dto";
+import { FilePropertiesResponseDto, FolderFlatTreeResponseDto, FolderTreeResponseDto, GetFileContentResponseDto, ListFileResponseDto } from "../file-system/dto/response.dto";
 import { Socket } from "socket.io";
 import GatewayPackage from "./gatewayPackage";
 import { WorkspacePermission } from "../../common/enums";
@@ -142,13 +142,17 @@ export class GatewayService {
         }
     }
 
-    async getFileContent(path: string): Promise<GatewayResponseBlock<string>> {
+    async getFileContent(path: string): Promise<GatewayResponseBlock<GetFileContentResponseDto>> {
         try {
             const content = await this.fsService.readFileContent(path);
+            const properties = await this.fsService.getFileProperties(path);
 
             return {
                 success: true,
-                data: content,
+                data: {
+                    content,
+                    ...properties,
+                },
             };
         } catch (e) {
             throw new WsException(e.message);

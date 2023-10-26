@@ -166,7 +166,7 @@ export class FileSystemService {
                 name: basename(fsPath),
                 path: filePath,
                 size: stats.size,
-                mimeType: mimeType ? mimeType : "application/octet-stream",
+                mimeType: mimeType ? mimeType : "text/plain",
                 created: stats.birthtime,
                 modified: stats.mtime,
             };
@@ -182,6 +182,15 @@ export class FileSystemService {
     async readFileContent(filePath: string): Promise<string> {
         try {
             const fsPath = this.getFsPath(filePath);
+
+            // Check if binary file then return base64
+            const mimeType = mime.lookup(filePath);
+
+            if (!mimeType || mimeType.startsWith("image") || mimeType.startsWith("video") || mimeType.startsWith("audio")) {
+                const content = await fs.readFile(fsPath);
+                return content.toString("base64");
+            }
+
             return fs.readFile(fsPath, "utf8");
         } catch (e) {
             if (e.code !== "ENOENT") {

@@ -41,6 +41,39 @@ export interface DirFlatTreeResponse extends BeaconResponseBlock<DirFlatTree[]> 
     data: DirFlatTree[];
 }
 
-export interface FileContentResponse extends BeaconResponseBlock<string> {
+export interface FilePropertiesResponseDto {
+    name: string;
+    path: string;
+    size: number;
+    mimeType: string;
+    created: Date;
+    modified: Date;
+}
+
+export interface FilePropertiesResponse extends BeaconResponseBlock<FilePropertiesResponseDto> {
+    data: FilePropertiesResponseDto;
+}
+
+export interface FolderFlatTreeResponseDto {
+    name: string;
+    path: string;
+    mimeType?: string;
+    size?: number;
+    type: FileType;
+}
+
+export interface GetFileContentResponseDto extends FilePropertiesResponseDto {
+    content: string;
+}
+
+export interface FileContentResponse extends BeaconResponseBlock<GetFileContentResponseDto> {
+    data: GetFileContentResponseDto;
+}
+
+export interface FileCreateResponse extends BeaconResponseBlock<string> {
     data: string;
+}
+
+export interface DeletePathResponse extends BeaconResponseBlock<boolean> {
+    data: boolean;
 }

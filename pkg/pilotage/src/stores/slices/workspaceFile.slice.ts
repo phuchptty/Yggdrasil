@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { GetFileContentResponseDto } from '@/types';
 
 type WorkspaceFileState = {
     openFiles: string[]; // file path
-    workspaceFiles: WorkspaceScatteredFileResponse[];
+    workspaceFiles: GetFileContentResponseDto[];
     currentFile: string; // path of current file
 };
 
@@ -17,7 +18,7 @@ export const workspaceFileSlice = createSlice({
     initialState,
     reducers: {
         reset: () => initialState,
-        addWorkspaceFile: (state, file: PayloadAction<WorkspaceScatteredFileResponse>) => {
+        addWorkspaceFile: (state, file: PayloadAction<GetFileContentResponseDto>) => {
             // Check if file already exists
             if (state.workspaceFiles.find((f) => f.path === file.payload.path)) return;
 
@@ -64,17 +65,8 @@ export const workspaceFileSlice = createSlice({
 
             state.workspaceFiles[index].content = payload.payload.content;
         },
-        addNewFile: (state, payload: PayloadAction<Playground_SaveWorkspaceFileInput>) => {
-            state.workspaceFiles.push({
-                _id: payload.payload._id,
-                name: payload.payload.name,
-                path: payload.payload.path,
-                content: payload.payload.content,
-                size: 0,
-                actualSize: 0,
-                fileType: Playground_FileType.Text, // TODO: support many file types
-                metaData: {},
-            });
+        addNewFile: (state, payload: PayloadAction<GetFileContentResponseDto>) => {
+            state.workspaceFiles.push(payload.payload);
 
             state.openFiles.push(payload.payload.path);
         },

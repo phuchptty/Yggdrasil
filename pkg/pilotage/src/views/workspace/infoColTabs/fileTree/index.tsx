@@ -2,17 +2,16 @@ import { Button, Input, Menu, message, Modal, Spin, Tooltip, Tree } from 'antd';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
 import { convertDataToAntDesignTree } from '@/utils';
 import { useEffect, useState } from 'react';
-import { DataNode, EventDataNode } from 'antd/es/tree';
-import { v4 as uuidV4 } from 'uuid';
+import { DataNode } from 'antd/es/tree';
 
 const { DirectoryTree } = Tree;
 import styles from './index.module.scss';
 import * as React from 'react';
-import { addNewFile, addWorkspaceFile, closeFile, openNewFile, removeMemorizeFile } from '@/stores/slices/workspaceFile.slice';
+import { addWorkspaceFile, openNewFile } from '@/stores/slices/workspaceFile.slice';
 import { FileAddOutlined } from '@ant-design/icons';
 import { io } from 'socket.io-client';
 import { Playground_Workspace } from '@/graphql/generated/types';
-import { BeaconConnectionMessage, DirFlatTreeResponse, DirTreeResponse, FileContentResponse, ListFileResponse } from '@/types';
+import { BeaconConnectionMessage, DeletePathResponse, DirFlatTreeResponse, FileContentResponse, FileCreateResponse } from '@/types';
 import { Socket } from 'socket.io-client';
 import { BeaconEvent } from '@/constants/beaconEvent';
 
@@ -43,10 +42,37 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
 
     // Add new file
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isRenameModalOpen, setIsRenameModalOpen] = useState<boolean>(false);
     const [newFileName, setNewFileName] = useState<string>('');
 
     // Context menu
-    const [contextMenuFile, setContextMenuFile] = useState<any>(null);
+    const [contextMenuFile, setContextMenuFile] = useState<string>();
+
+    //
+    const getStructure = () => {
+        if (!socket) return;
+
+        // Get list file from server
+        socket.emit(
+            BeaconEvent.DIR_FLAT_TREE,
+            {
+                params: {
+                    path: '',
+                },
+            },
+            (res: DirFlatTreeResponse) => {
+                if (!res.success) {
+                    messageApi.error('Lỗi khi lấy danh sách file');
+                    return;
+                }
+
+                const data = res.data;
+                const structure = convertDataToAntDesignTree(data);
+
+                setStructure(structure);
+            },
+        );
+    };
 
     // First time connect with beacon
     useEffect(() => {
@@ -92,48 +118,8 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     useEffect(() => {
         if (!socket) return;
 
-        // Get list file from server
-        socket.emit(
-            BeaconEvent.DIR_FLAT_TREE,
-            {
-                params: {
-                    path: '',
-                },
-            },
-            (res: DirFlatTreeResponse) => {
-                if (!res.success) {
-                    messageApi.error('Lỗi khi lấy danh sách file');
-                    return;
-                }
-
-                const data = res.data;
-                const structure = convertDataToAntDesignTree(data);
-
-                setStructure(structure);
-            },
-        );
+        getStructure();
     }, [socket]);
-
-    // Fetch file from server
-    // useEffect(() => {
-    //     if (!scatteredFileRsp.data) return;
-    //
-    //     const fileData = scatteredFileRsp.data.playground_getScatteredWorkspaceFile;
-    //
-    //     if (!fileData) {
-    //         console.log('File not found');
-    //         return;
-    //     }
-    //
-    //     const checkExist = workspaceFileData.workspaceFiles.find((item) => item.path === fileData.path);
-    //
-    //     if (checkExist) return;
-    //
-    //     dispatch(addWorkspaceFile(fileData));
-    //     dispatch(openNewFile(fileData.path));
-    //
-    //     setFileLoading(false);
-    // }, [scatteredFileRsp]);
 
     const onDoubleClick = (_: any, node: any) => {
         setFileLoading(true);
@@ -175,10 +161,8 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
                     return;
                 }
 
-                const data = res.data;
-
-                // dispatch(addWorkspaceFile(fileData));
-                // dispatch(openNewFile(fileData.path));
+                dispatch(addWorkspaceFile(res.data));
+                dispatch(openNewFile(res.data.path));
 
                 setFileLoading(false);
             },
@@ -188,23 +172,35 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     };
 
     const addFile = () => {
-        dispatch(
-            addNewFile({
-                _id: uuidV4(),
-                name: newFileName,
-                path: newFileName,
-                content: '',
-            }),
+        if (!socket) return;
+
+        socket.emit(
+            BeaconEvent.CREATE_FILE,
+            {
+                params: {
+                    path: newFileName,
+                },
+            },
+            (res: FileCreateResponse) => {
+                if (!res.success) {
+                    messageApi.error('Lỗi khi tạo file');
+                    return;
+                }
+
+                dispatch(openNewFile(res.data));
+                setFileLoading(false);
+
+                getStructure();
+            },
         );
 
         setIsModalOpen(false);
+        setNewFileName('');
     };
 
     const onRightClick = (e: any) => {
         // Save temp
-        // const file = (workspaceData.workspaceFiles || []).find((item) => item.path === e.node.key);
-        // if (!file) return;
-        // setContextMenuFile(file);
+        setContextMenuFile(e.node.key);
 
         // Open context menu
         const el = document.getElementById('ctxMenu');
@@ -242,46 +238,33 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
 
     // Context MENU start
 
-    const deleteFile = async () => {
-        // try {
-        //     const rsp = await deleteWorkspaceFileMutation({
-        //         variables: {
-        //             playgroundDeleteWorkspaceFileId: workspaceData._id,
-        //             filePath: contextMenuFile.path,
-        //         },
-        //     });
-        //
-        //     if (rsp.errors) {
-        //         throw rsp.errors;
-        //     }
-        //
-        //     if (rsp.data?.playground_deleteWorkspaceFile) {
-        //         // close file
-        //         dispatch(closeFile(contextMenuFile.path));
-        //         dispatch(removeMemorizeFile(contextMenuFile.path));
-        //
-        //         // Remove file from tree
-        //         dispatch(deleteWorkspaceFile(contextMenuFile.path));
-        //
-        //         setStructure(
-        //             convertDataToAntDesignTree(rsp.data.playground_deleteWorkspaceFile.workspaceFiles || workspaceData.workspaceFiles || []),
-        //         );
-        //
-        //         // close context menu
-        //         closeContextMenu();
-        //
-        //         messageApi.success('Xoá file thành công');
-        //     }
-        // } catch (e) {
-        //     console.error(e);
-        //     messageApi.error('Không thể xoá file');
-        // }
+    const deleteFile = () => {
+        if (!socket) return;
+
+        socket.emit(
+            BeaconEvent.DELETE,
+            {
+                params: {
+                    path: contextMenuFile,
+                },
+            },
+            (res: DeletePathResponse) => {
+                if (!res.success) {
+                    messageApi.error('Lỗi khi xoá file');
+                    return;
+                }
+
+                getStructure();
+            },
+        );
     };
 
     const onClickMenu = (e: any) => {
         switch (e.key) {
             case ContextMenuAction.RENAME:
+                setIsRenameModalOpen(true);
                 break;
+
             case ContextMenuAction.DELETE:
                 Modal.confirm({
                     title: 'Xác nhận',
@@ -297,6 +280,31 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
                 });
                 break;
         }
+    };
+
+    const onRename = () => {
+        if (!socket) return;
+
+        socket.emit(
+            BeaconEvent.RENAME,
+            {
+                params: {
+                    path: contextMenuFile,
+                    newPath: newFileName,
+                },
+            },
+            (res: DeletePathResponse) => {
+                if (!res.success) {
+                    messageApi.error('Lỗi khi đổi tên file');
+                    return;
+                }
+
+                getStructure();
+
+                setIsRenameModalOpen(false);
+                setNewFileName('');
+            },
+        );
     };
 
     return (
@@ -332,26 +340,45 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
             </div>
 
             <div>
-                <Modal title="Thêm file mới" open={isModalOpen} onCancel={() => setIsModalOpen(false)} onOk={addFile} cancelText="Huỷ bỏ">
-                    <Input placeholder="Tên file" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} />
+                <Modal
+                    title="Thêm file mới"
+                    className={styles.addNewFileModal}
+                    open={isModalOpen}
+                    onCancel={() => setIsModalOpen(false)}
+                    onOk={addFile}
+                    cancelText="Huỷ bỏ"
+                >
+                    <Input placeholder="Tên file" className="mt--2" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} />
                 </Modal>
 
-                {/*<Modal title="Đổi tên" open={isModalOpen} onCancel={() => setIsModalOpen(false)} onOk={addFile} cancelText="Huỷ bỏ">*/}
-                {/*    <Input placeholder="Đổi tên file" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} />*/}
-                {/*</Modal>*/}
+                <Modal
+                    title="Đổi tên"
+                    className={styles.addNewFileModal}
+                    open={isRenameModalOpen}
+                    onCancel={() => setIsRenameModalOpen(false)}
+                    onOk={onRename}
+                    cancelText="Huỷ bỏ"
+                >
+                    <Input
+                        placeholder="Đổi tên file"
+                        className="mt--2"
+                        value={newFileName || contextMenuFile}
+                        onChange={(e) => setNewFileName(e.target.value)}
+                    />
+                </Modal>
             </div>
 
             <div id="ctxMenu" className={styles.ctxMenu}>
                 <Menu
                     selectable={false}
                     items={[
-                        // {
-                        //     key: ContextMenuAction.RENAME,
-                        //     label: 'Đổi tên',
-                        // },
-                        // {
-                        //     type: 'divider',
-                        // },
+                        {
+                            key: ContextMenuAction.RENAME,
+                            label: 'Đổi tên',
+                        },
+                        {
+                            type: 'divider',
+                        },
                         {
                             key: ContextMenuAction.DELETE,
                             label: 'Xóa',

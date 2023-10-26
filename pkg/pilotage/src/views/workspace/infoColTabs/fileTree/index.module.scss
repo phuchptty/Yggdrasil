@@ -81,3 +81,11 @@
         }
     }
 }
+
+.addNewFileModal {
+    :global {
+        .ant-modal-header {
+            background-color: transparent;
+        }
+    }
+}

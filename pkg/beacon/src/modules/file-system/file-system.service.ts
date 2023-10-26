@@ -118,6 +118,18 @@ export class FileSystemService {
             function traverseFolder(currentFolder: string, currentPath = "") {
                 const files = fs.readdirSync(currentFolder);
 
+                // In case of empty folder
+                if (files.length === 0) {
+                    // Process name
+                    const name = toUnixPath(currentPath).split("/").pop();
+
+                    result.push({
+                        name,
+                        path: toUnixPath(currentPath),
+                        type: FileTypeEnum.DIRECTORY,
+                    });
+                }
+
                 files.forEach((file) => {
                     const filePath = join(currentFolder, file);
                     const stats = fs.statSync(filePath);

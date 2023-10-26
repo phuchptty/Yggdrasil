@@ -43,7 +43,7 @@ type Props = {
     isExecuting: boolean;
 };
 
-export default function EditorColumn({ onRunClick , isExecuting}: Props) {
+export default function EditorColumn({ onRunClick, isExecuting }: Props) {
     const sensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } });
     const dispatch = useAppDispatch();
 
@@ -67,7 +67,10 @@ export default function EditorColumn({ onRunClick , isExecuting}: Props) {
                     key: fileData.path,
                     label: fileData.name,
                     children:
-                        fileData.fileType === Playground_FileType.Text ? (
+                        !fileData.mimeType.startsWith('image') ||
+                        !fileData.mimeType.startsWith('video') ||
+                        !fileData.mimeType.startsWith('audio') ||
+                        fileData.mimeType !== 'application/octet-stream' ? (
                             <MonacoEditor key={fileData.path} path={fileData.path} />
                         ) : (
                             <FilePreview key={fileData.path} path={fileData.path} />
@@ -112,7 +115,7 @@ export default function EditorColumn({ onRunClick , isExecuting}: Props) {
 
     const tabBarExtra = (
         <div className={styles.tabBarExtra}>
-            {workspaceData.workspaceLanguage && workspaceData.workspaceLanguage.playgroundType === Playground_PlaygroundType.Web && (
+            {workspaceData.workspaceLanguage && (
                 <Button icon={<Image src={reloadIcon} alt={'reloadIcon'} />} className={styles.reloadBtn} />
             )}
 

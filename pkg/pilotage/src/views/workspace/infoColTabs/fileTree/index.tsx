@@ -49,7 +49,7 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     // Context menu
     const [contextMenuFile, setContextMenuFile] = useState<string>();
 
-    //
+    // Get file tree structure
     const getStructure = () => {
         if (!socket) return;
 
@@ -68,8 +68,12 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
                 }
 
                 const data = res.data;
-                const structure = convertDataToAntDesignTree(data);
 
+                // Set to store
+                // dispatch(addWorkspaceFile(data));
+
+                // Convert to ant design tree
+                const structure = convertDataToAntDesignTree(data);
                 setStructure(structure);
             },
         );
@@ -122,6 +126,7 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
         getStructure();
     }, [socket]);
 
+    // Open file
     const onDoubleClick = (_: any, node: any) => {
         setFileLoading(true);
 

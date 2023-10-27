@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { setWorkspace } from '@/stores/slices/workspace.slice';
 import { io, Socket } from 'socket.io-client';
 import { BeaconConnectionMessage } from '@/types';
+import { usePlayground_RequestVmForWorkspaceMutation } from '@/graphql/generated/playground.generated';
 
 type Props = {
     workspaceData: Playground_Workspace;
@@ -28,7 +29,30 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
     // Beacon socket client
     const [beaconSocket, setBeaconSocket] = useState<Socket | undefined>();
 
+    // Set executing code state
     const [isExecuting, setIsExecuting] = useState(false);
+
+    // Request workspace vm
+    const [requestWorkspaceMutation] = usePlayground_RequestVmForWorkspaceMutation({
+        variables: {
+            workspaceSlug: workspaceData.slug as string,
+        },
+    });
+
+    const handleRequestVm = async () => {
+        try {
+            const { data, errors } = await requestWorkspaceMutation();
+
+            if (errors) {
+                console.log(errors);
+                return;
+            }
+
+            console.log(data);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     const handleRunCode = () => {
         setIsExecuting(true);
@@ -61,6 +85,8 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
 
         ioCon.on('connect', () => {
             console.log('connected to beacon');
+
+            handleRequestVm();
         });
 
         ioCon.on('disconnect', () => {

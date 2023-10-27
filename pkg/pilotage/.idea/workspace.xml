@@ -6,7 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphql/generated/playground.generated.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/generated/playground.generated.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphql/generated/profile.generated.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/generated/profile.generated.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphql/generated/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/generated/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphql/graphql.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/graphql.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphql/operations/playground.graphql" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/operations/playground.graphql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,24 +51,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;E:\\PROJECT\\KMA\\Yggdrasil\\pkg\\pilotage\\node_modules\\prettier&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;E:\\PROJECT\\KMA\\Yggdrasil\\pkg\\pilotage\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "E:/Project/KMA/Yggdrasil/pkg/pilotage",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "prettierjs.PrettierConfiguration.Package": "E:\\PROJECT\\KMA\\Yggdrasil\\pkg\\pilotage\\node_modules\\prettier",
+    "ts.external.directory.path": "E:\\Project\\KMA\\Yggdrasil\\pkg\\pilotage\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="npm.dev">
+}]]></component>
+  <component name="RunManager" selected="npm.codegen">
     <configuration name="Dockerfile" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
       <deployment type="dockerfile">
         <settings>
@@ -101,9 +107,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.codegen" />
         <item itemvalue="npm.dev" />
         <item itemvalue="Docker.Dockerfile" />
-        <item itemvalue="npm.codegen" />
       </list>
     </recent_temporary>
   </component>
@@ -137,6 +143,7 @@
       <workItem from="1698347246346" duration="3004000" />
       <workItem from="1698353662910" duration="2505000" />
       <workItem from="1698393031769" duration="9101000" />
+      <workItem from="1698409894669" duration="983000" />
     </task>
     <servers />
   </component>

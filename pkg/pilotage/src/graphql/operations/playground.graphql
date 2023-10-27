@@ -158,3 +158,29 @@ mutation Playground_deleteWorkspace($playgroundDeleteWorkspaceId: String!) {
         _id
     }
 }
+
+mutation Playground_requestVmForWorkspace($workspaceSlug: String!) {
+    Playground_requestVmForWorkspace(workspaceSlug: $workspaceSlug) {
+        message
+        node {
+            beaconHost
+            execHost
+            ownerId
+            podName
+            workspaceId
+        }
+    }
+}
+
+mutation Playground_requestReCreateVM($workspaceSlug: String!) {
+    Playground_requestReCreateVM(workspaceSlug: $workspaceSlug) {
+        message
+        node {
+            beaconHost
+            execHost
+            ownerId
+            podName
+            workspaceId
+        }
+    }
+}

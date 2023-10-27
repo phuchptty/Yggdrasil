@@ -61,6 +61,20 @@ export type Playground_DeleteWorkspaceMutationVariables = Types.Exact<{
 
 export type Playground_DeleteWorkspaceMutation = { __typename?: 'Mutation', playground_deleteWorkspace: { __typename?: 'Playground_Workspace', _id: string } };
 
+export type Playground_RequestVmForWorkspaceMutationVariables = Types.Exact<{
+  workspaceSlug: Types.Scalars['String']['input'];
+}>;
+
+
+export type Playground_RequestVmForWorkspaceMutation = { __typename?: 'Mutation', Playground_requestVmForWorkspace: { __typename?: 'Playground_RequestForVmResponse', message?: string | null, node?: { __typename?: 'Playground_RequestForVmBaseResponse', beaconHost: string, execHost: string, ownerId: string, podName: string, workspaceId: string } | null } };
+
+export type Playground_RequestReCreateVmMutationVariables = Types.Exact<{
+  workspaceSlug: Types.Scalars['String']['input'];
+}>;
+
+
+export type Playground_RequestReCreateVmMutation = { __typename?: 'Mutation', Playground_requestReCreateVM: { __typename?: 'Playground_RequestForVmResponse', message?: string | null, node?: { __typename?: 'Playground_RequestForVmBaseResponse', beaconHost: string, execHost: string, ownerId: string, podName: string, workspaceId: string } | null } };
+
 
 export const Playground_LanguagesDocument = gql`
     query Playground_languages {
@@ -448,3 +462,83 @@ export function usePlayground_DeleteWorkspaceMutation(baseOptions?: Apollo.Mutat
 export type Playground_DeleteWorkspaceMutationHookResult = ReturnType<typeof usePlayground_DeleteWorkspaceMutation>;
 export type Playground_DeleteWorkspaceMutationResult = Apollo.MutationResult<Playground_DeleteWorkspaceMutation>;
 export type Playground_DeleteWorkspaceMutationOptions = Apollo.BaseMutationOptions<Playground_DeleteWorkspaceMutation, Playground_DeleteWorkspaceMutationVariables>;
+export const Playground_RequestVmForWorkspaceDocument = gql`
+    mutation Playground_requestVmForWorkspace($workspaceSlug: String!) {
+  Playground_requestVmForWorkspace(workspaceSlug: $workspaceSlug) {
+    message
+    node {
+      beaconHost
+      execHost
+      ownerId
+      podName
+      workspaceId
+    }
+  }
+}
+    `;
+export type Playground_RequestVmForWorkspaceMutationFn = Apollo.MutationFunction<Playground_RequestVmForWorkspaceMutation, Playground_RequestVmForWorkspaceMutationVariables>;
+
+/**
+ * __usePlayground_RequestVmForWorkspaceMutation__
+ *
+ * To run a mutation, you first call `usePlayground_RequestVmForWorkspaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePlayground_RequestVmForWorkspaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [playgroundRequestVmForWorkspaceMutation, { data, loading, error }] = usePlayground_RequestVmForWorkspaceMutation({
+ *   variables: {
+ *      workspaceSlug: // value for 'workspaceSlug'
+ *   },
+ * });
+ */
+export function usePlayground_RequestVmForWorkspaceMutation(baseOptions?: Apollo.MutationHookOptions<Playground_RequestVmForWorkspaceMutation, Playground_RequestVmForWorkspaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<Playground_RequestVmForWorkspaceMutation, Playground_RequestVmForWorkspaceMutationVariables>(Playground_RequestVmForWorkspaceDocument, options);
+      }
+export type Playground_RequestVmForWorkspaceMutationHookResult = ReturnType<typeof usePlayground_RequestVmForWorkspaceMutation>;
+export type Playground_RequestVmForWorkspaceMutationResult = Apollo.MutationResult<Playground_RequestVmForWorkspaceMutation>;
+export type Playground_RequestVmForWorkspaceMutationOptions = Apollo.BaseMutationOptions<Playground_RequestVmForWorkspaceMutation, Playground_RequestVmForWorkspaceMutationVariables>;
+export const Playground_RequestReCreateVmDocument = gql`
+    mutation Playground_requestReCreateVM($workspaceSlug: String!) {
+  Playground_requestReCreateVM(workspaceSlug: $workspaceSlug) {
+    message
+    node {
+      beaconHost
+      execHost
+      ownerId
+      podName
+      workspaceId
+    }
+  }
+}
+    `;
+export type Playground_RequestReCreateVmMutationFn = Apollo.MutationFunction<Playground_RequestReCreateVmMutation, Playground_RequestReCreateVmMutationVariables>;
+
+/**
+ * __usePlayground_RequestReCreateVmMutation__
+ *
+ * To run a mutation, you first call `usePlayground_RequestReCreateVmMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePlayground_RequestReCreateVmMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [playgroundRequestReCreateVmMutation, { data, loading, error }] = usePlayground_RequestReCreateVmMutation({
+ *   variables: {
+ *      workspaceSlug: // value for 'workspaceSlug'
+ *   },
+ * });
+ */
+export function usePlayground_RequestReCreateVmMutation(baseOptions?: Apollo.MutationHookOptions<Playground_RequestReCreateVmMutation, Playground_RequestReCreateVmMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<Playground_RequestReCreateVmMutation, Playground_RequestReCreateVmMutationVariables>(Playground_RequestReCreateVmDocument, options);
+      }
+export type Playground_RequestReCreateVmMutationHookResult = ReturnType<typeof usePlayground_RequestReCreateVmMutation>;
+export type Playground_RequestReCreateVmMutationResult = Apollo.MutationResult<Playground_RequestReCreateVmMutation>;
+export type Playground_RequestReCreateVmMutationOptions = Apollo.BaseMutationOptions<Playground_RequestReCreateVmMutation, Playground_RequestReCreateVmMutationVariables>;

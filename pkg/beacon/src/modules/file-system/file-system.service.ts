@@ -198,7 +198,7 @@ export class FileSystemService {
             // Check if binary file then return base64
             const mimeType = mime.lookup(filePath);
 
-            if (!mimeType || mimeType.startsWith("image") || mimeType.startsWith("video") || mimeType.startsWith("audio")) {
+            if (mimeType && (mimeType.startsWith("image") || mimeType.startsWith("video") || mimeType.startsWith("audio"))) {
                 const content = await fs.readFile(fsPath);
                 return content.toString("base64");
             }

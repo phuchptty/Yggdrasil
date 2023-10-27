@@ -1,8 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { GetFileContentResponseDto } from '@/types';
+import { FileState, GetFileContentResponseDto } from '@/types';
+
+type OpenFile = {
+    path: string;
+    state: FileState;
+};
 
 type WorkspaceFileState = {
-    openFiles: string[]; // file path
+    openFiles: OpenFile[]; // file path & file state
     workspaceFiles: GetFileContentResponseDto[];
     currentFile: string; // path of current file
 };
@@ -25,7 +30,8 @@ export const workspaceFileSlice = createSlice({
             state.workspaceFiles.push(file.payload);
         },
         openNewFile: (state, path: PayloadAction<string>) => {
-            if (state.openFiles.includes(path.payload)) {
+            // Check if file already opened
+            if (state.openFiles.some((x) => x.path.includes(path.payload))) {
                 return;
             }
 
@@ -36,16 +42,32 @@ export const workspaceFileSlice = createSlice({
                 return;
             }
 
-            state.openFiles.push(file.path);
+            state.openFiles.push({
+                path: file.path,
+                state: FileState.OPENED,
+            });
         },
         closeFile: (state, path: PayloadAction<string>) => {
-            const index = state.openFiles.findIndex((f) => f === path.payload);
+            const index = state.openFiles.findIndex((f) => f.path === path.payload);
 
             if (index === -1) {
                 return;
             }
 
             state.openFiles.splice(index, 1);
+
+            // Remove from workspaceFiles
+            const index2 = state.workspaceFiles.findIndex((f) => f.path === path.payload);
+            state.workspaceFiles.splice(index2, 1);
+        },
+        changeFileState: (state, payload: PayloadAction<OpenFile>) => {
+            const index = state.openFiles.findIndex((f) => f.path === payload.payload.path);
+
+            if (index === -1) {
+                return;
+            }
+
+            state.openFiles[index].state = payload.payload.state;
         },
         removeMemorizeFile: (state, path: PayloadAction<string>) => {
             const index = state.workspaceFiles.findIndex((f) => f.path === path.payload);
@@ -68,7 +90,10 @@ export const workspaceFileSlice = createSlice({
         addNewFile: (state, payload: PayloadAction<GetFileContentResponseDto>) => {
             state.workspaceFiles.push(payload.payload);
 
-            state.openFiles.push(payload.payload.path);
+            state.openFiles.push({
+                path: payload.payload.path,
+                state: FileState.OPENED,
+            });
         },
         setCurrentFile: (state, payload: PayloadAction<string>) => {
             state.currentFile = payload.payload;
@@ -76,7 +101,16 @@ export const workspaceFileSlice = createSlice({
     },
 });
 
-export const { reset, setCurrentFile, openNewFile, addWorkspaceFile, closeFile, fileContentChanged, addNewFile, removeMemorizeFile } =
-    workspaceFileSlice.actions;
+export const {
+    reset,
+    setCurrentFile,
+    changeFileState,
+    openNewFile,
+    addWorkspaceFile,
+    closeFile,
+    fileContentChanged,
+    addNewFile,
+    removeMemorizeFile,
+} = workspaceFileSlice.actions;
 
 export default workspaceFileSlice.reducer;

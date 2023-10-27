@@ -1,1 +1,2 @@
-export * from "./beaconSocket.type";
+export * from './beaconSocket.type';
+export * from './enum';

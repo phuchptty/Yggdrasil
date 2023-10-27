@@ -1,9 +1,10 @@
 import { Image } from 'antd';
+import { GetFileContentResponseDto } from '@/types';
 
 type Props = {
-    path: string;
+    file: GetFileContentResponseDto;
 };
 
-export default function ImagePreview({ path }: Props) {
-    return <Image src={path} alt={'icon'} />;
+export default function ImagePreview({ file }: Props) {
+    return <Image src={`data:${file.mimeType};base64,${file.content}`} alt={'preview'} />;
 }

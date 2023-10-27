@@ -2,18 +2,17 @@ import { Button, Input, Menu, message, Modal, Spin, Tooltip, Tree } from 'antd';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
 import { convertDataToAntDesignTree } from '@/utils';
 import { useEffect, useState } from 'react';
-import { DataNode } from 'antd/es/tree';
-
-const { DirectoryTree } = Tree;
 import styles from './index.module.scss';
 import * as React from 'react';
 import { addWorkspaceFile, openNewFile } from '@/stores/slices/workspaceFile.slice';
 import { FileAddOutlined } from '@ant-design/icons';
-import { io } from 'socket.io-client';
-import { Playground_Workspace } from '@/graphql/generated/types';
-import { BeaconConnectionMessage, DeletePathResponse, DirFlatTreeResponse, FileContentResponse, FileCreateResponse } from '@/types';
+import { DeletePathResponse, DirFlatTreeResponse, FileContentResponse, FileCreateResponse } from '@/types';
 import { Socket } from 'socket.io-client';
 import { BeaconEvent } from '@/constants/beaconEvent';
+
+import { DataNode } from 'antd/es/tree';
+
+const { DirectoryTree } = Tree;
 
 enum ContextMenuAction {
     RENAME = 'RENAME',
@@ -21,22 +20,19 @@ enum ContextMenuAction {
 }
 
 type Props = {
-    workspaceData: Playground_Workspace;
-    accessToken: string;
+    beaconSocket?: Socket;
 };
 
-export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
+export default function InfoColTabFile({ beaconSocket }: Props) {
     const dispatch = useAppDispatch();
     const [messageApi, messageContext] = message.useMessage();
     const [modalApi, modalContext] = Modal.useModal();
 
+    // Open file loading
     const [fileLoading, setFileLoading] = useState<boolean>(false);
 
     // workspace file redux store
     const workspaceFileData = useAppSelector((state) => state.workspaceFileSlice);
-
-    // Socket client
-    const [socket, setSocket] = useState<Socket | undefined>();
 
     // File tree structure
     const [structure, setStructure] = useState<DataNode[]>([]);
@@ -51,10 +47,10 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
 
     // Get file tree structure
     const getStructure = () => {
-        if (!socket) return;
+        if (!beaconSocket) return;
 
         // Get list file from server
-        socket.emit(
+        beaconSocket.emit(
             BeaconEvent.DIR_FLAT_TREE,
             {
                 params: {
@@ -69,9 +65,6 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
 
                 const data = res.data;
 
-                // Set to store
-                // dispatch(addWorkspaceFile(data));
-
                 // Convert to ant design tree
                 const structure = convertDataToAntDesignTree(data);
                 setStructure(structure);
@@ -79,52 +72,12 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
         );
     };
 
-    // First time connect with beacon
+    // Get file tree structure when beacon socket connected or reconnected
     useEffect(() => {
-        if (socket) {
-            socket.disconnect();
-        }
-
-        const beaconUrl = new URL(workspaceData.beaconHost);
-        beaconUrl.searchParams.append('workspace', workspaceData._id);
-
-        const ioCon = io(beaconUrl.toString(), {
-            reconnection: true,
-            extraHeaders: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
-        setSocket(ioCon);
-
-        ioCon.on('connect', () => {
-            console.log('connected to beacon');
-        });
-
-        ioCon.on('disconnect', () => {
-            console.log('disconnected to beacon');
-        });
-
-        ioCon.on('CONNECTION_MESSAGE', (value: BeaconConnectionMessage) => {
-            messageApi.error(value.message);
-        });
-
-        ioCon.on('exception', (value: any) => {
-            console.error(value);
-        });
-
-        return () => {
-            if (ioCon) {
-                ioCon.disconnect();
-            }
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!socket) return;
+        if (!beaconSocket) return;
 
         getStructure();
-    }, [socket]);
+    }, [beaconSocket]);
 
     // Open file
     const onDoubleClick = (_: any, node: any) => {
@@ -149,12 +102,12 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
         }
 
         // If not fetch file from server
-        if (!socket) {
+        if (!beaconSocket) {
             setFileLoading(false);
             return;
         }
 
-        socket.emit(
+        beaconSocket.emit(
             BeaconEvent.GET_FILE_CONTENT,
             {
                 params: {
@@ -173,14 +126,12 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
                 setFileLoading(false);
             },
         );
-
-        // Close loading in useEffect not here
     };
 
     const addFile = () => {
-        if (!socket) return;
+        if (!beaconSocket) return;
 
-        socket.emit(
+        beaconSocket.emit(
             BeaconEvent.CREATE_FILE,
             {
                 params: {
@@ -245,9 +196,9 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     // Context MENU start
 
     const deleteFile = () => {
-        if (!socket) return;
+        if (!beaconSocket) return;
 
-        socket.emit(
+        beaconSocket.emit(
             BeaconEvent.DELETE,
             {
                 params: {
@@ -289,9 +240,9 @@ export default function InfoColTabFile({ workspaceData, accessToken }: Props) {
     };
 
     const onRename = () => {
-        if (!socket) return;
+        if (!beaconSocket) return;
 
-        socket.emit(
+        beaconSocket.emit(
             BeaconEvent.RENAME,
             {
                 params: {

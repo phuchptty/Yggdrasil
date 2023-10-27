@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Tabs, Tooltip } from 'antd';
+import { Button, message, Tabs, Tooltip } from 'antd';
 import Image from 'next/image';
 import Resizable from 'react-split';
 import InfoColTabInfo from '@/views/workspace/infoColTabs/info';
@@ -7,12 +7,13 @@ import EditorColumn from './editorCol';
 import { Playground_Workspace } from '@/graphql/generated/types';
 import WorkspaceThirdCol from '@/views/workspace/thirdTab';
 import InfoColTabFile from '@/views/workspace/infoColTabs/fileTree';
-
 import styles from './index.module.scss';
 import folderIcon from '@/assets/icons/workspace/Folder_Open.svg';
 import bookIcon from '@/assets/icons/workspace/carbon_book.svg';
 import { useDispatch } from 'react-redux';
 import { setWorkspace } from '@/stores/slices/workspace.slice';
+import { io, Socket } from 'socket.io-client';
+import { BeaconConnectionMessage } from '@/types';
 
 type Props = {
     workspaceData: Playground_Workspace;
@@ -22,6 +23,10 @@ type Props = {
 export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
     const [infoColActiveTab, setInfoColActiveTab] = useState('0');
     const dispatch = useDispatch();
+    const [messageApi, messageContext] = message.useMessage();
+
+    // Beacon socket client
+    const [beaconSocket, setBeaconSocket] = useState<Socket | undefined>();
 
     const [isExecuting, setIsExecuting] = useState(false);
 
@@ -33,15 +38,57 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
         // }, 2000);
     };
 
+    // First time connect with beacon
     useEffect(() => {
+        // Save workspace data to redux -> other components can use it
         dispatch(setWorkspace(workspaceData));
+
+        if (beaconSocket) {
+            beaconSocket.disconnect();
+        }
+
+        const beaconUrl = new URL(workspaceData.beaconHost);
+        beaconUrl.searchParams.append('workspace', workspaceData._id);
+
+        const ioCon = io(beaconUrl.toString(), {
+            reconnection: true,
+            extraHeaders: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        setBeaconSocket(ioCon);
+
+        ioCon.on('connect', () => {
+            console.log('connected to beacon');
+        });
+
+        ioCon.on('disconnect', () => {
+            console.log('disconnected to beacon');
+        });
+
+        ioCon.on('CONNECTION_MESSAGE', (value: BeaconConnectionMessage) => {
+            messageApi.error(value.message);
+        });
+
+        ioCon.on('exception', (value: any) => {
+            console.error(value);
+
+            messageApi.error('Lỗi ngoài dự đoán, vui lòng liên hệ với chúng tôi để được hỗ trợ.');
+        });
+
+        return () => {
+            if (ioCon) {
+                ioCon.disconnect();
+            }
+        };
     }, []);
 
     const infoColTabs = [
         {
             key: '0',
             label: `Quản lý file`,
-            children: <InfoColTabFile workspaceData={workspaceData} accessToken={accessToken} />,
+            children: <InfoColTabFile beaconSocket={beaconSocket} />,
         },
         {
             key: '1',
@@ -52,6 +99,8 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
 
     return (
         <div className={'display--flex flex-direction--row h--full'}>
+            {messageContext}
+
             <div id={'firstCol'} className={styles.firstCol}>
                 <div className={styles.toolBarSpace}>
                     <Tooltip placement={'right'} title={'Cây thư mục'}>
@@ -77,7 +126,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             <Resizable sizes={[20, 40, 40]} direction={'horizontal'} minSize={[0, 400, 0]} gutterSize={1} className={`split ${styles.split}`}>
                 <Tabs animated tabBarStyle={{ display: 'none' }} items={infoColTabs} activeKey={infoColActiveTab} />
 
-                <EditorColumn onRunClick={handleRunCode} isExecuting={isExecuting} />
+                <EditorColumn onRunClick={handleRunCode} isExecuting={isExecuting} beaconSocket={beaconSocket} />
 
                 {/*<WorkspaceThirdCol*/}
                 {/*    workspaceData={workspaceData}*/}

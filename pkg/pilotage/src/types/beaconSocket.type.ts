@@ -77,3 +77,7 @@ export interface FileCreateResponse extends BeaconResponseBlock<string> {
 export interface DeletePathResponse extends BeaconResponseBlock<boolean> {
     data: boolean;
 }
+
+export interface SaveFileContentResponse extends BeaconResponseBlock<string> {
+    data: string;
+}

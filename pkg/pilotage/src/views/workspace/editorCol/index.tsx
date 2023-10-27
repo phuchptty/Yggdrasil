@@ -13,6 +13,10 @@ import reloadIcon from '@/assets/icons/workspace/mdi_reload.svg';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
 import { closeFile, setCurrentFile } from '@/stores/slices/workspaceFile.slice';
 import FilePreview from '@/components/filePreview';
+import { FileState } from '@/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircle } from '@fortawesome/free-solid-svg-icons';
+import { Socket } from 'socket.io-client';
 
 interface DraggableTabPaneProps extends React.HTMLAttributes<HTMLDivElement> {
     'data-node-key': string;
@@ -41,9 +45,10 @@ const DraggableTabNode = ({ className, ...props }: DraggableTabPaneProps) => {
 type Props = {
     onRunClick: () => void;
     isExecuting: boolean;
+    beaconSocket?: Socket;
 };
 
-export default function EditorColumn({ onRunClick, isExecuting }: Props) {
+export default function EditorColumn({ onRunClick, isExecuting, beaconSocket }: Props) {
     const sensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } });
     const dispatch = useAppDispatch();
 
@@ -57,7 +62,7 @@ export default function EditorColumn({ onRunClick, isExecuting }: Props) {
     useEffect(() => {
         if (workspaceFileOpen.openFiles.length > 0) {
             const items = workspaceFileOpen.openFiles.flatMap((file) => {
-                const fileData = workspaceFileOpen.workspaceFiles.find((f) => f.path === file);
+                const fileData = workspaceFileOpen.workspaceFiles.find((f) => f.path === file.path);
 
                 if (!fileData) {
                     return [];
@@ -65,13 +70,24 @@ export default function EditorColumn({ onRunClick, isExecuting }: Props) {
 
                 return {
                     key: fileData.path,
-                    label: fileData.name,
+                    label: (
+                        <>
+                            {file.state === FileState.OPENED && <p className="italic">{fileData.name}</p>}
+                            {file.state === FileState.CHANGED && (
+                                <p className="display--flex align-items--center">
+                                    <FontAwesomeIcon icon={faCircle} color="#ffffff" size="xs" />
+                                    <span className="ml--6">{fileData.name}</span>
+                                </p>
+                            )}
+                            {file.state === FileState.SAVED && <p>{fileData.name}</p>}
+                        </>
+                    ),
                     children:
                         !fileData.mimeType.startsWith('image') ||
                         !fileData.mimeType.startsWith('video') ||
                         !fileData.mimeType.startsWith('audio') ||
                         fileData.mimeType !== 'application/octet-stream' ? (
-                            <MonacoEditor key={fileData.path} path={fileData.path} />
+                            <MonacoEditor key={fileData.path} path={fileData.path} beaconSocket={beaconSocket} />
                         ) : (
                             <FilePreview key={fileData.path} path={fileData.path} />
                         ),
@@ -115,9 +131,7 @@ export default function EditorColumn({ onRunClick, isExecuting }: Props) {
 
     const tabBarExtra = (
         <div className={styles.tabBarExtra}>
-            {workspaceData.workspaceLanguage && (
-                <Button icon={<Image src={reloadIcon} alt={'reloadIcon'} />} className={styles.reloadBtn} />
-            )}
+            {workspaceData.workspaceLanguage && <Button icon={<Image src={reloadIcon} alt={'reloadIcon'} />} className={styles.reloadBtn} />}
 
             <Button icon={<Image src={playIcon} alt={'playIcon'} />} loading={isExecuting} className={styles.runBtn} onClick={onRunClick} />
         </div>

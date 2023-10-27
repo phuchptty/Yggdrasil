@@ -1,12 +1,12 @@
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
 import { useEffect, useState } from 'react';
-import { WorkspaceScatteredFileResponse } from '@/graphql/generated/types';
 import mime from 'mime-types';
 
 import styles from './index.module.scss';
 import ImagePreview from '@/components/filePreview/image';
 import AudioPreview from '@/components/filePreview/audioPreview';
 import VideoPreview from '@/components/filePreview/video';
+import { GetFileContentResponseDto } from '@/types';
 
 type Props = {
     path?: string;
@@ -20,11 +20,9 @@ enum FilePreviewType {
 }
 
 export default function FilePreview({ path }: Props) {
-    const dispatch = useAppDispatch();
-
     const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice.workspaceFiles);
 
-    const [workspaceFile, setWorkspaceFile] = useState<WorkspaceScatteredFileResponse>();
+    const [workspaceFile, setWorkspaceFile] = useState<GetFileContentResponseDto>();
     const [fileType, setFileType] = useState<FilePreviewType>(FilePreviewType.IMAGE);
 
     useEffect(() => {
@@ -34,24 +32,22 @@ export default function FilePreview({ path }: Props) {
 
         setWorkspaceFile(file);
 
-        const mineType = mime.lookup(file.path);
-
-        if (mineType) {
-            if (mineType.includes('image/')) {
+        if (file.mimeType) {
+            if (file.mimeType.includes('image/')) {
                 setFileType(FilePreviewType.IMAGE);
-            } else if (mineType.includes('video/')) {
+            } else if (file.mimeType.includes('video/')) {
                 setFileType(FilePreviewType.VIDEO);
-            } else if (mineType.includes('audio/')) {
+            } else if (file.mimeType.includes('audio/')) {
                 setFileType(FilePreviewType.AUDIO);
-            } else if (mineType.includes('application/pdf')) {
+            } else if (file.mimeType.includes('application/pdf')) {
                 setFileType(FilePreviewType.PDF);
             }
         }
-    }, []);
+    }, [workspaceFiles]);
 
     return (
         <div className={styles.container}>
-            {workspaceFile && fileType === FilePreviewType.IMAGE && <ImagePreview path={workspaceFile.content} />}
+            {workspaceFile && fileType === FilePreviewType.IMAGE && <ImagePreview file={workspaceFile} />}
 
             {workspaceFile && fileType === FilePreviewType.AUDIO && <AudioPreview path={workspaceFile.content} />}
 

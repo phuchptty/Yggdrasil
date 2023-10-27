@@ -6,6 +6,7 @@ interface LanguageConfig {
 }
 
 const languages: LanguageConfig[] = [
+    { name: 'Text', editorKey: 'plaintext', extension: ['.txt'] },
     { name: 'HTML', editorKey: 'html', extension: ['.html'], entryFile: 'index.html' },
     { name: 'CSS', editorKey: 'css', extension: ['.css'] },
     { name: 'SASS', editorKey: 'scss', extension: ['.sass', '.scss'] },

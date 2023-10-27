@@ -3,29 +3,34 @@ import { useEffect, useRef, useState } from 'react';
 import { editor } from 'monaco-editor';
 import debounce from 'lodash/debounce';
 import { message } from 'antd';
-import Image from 'next/image';
-
 import styles from './index.module.scss';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
-import { fileContentChanged } from '@/stores/slices/workspaceFile.slice';
-import { WorkspaceScatteredFileResponse } from '@/graphql/generated/types';
+import { changeFileState, fileContentChanged } from '@/stores/slices/workspaceFile.slice';
 import { getLanguageByFileExtension } from '@/utils';
-import warningNoti from '@/assets/icons/warning-noti.svg';
+import { FileState, GetFileContentResponseDto, SaveFileContentResponse } from '@/types';
+import { Socket } from 'socket.io-client';
+import { BeaconEvent } from '@/constants/beaconEvent';
 
 type Props = {
     path?: string;
+    beaconSocket?: Socket;
 };
 
-export default function MonacoEditor({ path }: Props) {
+export default function MonacoEditor({ path, beaconSocket }: Props) {
     const monacoRef = useRef<Monaco>();
+    const editorRef = useRef<editor.IStandaloneCodeEditor>();
+
     const dispatch = useAppDispatch();
 
     const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice.workspaceFiles);
     const [messageApi, contextHolder] = message.useMessage();
 
-    const [workspaceFile, setWorkspaceFile] = useState<WorkspaceScatteredFileResponse>();
-    const [value, setValue] = useState<string>('Content here');
+    const [workspaceFile, setWorkspaceFile] = useState<GetFileContentResponseDto>();
+    const [value, setValue] = useState<string>('Getting started...');
     const [editorLanguage, setEditorLanguage] = useState<string>('plaintext');
+
+    // Use for reduce redux dispatch
+    const [currentFileState, setCurrentFileState] = useState<FileState>(FileState.OPENED);
 
     useEffect(() => {
         const file = workspaceFiles.find((item) => item.path === path);
@@ -44,8 +49,6 @@ export default function MonacoEditor({ path }: Props) {
             });
         }
 
-        console.log('editorLanguage', editorLanguage);
-
         setEditorLanguage(editorLanguage?.editorKey || 'plaintext');
     }, []);
 
@@ -60,16 +63,44 @@ export default function MonacoEditor({ path }: Props) {
         );
     };
 
+    const saveFile = () => {
+        if (!path || !beaconSocket) return;
+
+        const value = editorRef.current?.getValue();
+
+        beaconSocket.emit(
+            BeaconEvent.SAVE_FILE_CONTENT,
+            {
+                params: {
+                    path: path,
+                    content: value || '',
+                },
+            },
+            (res: SaveFileContentResponse) => {
+                if (res.success) {
+                    setCurrentFileState(FileState.SAVED);
+                    dispatch(changeFileState({ path: path, state: FileState.SAVED }));
+                } else {
+                    messageApi.error('Lỗi khi lưu file!');
+                }
+            },
+        );
+    };
+
     const onChange = debounce((value: string | undefined) => {
         if (!value || !path) return;
 
         setValue(value);
 
-        saveToRedux(value);
+        // change file state
+        if (currentFileState !== FileState.CHANGED) {
+            setCurrentFileState(FileState.CHANGED);
+            dispatch(changeFileState({ path: path, state: FileState.CHANGED }));
+        }
     }, 500);
 
     const handleEditorWillMount = (monaco: Monaco) => {
-        const tek4Theme: editor.IStandaloneThemeData = {
+        const yggdrasilTheme: editor.IStandaloneThemeData = {
             base: 'vs-dark',
             inherit: true,
             rules: [],
@@ -78,13 +109,20 @@ export default function MonacoEditor({ path }: Props) {
             },
         };
 
-        monaco.editor.defineTheme('tek4Theme', tek4Theme);
+        monaco.editor.defineTheme('yggdrasilTheme', yggdrasilTheme);
 
         monacoRef.current = monaco;
     };
 
-    const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: any) => {
+    const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editor.focus();
+
+        editorRef.current = editor;
+
+        // Bind ctrl S to editor
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+            saveFile();
+        });
     };
 
     return (
@@ -98,7 +136,7 @@ export default function MonacoEditor({ path }: Props) {
                 beforeMount={handleEditorWillMount}
                 onMount={handleEditorDidMount}
                 onChange={onChange}
-                theme={'tek4Theme'}
+                theme={'yggdrasilTheme'}
             />
         </div>
     );

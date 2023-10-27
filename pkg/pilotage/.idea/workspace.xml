@@ -5,20 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/types/enum.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/filePreview/image/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/filePreview/image/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/filePreview/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/filePreview/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stores/slices/workspaceFile.slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stores/slices/workspaceFile.slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/beaconSocket.type.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/beaconSocket.type.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/language.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/language.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/editorCol/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/editorCol/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +136,7 @@
       <workItem from="1698343202585" duration="1068000" />
       <workItem from="1698347246346" duration="3004000" />
       <workItem from="1698353662910" duration="2505000" />
-      <workItem from="1698393031769" duration="8027000" />
+      <workItem from="1698393031769" duration="9101000" />
     </task>
     <servers />
   </component>

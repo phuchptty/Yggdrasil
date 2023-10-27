@@ -5,9 +5,9 @@ import debounce from 'lodash/debounce';
 import { message } from 'antd';
 import styles from './index.module.scss';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
-import { changeFileState, fileContentChanged } from '@/stores/slices/workspaceFile.slice';
+import { changeFileState } from '@/stores/slices/workspaceFile.slice';
 import { getLanguageByFileExtension } from '@/utils';
-import { FileState, GetFileContentResponseDto, SaveFileContentResponse } from '@/types';
+import { FileContentResponse, FileState, GetFileContentResponseDto, SaveFileContentResponse } from '@/types';
 import { Socket } from 'socket.io-client';
 import { BeaconEvent } from '@/constants/beaconEvent';
 
@@ -32,6 +32,27 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
     // Use for reduce redux dispatch
     const [currentFileState, setCurrentFileState] = useState<FileState>(FileState.OPENED);
 
+    const fetchFileContent = () => {
+        if (!path || !beaconSocket) return;
+
+        beaconSocket.emit(
+            BeaconEvent.GET_FILE_CONTENT,
+            {
+                params: {
+                    path: path,
+                },
+            },
+            (res: FileContentResponse) => {
+                if (res.success) {
+                    setValue(res.data.content);
+                    setWorkspaceFile(res.data);
+                } else {
+                    messageApi.error('Lỗi khi lấy nội dung file!');
+                }
+            },
+        );
+    };
+
     useEffect(() => {
         const file = workspaceFiles.find((item) => item.path === path);
 
@@ -50,18 +71,18 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
         }
 
         setEditorLanguage(editorLanguage?.editorKey || 'plaintext');
+
+        // Fetch file content every 1 second
+        const fetchFileInterval = setInterval(() => {
+            if (currentFileState !== FileState.CHANGED) {
+                fetchFileContent();
+            }
+        }, 2500);
+
+        return () => {
+            clearInterval(fetchFileInterval);
+        };
     }, []);
-
-    const saveToRedux = (value: string) => {
-        if (!path) return;
-
-        dispatch(
-            fileContentChanged({
-                filePath: workspaceFile?.path as string,
-                content: value,
-            }),
-        );
-    };
 
     const saveFile = () => {
         if (!path || !beaconSocket) return;

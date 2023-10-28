@@ -7,9 +7,11 @@ import { VM_MANAGER_QUEUE_NAME } from "./vm-manager.constant";
 import { BullBoardModule } from "@bull-board/nestjs";
 import { BullAdapter } from "@bull-board/api/bullAdapter";
 import { KubeApiModule } from "../external/kube-api/kube-api.module";
+import { KcClientModule } from "../external/kc-client/kc-client.module";
+import { VmManagerGateway } from './vm-manager.gateway';
 
 @Module({
-    providers: [VmManagerService, VmManagerResolver],
+    providers: [VmManagerService, VmManagerResolver, VmManagerGateway],
     imports: [
         WorkspaceModule,
         BullModule.registerQueue({
@@ -20,6 +22,7 @@ import { KubeApiModule } from "../external/kube-api/kube-api.module";
             adapter: BullAdapter,
         }),
         KubeApiModule,
+        KcClientModule,
     ],
     exports: [VmManagerService],
 })

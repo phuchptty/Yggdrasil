@@ -55,5 +55,6 @@ import { VmManagerModule } from './modules/vm-manager/vm-manager.module';
         VmManagerModule,
     ],
     controllers: [AppController],
+    providers: [],
 })
 export class AppModule {}

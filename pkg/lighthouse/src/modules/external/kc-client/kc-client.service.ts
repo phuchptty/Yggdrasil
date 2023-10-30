@@ -1,13 +1,12 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
-import { InjectRedis } from "@liaoliaots/nestjs-redis";
-import Redis from "ioredis";
 import qs from "querystring";
 import { lastValueFrom } from "rxjs";
 import dayjs from "dayjs";
 import { KC_ACCESS_TOKEN, KC_EXPIRES_TS } from "./kc-client.const";
 import { KeyCloakGroup, KeyCloakTokenIntrospectRsp, KeyCloakUser } from "../../../types/keycloak";
+import { RedisService } from "../../redis/redis.service";
 
 @Injectable()
 export class KcClientService implements OnModuleInit {
@@ -15,7 +14,7 @@ export class KcClientService implements OnModuleInit {
     private readonly kcClientAdminRestApiUrl: string;
     private logger = new Logger(KcClientService.name);
 
-    constructor(private readonly httpService: HttpService, private configService: ConfigService, @InjectRedis() private readonly redis: Redis) {
+    constructor(private readonly httpService: HttpService, private configService: ConfigService, private readonly redisService: RedisService) {
         this.kcClientTokenApiUrl = `${this.configService.get("keycloak.baseUrl")}/realms/master/protocol/openid-connect/token`;
         this.kcClientAdminRestApiUrl = `${this.configService.get("keycloak.baseUrl")}/admin/realms/${this.configService.get("keycloak.realm")}`;
     }
@@ -51,8 +50,10 @@ export class KcClientService implements OnModuleInit {
                 .add(data.expires_in ?? 0, "second")
                 .unix();
 
-            await this.redis.set(KC_ACCESS_TOKEN, data.access_token, "EX", data.expires_in ?? 0);
-            await this.redis.set(KC_EXPIRES_TS, expTimestamp);
+            await this.redisService.redisClient.set(KC_ACCESS_TOKEN, data.access_token, {
+                EX: data.expires_in ?? 0,
+            });
+            await this.redisService.redisClient.set(KC_EXPIRES_TS, expTimestamp);
         } catch (e) {
             throw new Error(e);
         }
@@ -60,9 +61,9 @@ export class KcClientService implements OnModuleInit {
 
     private async getAccessToken() {
         try {
-            const exp = await this.redis.get(KC_EXPIRES_TS);
+            const exp = await this.redisService.redisClient.get(KC_EXPIRES_TS);
             const currentTime = dayjs().unix();
-            const currentToken = await this.redis.get(KC_ACCESS_TOKEN);
+            const currentToken = await this.redisService.redisClient.get(KC_ACCESS_TOKEN);
 
             if (!currentToken) {
                 await this.getKcToken();
@@ -72,7 +73,7 @@ export class KcClientService implements OnModuleInit {
                 await this.getKcToken();
             }
 
-            return this.redis.get(KC_ACCESS_TOKEN);
+            return this.redisService.redisClient.get(KC_ACCESS_TOKEN);
         } catch (e) {
             throw e;
         }

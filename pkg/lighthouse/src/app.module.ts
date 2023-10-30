@@ -9,10 +9,10 @@ import { KubeApiModule } from "./modules/external/kube-api/kube-api.module";
 import { UserModule } from "./modules/user/user.module";
 import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
 import { keycloakConfig, appConfig, databaseConfig, workspaceConfig } from "./configs";
-import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { GraphqlModule } from "./modules/graphql/graphql.module";
 import { VmManagerModule } from "./modules/vm-manager/vm-manager.module";
 import { RedisModule as NodeRedisModule } from "./modules/redis/redis.module";
+import { TaskModule } from './modules/task/task.module';
 
 @Module({
     imports: [
@@ -28,24 +28,6 @@ import { RedisModule as NodeRedisModule } from "./modules/redis/redis.module";
                 dbName: config.get<string>("database.name"),
             }),
         }),
-        RedisModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => {
-                const infoObj = {
-                    host: configService.get<string>("redis.host"),
-                    port: configService.get<number>("redis.port"),
-                };
-
-                if (configService.get<string>("redis.pass")) {
-                    infoObj["password"] = configService.get<string>("redis.pass");
-                }
-
-                return {
-                    config: infoObj,
-                };
-            },
-        }),
         NodeRedisModule,
         GraphqlModule,
         QueueModule,
@@ -55,7 +37,7 @@ import { RedisModule as NodeRedisModule } from "./modules/redis/redis.module";
         UserModule,
         KcClientModule,
         VmManagerModule,
-        RedisModule,
+        TaskModule,
     ],
     controllers: [AppController],
     providers: [],

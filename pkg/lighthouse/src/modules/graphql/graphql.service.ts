@@ -1,12 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { KcClientService } from "../external/kc-client/kc-client.service";
 import { Request } from "express";
-import { InjectRedis } from "@liaoliaots/nestjs-redis";
-import Redis from "ioredis";
 
 @Injectable()
 export class GraphqlService {
-    constructor(private readonly kcService: KcClientService, @InjectRedis() private readonly redis: Redis) {}
+    constructor(private readonly kcService: KcClientService) {}
 
     private logger = new Logger(GraphqlService.name);
 

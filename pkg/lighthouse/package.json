@@ -33,6 +33,7 @@
         "@nestjs/mongoose": "^10.0.1",
         "@nestjs/platform-express": "^10.0.0",
         "@nestjs/platform-socket.io": "^10.2.7",
+        "@nestjs/schedule": "^4.0.0",
         "@nestjs/websockets": "^10.2.7",
         "axios": "^1.4.0",
         "bull": "^4.11.3",

@@ -52,17 +52,14 @@ export class RedisService implements OnModuleInit {
             await this.redisClient.ft.create(
                 indexName,
                 {
-                    "$.socketId": {
+                    socketId: {
                         type: SchemaFieldTypes.TEXT,
-                        AS: "socketId",
                     },
-                    "$.ownerId": {
+                    ownerId: {
                         type: SchemaFieldTypes.TEXT,
-                        AS: "ownerId",
                     },
-                    "$.state": {
+                    state: {
                         type: SchemaFieldTypes.TEXT,
-                        AS: "state",
                     },
                 },
                 {

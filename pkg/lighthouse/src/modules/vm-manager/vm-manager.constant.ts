@@ -6,3 +6,9 @@ export const VmManagerEvent = {
     HEARTBEAT: "HEARTBEAT",
     REQUEST_EXEC_URL: "REQUEST_EXEC_URL",
 };
+
+export enum VmState {
+    PROVISIONED = "PROVISIONED",
+    DISCONNECTED = "DISCONNECTED",
+    PENDING_DELETE = "PENDING_DELETE",
+}

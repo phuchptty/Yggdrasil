@@ -1,18 +1,22 @@
-import { OnGatewayConnection, SubscribeMessage, WebSocketGateway, WsException } from "@nestjs/websockets";
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WsException } from "@nestjs/websockets";
 import { Socket } from "socket.io";
 import { VmManagerService } from "./vm-manager.service";
 import { VmManagerEvent } from "./vm-manager.constant";
 
 @WebSocketGateway()
-export class VmManagerGateway implements OnGatewayConnection<Socket> {
+export class VmManagerGateway implements OnGatewayConnection<Socket>, OnGatewayDisconnect<Socket> {
     constructor(private readonly vmManagerService: VmManagerService) {}
 
     async handleConnection(client: Socket) {
         await this.vmManagerService.handleSocketConnection(client);
     }
 
+    async handleDisconnect(client: Socket) {
+        await this.vmManagerService.handleDisconnect(client);
+    }
+
     @SubscribeMessage("test")
-    handleMessage(client: Socket, payload: any): string {
+    handleMessage(client: Socket): string {
         console.log(client.data);
         return "Hello world!";
     }

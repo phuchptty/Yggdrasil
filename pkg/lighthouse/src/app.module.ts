@@ -11,7 +11,8 @@ import { KcClientModule } from "./modules/external/kc-client/kc-client.module";
 import { keycloakConfig, appConfig, databaseConfig, workspaceConfig } from "./configs";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { GraphqlModule } from "./modules/graphql/graphql.module";
-import { VmManagerModule } from './modules/vm-manager/vm-manager.module';
+import { VmManagerModule } from "./modules/vm-manager/vm-manager.module";
+import { RedisModule as NodeRedisModule } from "./modules/redis/redis.module";
 
 @Module({
     imports: [
@@ -45,6 +46,7 @@ import { VmManagerModule } from './modules/vm-manager/vm-manager.module';
                 };
             },
         }),
+        NodeRedisModule,
         GraphqlModule,
         QueueModule,
         LanguageModule,
@@ -53,6 +55,7 @@ import { VmManagerModule } from './modules/vm-manager/vm-manager.module';
         UserModule,
         KcClientModule,
         VmManagerModule,
+        RedisModule,
     ],
     controllers: [AppController],
     providers: [],

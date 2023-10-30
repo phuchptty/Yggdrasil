@@ -1,7 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { InjectRedis } from "@liaoliaots/nestjs-redis";
-import Redis from "ioredis";
 import { GraphQLError } from "graphql/error";
 import { WorkspacePermission } from "../../commons/enums";
 import { WorkspaceService } from "../workspace/workspace.service";
@@ -14,20 +12,26 @@ import dayjs from "dayjs";
 import { v4 as uuidv4 } from "uuid";
 import { KcClientService } from "../external/kc-client/kc-client.service";
 import { Socket } from "socket.io";
-import { VmManagerEvent } from "./vm-manager.constant";
+import { VmManagerEvent, VmState } from "./vm-manager.constant";
 import { WsException } from "@nestjs/websockets";
+import { RedisService } from "../redis/redis.service";
+import { errorMessageConstant } from "../../constants";
 
 @Injectable()
 export class VmManagerService {
     constructor(
         private configService: ConfigService,
         private readonly wsService: WorkspaceService,
-        @InjectRedis() private readonly redis: Redis,
         private readonly kubeApi: KubeApiService,
         private readonly kcClient: KcClientService,
+        private readonly redisService: RedisService,
     ) {}
 
     private logger = new Logger(VmManagerService.name);
+
+    private getRedisKey(workspaceId: string, ownerId: string, podName: string) {
+        return `vm:provision:${workspaceId}:${ownerId}:${podName}`;
+    }
 
     private forceDisconnect(client: Socket, message?: string) {
         client.emit(VmManagerEvent.CONNECTION_MESSAGE, {
@@ -43,21 +47,21 @@ export class VmManagerService {
 
         try {
             if (!authHeader) {
-                this.forceDisconnect(client, "Missing authorization token");
+                this.forceDisconnect(client, errorMessageConstant.MISSING_AUTHORIZATION_HEADER);
                 return;
             }
 
             const token = authHeader.trim().replace("Bearer ", "");
 
             if (!token) {
-                this.forceDisconnect(client, "Missing post authorization token");
+                this.forceDisconnect(client, errorMessageConstant.MISSING_AUTHORIZATION_HEADER);
                 return;
             }
 
             const user = await this.kcClient.introspectToken(token);
 
             if (!user) {
-                this.forceDisconnect(client, "Invalid token");
+                this.forceDisconnect(client, errorMessageConstant.INVALID_TOKEN);
                 return;
             }
 
@@ -70,24 +74,51 @@ export class VmManagerService {
         }
     }
 
+    async handleDisconnect(client: Socket) {
+        const socketId = client.id;
+
+        // Check if socketId is in redis
+        const redisKey = await this.redisService.redisClient.ft.SEARCH("idx:vm-provision", `@socketId:${socketId}`);
+
+        if (redisKey.total === 0 || redisKey.documents.length === 0) {
+            return;
+        }
+
+        for (const document of redisKey.documents) {
+            const key = document.id;
+            const value = document.value;
+
+            if (value.state === VmState.DISCONNECTED) {
+                this.logger.warn(`Key ${key} disconnected but already marked as disconnected!`);
+                continue;
+            }
+
+            // Set state to "disconnected"
+            await this.redisService.redisClient.hSet(key, "state", VmState.DISCONNECTED);
+            await this.redisService.redisClient.hSet(key, "disconnectedAt", dayjs().unix().toString());
+            await this.redisService.redisClient.hSet(key, "socketId", "");
+        }
+    }
+
     async requestVmForWorkspace(socketId: string, owner: string, workspaceSlug: string) {
         try {
             // Query workspace
             const workspace = await this.wsService.findOneBySlug(owner, workspaceSlug);
 
             if (!workspace) {
-                throw new GraphQLError("Không tìm thấy workspace hoặc bạn không có quyền truy cập workspace này!");
+                throw new WsException(errorMessageConstant.NO_WORKSPACE_FOUND_OR_USER_NO_PERMISSION);
             }
 
             if (workspace.permission === WorkspacePermission.PRIVATE && workspace.owner._id.toString() !== owner) {
-                throw new GraphQLError("Bạn không có quyền truy cập Workspace này!");
+                throw new WsException(errorMessageConstant.NO_WORKSPACE_FOUND_OR_USER_NO_PERMISSION);
             }
 
             const workspaceId = workspace._id.toString();
             const podName = `vm-${uuidv4()}`;
+            const redisKey = this.getRedisKey(workspaceId, owner, podName);
 
             // Check exist vm exist
-            const vmPersistCheck = await this.redis.hget(`vm:provision:${workspaceId}:${owner}`, "socketId");
+            const vmPersistCheck = await this.redisService.redisClient.hGet(redisKey, "socketId");
 
             if (vmPersistCheck) {
                 // Check if socketId is the same -> same user
@@ -98,7 +129,7 @@ export class VmManagerService {
                         ownerId: owner,
                     };
                 } else {
-                    throw new WsException("Mỗi tài khoản chỉ được cấp 1 VM cho 1 Workspace!");
+                    throw new WsException(errorMessageConstant.ONLY_ONE_VM_PER_WORKSPACE);
                 }
             } else {
                 const rsp = await this.provisionVm(owner, podName, workspace);
@@ -110,9 +141,10 @@ export class VmManagerService {
                     podName: podName,
                     socketId: socketId,
                     expiredAt: rsp.expiredAt,
+                    state: VmState.PROVISIONED,
                 };
 
-                await this.redis.hset(`vm:provision:${workspaceId}:${owner}`, redisPersistData);
+                await this.redisService.redisClient.hSet(redisKey, redisPersistData);
 
                 return rsp;
             }
@@ -189,8 +221,6 @@ export class VmManagerService {
     }
 
     generateExecUrl(workspaceId: string, podName: string) {
-        console.log(workspaceId, podName)
-
         const namespace = generateK8sNamespace(workspaceId);
         return urlJoin(this.configService.get("publicK8sExecUrl"), `/api/v1/namespaces`, namespace, "pods", podName, "exec", `?container=${podName}`);
     }
@@ -203,24 +233,40 @@ export class VmManagerService {
             const workspace = await this.wsService.findOneBySlug(ownerId, workspaceSlug);
 
             if (!workspace) {
-                throw new WsException("Không tìm thấy workspace hoặc bạn không có quyền truy cập workspace này!");
+                throw new WsException(errorMessageConstant.NO_WORKSPACE_FOUND_OR_USER_NO_PERMISSION);
             }
 
             const workspaceId = workspace._id.toString();
+            const redisKey = this.getRedisKey(workspaceId, ownerId, podName);
 
-            const rsp = await this.redis.hget(`vm:provision:${workspaceId}:${ownerId}`, "podName");
+            const rsp = await this.redisService.redisClient.hGet(redisKey, "podName");
 
             if (!rsp) {
-                throw new WsException("Không tìm thấy VM!");
+                throw new WsException(errorMessageConstant.VM_NOT_FOUND);
             }
 
             if (rsp !== podName) {
                 throw new WsException("Unauthorized");
             }
 
-            await this.redis.hset(`vm:provision:${workspaceId}:${ownerId}`, {
+            // Check if disconnected too long -> delete pod
+            const disconnectedAt = await this.redisService.redisClient.hGet(redisKey, "disconnectedAt");
+
+            if (disconnectedAt) {
+                const disconnectedAtUnix = parseInt(disconnectedAt);
+                const nowUnix = dayjs().unix();
+
+                // 5 minutes
+                if (nowUnix - disconnectedAtUnix > 300) {
+                    await this.redisService.redisClient.hSet(redisKey, "state", VmState.PENDING_DELETE);
+                    throw new WsException(errorMessageConstant.VM_DELETED_FOR_TIMEOUT);
+                }
+            }
+
+            await this.redisService.redisClient.hSet(redisKey, {
                 socketId: client.id,
                 expiredAt: dayjs().add(4, "hour").unix(),
+                state: VmState.PROVISIONED,
             });
 
             return {
@@ -250,11 +296,11 @@ export class VmManagerService {
             const podName = generateK8sPodName(workspace._id.toString(), ownerId);
 
             // Check exist vm
-            const vmTrashCheck = await this.redis.hgetall(`vm:provision:${podName}`);
-
-            if (!vmTrashCheck) {
-                throw new GraphQLError("Workspace này đã được xóa!");
-            }
+            // const vmTrashCheck = await this.redis.hgetall(`vm:provision:${podName}`);
+            //
+            // if (!vmTrashCheck) {
+            //     throw new GraphQLError("Workspace này đã được xóa!");
+            // }
 
             // Delete pod
             await this.kubeApi.deletePod(namespace, podName);

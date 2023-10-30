@@ -3,7 +3,11 @@ import { Socket } from "socket.io";
 import { VmManagerService } from "./vm-manager.service";
 import { VmManagerEvent } from "./vm-manager.constant";
 
-@WebSocketGateway()
+@WebSocketGateway({
+    cors: {
+        origin: "*",
+    },
+})
 export class VmManagerGateway implements OnGatewayConnection<Socket>, OnGatewayDisconnect<Socket> {
     constructor(private readonly vmManagerService: VmManagerService) {}
 

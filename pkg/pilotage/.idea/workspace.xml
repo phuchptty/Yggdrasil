@@ -5,13 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphql/generated/playground.generated.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/generated/playground.generated.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphql/generated/profile.generated.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/generated/profile.generated.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphql/generated/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/generated/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphql/graphql.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/graphql.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphql/operations/playground.graphql" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphql/operations/playground.graphql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lighthouse/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../lighthouse/src/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.constant.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.constant.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.resolver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.resolver.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../lighthouse/src/modules/vm-manager/vm-manager.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +63,7 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "yarn",
     "prettierjs.PrettierConfiguration.Package": "E:\\PROJECT\\KMA\\Yggdrasil\\pkg\\pilotage\\node_modules\\prettier",
-    "ts.external.directory.path": "E:\\Project\\KMA\\Yggdrasil\\pkg\\pilotage\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "E:\\PROJECT\\KMA\\Yggdrasil\\pkg\\pilotage\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -144,6 +142,7 @@
       <workItem from="1698353662910" duration="2505000" />
       <workItem from="1698393031769" duration="9101000" />
       <workItem from="1698409894669" duration="983000" />
+      <workItem from="1698528034098" duration="4000" />
     </task>
     <servers />
   </component>

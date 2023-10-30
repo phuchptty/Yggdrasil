@@ -12,8 +12,12 @@ data:
   DATABASE_URI: {{ .Values.appConfig.service.mongodb.uri }}
   DATABASE_NAME: {{ .Values.appConfig.service.mongodb.name }}
 
-  REDIS_HOST: {{ .Release.Name }}-redis-master-0.{{ .Release.Name }}-redis-headless.{{ .Release.Namespace }}.svc.cluster.local
-  REDIS_PORT: "6379"
+  # REDIS_HOST: {{ .Release.Name }}-redis-master-0.{{ .Release.Name }}-redis-headless.{{ .Release.Namespace }}.svc.cluster.local
+  # REDIS_PORT: "6379"
+
+  REDIS_HOST: {{ .Values.appConfig.service.redis.host }}
+  REDIS_PORT: {{ .Values.appConfig.service.redis.port | quote }}
+  REDIS_PASS: {{ .Values.appConfig.service.redis.pass }}
 
   KEYCLOAK_BASE: {{ .Values.appConfig.keycloak.base }}
   KEYCLOAK_REALM: {{ .Values.appConfig.keycloak.realm }}

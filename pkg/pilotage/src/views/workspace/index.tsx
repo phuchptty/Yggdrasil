@@ -14,7 +14,9 @@ import { useDispatch } from 'react-redux';
 import { setWorkspace } from '@/stores/slices/workspace.slice';
 import { io, Socket } from 'socket.io-client';
 import { BeaconConnectionMessage } from '@/types';
-import { usePlayground_RequestVmForWorkspaceMutation } from '@/graphql/generated/playground.generated';
+import { LighthouseEvent } from '@/constants/lighthouseEvent';
+import { RequestVmForWorkspace } from '@/types/lighthouseSocket.type';
+import { useAppSelector } from '@/stores/hook';
 
 type Props = {
     workspaceData: Playground_Workspace;
@@ -26,33 +28,17 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
     const dispatch = useDispatch();
     const [messageApi, messageContext] = message.useMessage();
 
+    const userData = useAppSelector((state) => state.authSlice.userData);
+
     // Beacon socket client
     const [beaconSocket, setBeaconSocket] = useState<Socket | undefined>();
+    const [lighthouseSocket, setLighthouseSocket] = useState<Socket | undefined>();
 
     // Set executing code state
     const [isExecuting, setIsExecuting] = useState(false);
 
-    // Request workspace vm
-    const [requestWorkspaceMutation] = usePlayground_RequestVmForWorkspaceMutation({
-        variables: {
-            workspaceSlug: workspaceData.slug as string,
-        },
-    });
-
-    const handleRequestVm = async () => {
-        try {
-            const { data, errors } = await requestWorkspaceMutation();
-
-            if (errors) {
-                console.log(errors);
-                return;
-            }
-
-            console.log(data);
-        } catch (e) {
-            console.log(e);
-        }
-    };
+    // VM data
+    const [vmData, setVmData] = useState<any>();
 
     const handleRunCode = () => {
         setIsExecuting(true);
@@ -81,12 +67,9 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             },
         });
 
-        setBeaconSocket(ioCon);
-
         ioCon.on('connect', () => {
+            setBeaconSocket(ioCon);
             console.log('connected to beacon');
-
-            handleRequestVm();
         });
 
         ioCon.on('disconnect', () => {
@@ -99,7 +82,42 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
 
         ioCon.on('exception', (value: any) => {
             console.error(value);
+            messageApi.error('Lỗi ngoài dự đoán, vui lòng liên hệ với chúng tôi để được hỗ trợ.');
+        });
 
+        // Lighthouse connect
+        const lighthouseIo = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
+            reconnection: true,
+            extraHeaders: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        lighthouseIo.on('connect', () => {
+            setLighthouseSocket(lighthouseIo);
+            console.log('connected to lighthouse');
+
+            lighthouseIo.emit(
+                LighthouseEvent.REQUEST_VM_FOR_WORKSPACE,
+                {
+                    workspaceSlug: workspaceData.slug,
+                },
+                (res: RequestVmForWorkspace) => {
+                    setVmData(res);
+                },
+            );
+        });
+
+        lighthouseIo.on('disconnect', () => {
+            console.log('disconnected to lighthouse');
+        });
+
+        lighthouseIo.on('CONNECTION_MESSAGE', (value: BeaconConnectionMessage) => {
+            messageApi.error(value.message);
+        });
+
+        lighthouseIo.on('exception', (value: any) => {
+            console.error(value);
             messageApi.error('Lỗi ngoài dự đoán, vui lòng liên hệ với chúng tôi để được hỗ trợ.');
         });
 
@@ -107,8 +125,28 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             if (ioCon) {
                 ioCon.disconnect();
             }
+
+            if (lighthouseIo) {
+                lighthouseIo.disconnect();
+            }
         };
     }, []);
+
+    useEffect(() => {
+        if (!lighthouseSocket || !userData || !vmData) {
+            return;
+        }
+
+        const interval = setInterval(() => {
+            lighthouseSocket.emit(LighthouseEvent.HEARTBEAT, {
+                workspaceSlug: workspaceData.slug,
+                podName: vmData.podName,
+                userId: userData._id,
+            });
+        }, 10 * 1000);
+
+        return () => clearInterval(interval);
+    }, [lighthouseSocket, userData, vmData]);
 
     const infoColTabs = [
         {
@@ -154,12 +192,14 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
 
                 <EditorColumn onRunClick={handleRunCode} isExecuting={isExecuting} beaconSocket={beaconSocket} />
 
-                {/*<WorkspaceThirdCol*/}
-                {/*    workspaceData={workspaceData}*/}
-                {/*    accessToken={accessToken}*/}
-                {/*    isExecuting={isExecuting}*/}
-                {/*    setIsExecuting={setIsExecuting}*/}
-                {/*/>*/}
+                <WorkspaceThirdCol
+                    workspaceData={workspaceData}
+                    accessToken={accessToken}
+                    vmData={vmData}
+                    lightHouseSocket={lighthouseSocket}
+                    isExecuting={isExecuting}
+                    setIsExecuting={setIsExecuting}
+                />
             </Resizable>
         </div>
     );

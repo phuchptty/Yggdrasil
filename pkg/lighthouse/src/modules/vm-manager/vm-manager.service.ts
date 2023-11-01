@@ -185,6 +185,8 @@ export class VmManagerService {
                                     mountPath: "/home/alixia/runner",
                                 },
                             ],
+                            stdin: true,
+                            tty: true,
                         },
                     ],
                     volumes: [

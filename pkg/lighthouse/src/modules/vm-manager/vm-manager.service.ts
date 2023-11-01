@@ -178,7 +178,7 @@ export class VmManagerService {
                         {
                             name: podName,
                             image: containerImage,
-                            imagePullPolicy: this.configService.get("env") === "development" ? "Always" : "IfNotPresent",
+                            imagePullPolicy: "Always",
                             volumeMounts: [
                                 {
                                     name: volumeName,

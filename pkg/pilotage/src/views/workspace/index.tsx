@@ -98,15 +98,15 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             console.log('connected to lighthouse');
 
             // TODO: Disable until done dynamicTerminal
-            // lighthouseIo.emit(
-            //     LighthouseEvent.REQUEST_VM_FOR_WORKSPACE,
-            //     {
-            //         workspaceSlug: workspaceData.slug,
-            //     },
-            //     (res: RequestVmForWorkspace) => {
-            //         setVmData(res);
-            //     },
-            // );
+            lighthouseIo.emit(
+                LighthouseEvent.REQUEST_VM_FOR_WORKSPACE,
+                {
+                    workspaceSlug: workspaceData.slug,
+                },
+                (res: RequestVmForWorkspace) => {
+                    setVmData(res);
+                },
+            );
         });
 
         lighthouseIo.on('disconnect', () => {

@@ -8,7 +8,7 @@ appConfig:
   env: production
   publicAppDomain: "yds.cuterabbit.art"
   publicBeaconUrl: "https://beacon.yds.cuterabbit.art"
-  publicK8sExecUrl: "https://exec.yds.cuterabbit.art"
+  publicK8sExecUrl: "wss://exec.yds.cuterabbit.art"
 
   service:
     mongodb:

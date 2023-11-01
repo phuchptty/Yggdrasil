@@ -45,31 +45,35 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
     const [socket, setSocket] = useState<WebSocket>();
 
     // Exec url
-    const [execUrl, setExecUrl] = useState<string>(
-        'wss://exec.yds.cuterabbit.art/api/v1/namespaces/test-base/pods/01/attach?stdin=true&stdout=true&tty=true',
-    );
+    const [execUrl, setExecUrl] = useState<string>();
 
     useEffect(() => {
+        console.log(lightHouseSocket, vmData);
+
         if (!lightHouseSocket || !vmData) {
             return;
         }
 
         // TODO: Disable until done dynamicTerminal
-        // lightHouseSocket.emit(
-        //     LighthouseEvent.REQUEST_EXEC_URL,
-        //     {
-        //         workspaceId: vmData.workspaceId,
-        //         podName: vmData.podName,
-        //     },
-        //     (res: RequestExecUrlResponse) => {
-        //         console.log(res);
-        //         setExecUrl(res.execHost);
-        //     },
-        // );
+        lightHouseSocket.emit(
+            LighthouseEvent.REQUEST_ATTACH_URL,
+            {
+                workspaceId: vmData.workspaceId,
+                podName: vmData.podName,
+            },
+            (res: RequestExecUrlResponse) => {
+                console.log(res);
+                setExecUrl(res.execHost);
+            },
+        );
     }, [vmData, lightHouseSocket]);
 
     useEffect(() => {
         if (!terminal) {
+            return;
+        }
+
+        if (!execUrl) {
             return;
         }
 
@@ -94,7 +98,7 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
             if (!terminal) return;
 
             let alive: number | undefined;
-            socConn = new WebSocket(execUrl, k8sProtocols);
+            socConn = new WebSocket(execUrl as string, k8sProtocols);
             socConn.binaryType = 'arraybuffer';
 
             socConn.onopen = function () {
@@ -187,7 +191,7 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
             terminal?.dispose();
             socConn.close();
         };
-    }, [terminal]);
+    }, [terminal, execUrl]);
 
     function sendStringCommand(msg: string, switchCode: number) {
         if (!socket) return;

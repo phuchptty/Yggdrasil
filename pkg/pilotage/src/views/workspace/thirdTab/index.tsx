@@ -3,16 +3,21 @@ import styles from './index.module.scss';
 import React, { useEffect, useRef, useState } from 'react';
 import 'xterm/css/xterm.css';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import { Playground_Workspace } from '@/graphql/generated/types';
 import { getLanguageByEditorKey } from '@/utils';
 import Image from 'next/image';
 import mobileLogin from '@/assets/images/mobile-login.svg';
 import { Button, message } from 'antd';
-import { addWorkspaceFile } from '@/stores/slices/workspaceFile.slice';
 import { mergeArrays } from '@/utils/array';
 import { LighthouseEvent } from '@/constants/lighthouseEvent';
 import { RequestExecUrlResponse } from '@/types/lighthouseSocket.type';
+import dynamic from 'next/dynamic';
+import { Terminal } from 'xterm';
+
+const DynamicTerminal = dynamic(() => import('@/components/dynamicTerminal'), {
+    ssr: false,
+});
 
 type Props = {
     workspaceData: Playground_Workspace;
@@ -23,10 +28,9 @@ type Props = {
     setIsExecuting: (isExecuting: boolean) => void;
 };
 
-export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecuting, setIsExecuting, vmData, lightHouseSocket }: Props) {
-    const { publicRuntimeConfig } = getConfig();
-    const { NEXT_PUBLIC_CODE_RUNNER_URL } = publicRuntimeConfig;
+const k8sProtocols = ['v4.channel.k8s.io', 'v3.channel.k8s.io', 'v2.channel.k8s.io', 'channel.k8s.io'];
 
+export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecuting, setIsExecuting, vmData, lightHouseSocket }: Props) {
     const dispatch = useAppDispatch();
     const [messageApi, messageContext] = message.useMessage();
 
@@ -37,103 +41,182 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
     const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice.workspaceFiles);
 
     const terminalRef: any = useRef(null);
-    const [terminal, setTerminal] = useState<any>();
-    const [socket, setSocket] = useState<any>();
+    const [terminal, setTerminal] = useState<Terminal>();
+    const [socket, setSocket] = useState<WebSocket>();
 
     // Exec url
-    const [execUrl, setExecUrl] = useState<string>();
+    const [execUrl, setExecUrl] = useState<string>(
+        'wss://exec.yds.cuterabbit.art/api/v1/namespaces/test-base/pods/01/attach?stdin=true&stdout=true&tty=true',
+    );
 
     useEffect(() => {
         if (!lightHouseSocket || !vmData) {
             return;
         }
 
-        lightHouseSocket.emit(
-            LighthouseEvent.REQUEST_EXEC_URL,
-            {
-                workspaceId: vmData.workspaceId,
-                podName: vmData.podName,
-            },
-            (res: RequestExecUrlResponse) => {
-                console.log(res);
-                setExecUrl(res.execHost);
-            },
-        );
+        // TODO: Disable until done dynamicTerminal
+        // lightHouseSocket.emit(
+        //     LighthouseEvent.REQUEST_EXEC_URL,
+        //     {
+        //         workspaceId: vmData.workspaceId,
+        //         podName: vmData.podName,
+        //     },
+        //     (res: RequestExecUrlResponse) => {
+        //         console.log(res);
+        //         setExecUrl(res.execHost);
+        //     },
+        // );
     }, [vmData, lightHouseSocket]);
 
     useEffect(() => {
-        if (!socket || !workspaceData) {
+        if (!terminal) {
             return;
         }
 
-        if (terminal) {
-            terminal.dispose();
+        let socConn: WebSocket;
+        let firstConnect = true;
+
+        function sendMessage(msg: string, switchCode: number) {
+            if (!socConn) return;
+
+            const encoder = new TextEncoder();
+            const data = encoder.encode(msg);
+
+            const buffer = new Uint8Array(1 + data.byteLength);
+
+            buffer[0] = switchCode;
+            buffer.set(new Uint8Array(data.buffer), 1);
+
+            socConn.send(buffer);
         }
 
-        const onDisconnect = () => {
-            terminal?.write('\r\nDisconnected from server, reconnecting...');
-            setIsExecuting(false);
-        };
+        function socketConnect() {
+            if (!terminal) return;
 
-        const onConnect = async () => {
-            const { Terminal } = await import('xterm');
-            const { FitAddon } = await import('xterm-addon-fit');
-            const term = new Terminal();
-            const fitAddon = new FitAddon();
+            let alive: number | undefined;
+            socConn = new WebSocket(execUrl, k8sProtocols);
+            socConn.binaryType = 'arraybuffer';
 
-            setTerminal(term);
+            socConn.onopen = function () {
+                console.log('console connected');
 
-            term.loadAddon(fitAddon);
-            term.open(terminalRef.current!);
-            term.resize(12, 4);
-            fitAddon.fit();
+                // Set socket to state
+                setSocket(socConn);
 
-            term.writeln('Connected to server, waiting for action...');
+                // Only send pre command on first connect
+                if (firstConnect) {
+                    // Ctrl C
+                    // terminal.write('\x03');
+                    socConn.send(new Uint8Array([0, 3]));
 
-            const xterm_resize_ob = new ResizeObserver(function (entries) {
-                // since we are observing only a single element, so we access the first element in entries array
-                try {
-                    fitAddon && fitAddon.fit();
-                } catch (err) {
-                    console.log(err);
+                    const preCommand = 'exec /bin/bash\n';
+                    sendMessage(preCommand, 0);
+
+                    const postCommand = 'clear\n';
+                    sendMessage(postCommand, 0);
+
+                    firstConnect = false;
                 }
-            });
 
-            // start observing for resize
-            xterm_resize_ob.observe(terminalRef.current);
+                // Send heartbeat to keep connection alive
+                alive = window.setInterval(function () {
+                    // const str = JSON.stringify({
+                    //     Width: terminal.cols || 12,
+                    //     Height: terminal.rows || 7,
+                    // });
+                    //
+                    // sendMessage(str, 4);
 
-            // LISTEN for socket
-            socket.timeout(60000).on('container-created', (containerId: string) => {
-                term.clear();
+                    const buffer = new ArrayBuffer(1);
+                    // @ts-ignore
+                    buffer[0] = 0;
 
-                term.writeln(`[INFO] Container ID: ${containerId}`);
+                    socConn.send(buffer);
+                }, 10 * 1000);
+            };
 
-                term.onKey((e) => {
-                    socket.emit(`input-${containerId}`, e.key);
-                });
+            socConn.onmessage = function (ev) {
+                const data = ev.data;
 
-                // Listen to output
-                socket.on(`output-${containerId}`, (data: string) => {
-                    if (data !== '\u001bc') {
-                        term.write(data);
+                if (typeof data === 'string') {
+                    terminal.write(data);
+                } else if (data instanceof ArrayBuffer) {
+                    // binary frame
+                    const view = new DataView(data);
+                    const switchCode = view.getUint8(0);
+
+                    switch (switchCode) {
+                        case 1:
+                        case 2:
+                        case 3:
+                            const realData = data.slice(1);
+                            const decoder = new TextDecoder('utf-8');
+                            const text = decoder.decode(realData);
+
+                            terminal.write(text);
+                            break;
                     }
-                });
-            });
+                }
+            };
 
-            socket.on('container-deleted', (containerId: string) => {
-                socket.removeAllListeners(`output-${containerId}`);
-                setIsExecuting(false);
-            });
-        };
+            socConn.onerror = function (e) {
+                console.error(e);
+            };
 
-        socket.timeout(60000).on('connect', onConnect);
+            socConn.onclose = function () {
+                console.log('console disconnected. reconnecting...');
+
+                // reconnect
+                setTimeout(() => {
+                    socketConnect();
+                }, 500);
+
+                window.clearInterval(alive);
+            };
+        }
+
+        // Connect to socket
+        socketConnect();
+
+        // Watch terminal input
+        terminal.onData((data) => {
+            sendMessage(data, 0);
+        });
 
         return () => {
             terminal?.dispose();
-            socket.off('disconnect', onDisconnect);
-            socket.off('connect', onConnect);
+            socConn.close();
         };
-    }, [socket]);
+    }, [terminal]);
+
+    function sendStringCommand(msg: string, switchCode: number) {
+        if (!socket) return;
+
+        const encoder = new TextEncoder();
+        const data = encoder.encode(msg);
+
+        const buffer = new Uint8Array(1 + data.byteLength);
+
+        buffer[0] = switchCode;
+        buffer.set(new Uint8Array(data.buffer), 1);
+
+        socket.send(buffer);
+    }
+
+    const onTerminalResize = (cols: number, rows: number) => {
+        if (!socket) return;
+
+        const str = JSON.stringify({
+            Width: cols,
+            Height: rows,
+        });
+
+        sendStringCommand(str, 4);
+    };
+
+    // useEffect(() => {
+    //
+    // }, [socket]);
 
     // useEffect(() => {
     //     if (!isExecuting) return;
@@ -207,7 +290,7 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
             <div className={styles.terminal}>
                 {isLogin ? (
-                    <div ref={terminalRef} id={'terminal'} className={styles.terminalContainer}></div>
+                    <DynamicTerminal terminal={terminal} setTerminal={setTerminal} onTerminalResize={onTerminalResize} />
                 ) : (
                     <div className={styles.notLoginZone}>
                         <p className={styles.notLoginZoneTitle}>Bạn chưa đăng nhập</p>

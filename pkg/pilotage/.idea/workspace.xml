@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/dynamicTerminal/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/constants/lighthouseEvent.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/lighthouseEvent.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/lighthouseSocket.type.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/lighthouseSocket.type.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" afterDir="false" />
     </list>
@@ -143,7 +142,9 @@
       <workItem from="1698393031769" duration="9101000" />
       <workItem from="1698409894669" duration="983000" />
       <workItem from="1698528034098" duration="4000" />
-      <workItem from="1698686439707" duration="4700000" />
+      <workItem from="1698686439707" duration="4722000" />
+      <workItem from="1698856433040" duration="667000" />
+      <workItem from="1698857126402" duration="9975000" />
     </task>
     <servers />
   </component>

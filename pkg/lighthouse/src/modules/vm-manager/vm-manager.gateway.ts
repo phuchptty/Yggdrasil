@@ -47,4 +47,13 @@ export class VmManagerGateway implements OnGatewayConnection<Socket>, OnGatewayD
             execHost: this.vmManagerService.generateExecUrl(payload.workspaceId, payload.podName),
         };
     }
+
+    @SubscribeMessage(VmManagerEvent.REQUEST_ATTACH_URL)
+    handleRequestAttachUrl(client: Socket, payload: { workspaceId: string; podName: string }) {
+        return {
+            workspaceId: payload.workspaceId,
+            podName: payload.podName,
+            execHost: this.vmManagerService.generateAttachUrl(payload.workspaceId, payload.podName),
+        };
+    }
 }

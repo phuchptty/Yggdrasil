@@ -225,6 +225,11 @@ export class VmManagerService {
         return urlJoin(this.configService.get("publicK8sExecUrl"), `/api/v1/namespaces`, namespace, "pods", podName, "exec", `?container=${podName}`);
     }
 
+    generateAttachUrl(workspaceId: string, podName: string) {
+        const namespace = generateK8sNamespace(workspaceId);
+        return urlJoin(this.configService.get("publicK8sExecUrl"), `/api/v1/namespaces`, namespace, "pods", podName, "attach", `?container=${podName}`);
+    }
+
     async handleHeartbeat(client: Socket, workspaceSlug: string, podName: string) {
         const ownerId = client.data.user;
 

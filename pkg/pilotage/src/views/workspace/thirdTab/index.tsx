@@ -98,6 +98,10 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
             if (!terminal) return;
 
             let alive: number | undefined;
+            let isSocketError = false;
+
+            console.log(execUrl);
+
             socConn = new WebSocket(execUrl as string, k8sProtocols);
             socConn.binaryType = 'arraybuffer';
 
@@ -124,13 +128,6 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
                 // Send heartbeat to keep connection alive
                 alive = window.setInterval(function () {
-                    // const str = JSON.stringify({
-                    //     Width: terminal.cols || 12,
-                    //     Height: terminal.rows || 7,
-                    // });
-                    //
-                    // sendMessage(str, 4);
-
                     const buffer = new ArrayBuffer(1);
                     // @ts-ignore
                     buffer[0] = 0;
@@ -165,15 +162,18 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
             socConn.onerror = function (e) {
                 console.error(e);
+                isSocketError = true;
             };
 
             socConn.onclose = function () {
                 console.log('console disconnected. reconnecting...');
 
                 // reconnect
-                setTimeout(() => {
-                    socketConnect();
-                }, 500);
+                if (!isSocketError) {
+                    setTimeout(() => {
+                        socketConnect();
+                    }, 500);
+                }
 
                 window.clearInterval(alive);
             };

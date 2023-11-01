@@ -17,6 +17,7 @@ import { BeaconConnectionMessage } from '@/types';
 import { LighthouseEvent } from '@/constants/lighthouseEvent';
 import { RequestVmForWorkspace } from '@/types/lighthouseSocket.type';
 import { useAppSelector } from '@/stores/hook';
+import { useRouter } from 'next/router';
 
 type Props = {
     workspaceData: Playground_Workspace;
@@ -27,6 +28,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
     const [infoColActiveTab, setInfoColActiveTab] = useState('0');
     const dispatch = useDispatch();
     const [messageApi, messageContext] = message.useMessage();
+    const router = useRouter();
 
     const userData = useAppSelector((state) => state.authSlice.userData);
 
@@ -122,6 +124,20 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             messageApi.error('Lỗi ngoài dự đoán, vui lòng liên hệ với chúng tôi để được hỗ trợ.');
         });
 
+        const leaving = () => {
+            if (ioCon) {
+                ioCon.disconnect();
+            }
+
+            if (lighthouseIo) {
+                lighthouseIo.disconnect();
+            }
+        };
+
+        router.events.on('routeChangeStart', leaving);
+
+        // window.onbeforeunload = () => true;
+
         return () => {
             if (ioCon) {
                 ioCon.disconnect();
@@ -130,6 +146,10 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             if (lighthouseIo) {
                 lighthouseIo.disconnect();
             }
+
+            router.events.off('routeChangeStart', leaving);
+
+            window.onbeforeunload = null;
         };
     }, []);
 

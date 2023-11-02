@@ -12,7 +12,7 @@ export class TaskService {
 
     constructor(private readonly redisService: RedisService, private readonly kubeClient: KubeApiService) {}
 
-    @Cron(CronExpression.EVERY_30_MINUTES)
+    @Cron(CronExpression.EVERY_10_MINUTES)
     async handlePendingDeletePod() {
         try {
             this.logger.debug("Performing task: handlePendingDeletePod");
@@ -53,7 +53,7 @@ export class TaskService {
         }
     }
 
-    @Cron(CronExpression.EVERY_10_MINUTES)
+    @Cron(CronExpression.EVERY_MINUTE)
     async handleDisconnectedPod() {
         try {
             this.logger.debug("Performing task: handleDisconnectedPod");
@@ -80,6 +80,38 @@ export class TaskService {
                 }
             }
         } catch (e) {
+            this.logger.error(e);
+        }
+    }
+
+    @Cron(CronExpression.EVERY_HOUR)
+    async handleExpiredWorkspace() {
+        try {
+            this.logger.debug("Performing task: handleDisconnectedPod");
+
+            // Get all pending delete pods
+            const redisKey = await this.redisService.redisClient.ft.SEARCH("idx:vm-provision", `@state:${VmState.PROVISIONED}`);
+
+            if (redisKey.total === 0 || redisKey.documents.length === 0) {
+                return;
+            }
+
+            for (const document of redisKey.documents) {
+                const createdAt = document.value.createdAt as number;
+
+                if (!createdAt) {
+                    continue;
+                }
+
+                const currentTime = dayjs().unix();
+
+                // 12 hours
+                if (currentTime - createdAt > 12 * 60 * 60) {
+                    // Set pod to pending delete
+                    this.redisService.redisClient.hSet(document.id, "state", VmState.PENDING_DELETE);
+                }
+            }
+        } catch (e){
             this.logger.error(e);
         }
     }

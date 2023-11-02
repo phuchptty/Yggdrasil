@@ -142,6 +142,7 @@ export class VmManagerService {
                     socketId: socketId,
                     expiredAt: rsp.expiredAt,
                     state: VmState.PROVISIONED,
+                    createdAt: dayjs().unix(),
                 };
 
                 await this.redisService.redisClient.hSet(redisKey, redisPersistData);
@@ -170,6 +171,7 @@ export class VmManagerService {
                     name: podName,
                     labels: {
                         app: podName,
+                        "app-type": "vm-guest",
                     },
                 },
                 spec: {

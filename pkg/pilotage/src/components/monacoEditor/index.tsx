@@ -30,7 +30,7 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
     const [editorLanguage, setEditorLanguage] = useState<string>('plaintext');
 
     // Use for reduce redux dispatch
-    const [currentFileState, setCurrentFileState] = useState<FileState>(FileState.OPENED);
+    const currentFileState = useRef<FileState>(FileState.OPENED);
 
     const fetchFileContent = () => {
         if (!path || !beaconSocket) return;
@@ -74,7 +74,7 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
 
         // Fetch file content every 1 second
         const fetchFileInterval = setInterval(() => {
-            if (currentFileState !== FileState.CHANGED) {
+            if (currentFileState.current !== FileState.CHANGED) {
                 fetchFileContent();
             }
         }, 2500);
@@ -99,7 +99,9 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
             },
             (res: SaveFileContentResponse) => {
                 if (res.success) {
-                    setCurrentFileState(FileState.SAVED);
+                    console.log('File saved!')
+
+                    currentFileState.current = FileState.SAVED;
                     dispatch(changeFileState({ path: path, state: FileState.SAVED }));
                 } else {
                     messageApi.error('Lỗi khi lưu file!');
@@ -114,11 +116,11 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
         setValue(value);
 
         // change file state
-        if (currentFileState !== FileState.CHANGED) {
-            setCurrentFileState(FileState.CHANGED);
+        if (currentFileState.current !== FileState.CHANGED) {
+            currentFileState.current = FileState.CHANGED;
             dispatch(changeFileState({ path: path, state: FileState.CHANGED }));
         }
-    }, 500);
+    }, 250);
 
     const handleEditorWillMount = (monaco: Monaco) => {
         const yggdrasilTheme: editor.IStandaloneThemeData = {

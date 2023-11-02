@@ -23,24 +23,22 @@ type Props = {
     workspaceData: Playground_Workspace;
     accessToken: string;
     vmData: any;
-    lightHouseSocket: Socket | undefined;
+    lighthouseSocket: Socket;
     isExecuting: boolean;
     setIsExecuting: (isExecuting: boolean) => void;
 };
 
 const k8sProtocols = ['v4.channel.k8s.io', 'v3.channel.k8s.io', 'v2.channel.k8s.io', 'channel.k8s.io'];
 
-export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecuting, setIsExecuting, vmData, lightHouseSocket }: Props) {
+export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecuting, setIsExecuting, vmData, lighthouseSocket }: Props) {
     const dispatch = useAppDispatch();
     const [messageApi, messageContext] = message.useMessage();
 
-    const userData = useAppSelector((state) => state.authSlice.userData);
     const currentFile = useAppSelector((state) => state.workspaceFileSlice.currentFile);
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
 
     const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice.workspaceFiles);
 
-    const terminalRef: any = useRef(null);
     const [terminal, setTerminal] = useState<Terminal>();
     const [socket, setSocket] = useState<WebSocket>();
 
@@ -48,37 +46,34 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
     const [execUrl, setExecUrl] = useState<string>();
 
     useEffect(() => {
-        console.log(lightHouseSocket, vmData);
-
-        if (!lightHouseSocket || !vmData) {
-            return;
-        }
-
-        // TODO: Disable until done dynamicTerminal
-        lightHouseSocket.emit(
-            LighthouseEvent.REQUEST_ATTACH_URL,
-            {
-                workspaceId: vmData.workspaceId,
-                podName: vmData.podName,
-            },
-            (res: RequestExecUrlResponse) => {
-                console.log(res);
-                setExecUrl(res.execHost);
-            },
-        );
-    }, [vmData, lightHouseSocket]);
-
-    useEffect(() => {
         if (!terminal) {
-            return;
-        }
-
-        if (!execUrl) {
             return;
         }
 
         let socConn: WebSocket;
         let firstConnect = true;
+        let socketErrorCount = 0;
+        let localExecUrl: string;
+
+        lighthouseSocket.emit(
+            LighthouseEvent.REQUEST_ATTACH_URL,
+            {
+                workspaceId: vmData.workspaceId,
+                podName: vmData.podName,
+            },
+            (requestAttachRes: RequestExecUrlResponse) => {
+                console.log(requestAttachRes);
+                setExecUrl(requestAttachRes.execHost);
+                localExecUrl = requestAttachRes.execHost;
+
+                terminal.writeln('Get exec url success. Connecting...\n');
+
+                // Connect to socket
+                setTimeout(() => {
+                    socketConnect();
+                }, 1000);
+            },
+        );
 
         function sendMessage(msg: string, switchCode: number) {
             if (!socConn) return;
@@ -98,11 +93,8 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
             if (!terminal) return;
 
             let alive: number | undefined;
-            let isSocketError = false;
 
-            console.log(execUrl);
-
-            socConn = new WebSocket(execUrl as string, k8sProtocols);
+            socConn = new WebSocket(localExecUrl, k8sProtocols);
             socConn.binaryType = 'arraybuffer';
 
             socConn.onopen = function () {
@@ -128,12 +120,9 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
                 // Send heartbeat to keep connection alive
                 alive = window.setInterval(function () {
-                    const buffer = new ArrayBuffer(1);
-                    // @ts-ignore
-                    buffer[0] = 0;
-
+                    const buffer = new Uint8Array([0]);
                     socConn.send(buffer);
-                }, 10 * 1000);
+                }, 5 * 1000);
             };
 
             socConn.onmessage = function (ev) {
@@ -161,26 +150,22 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
             };
 
             socConn.onerror = function (e) {
-                console.error(e);
-                isSocketError = true;
+                terminal.writeln("Error: Couldn't connect to console. Reconnecting...\n");
+                socketErrorCount += 1;
             };
 
-            socConn.onclose = function () {
-                console.log('console disconnected. reconnecting...');
+            socConn.onclose = function (e) {
+                console.log(`Error code: ${e.code} - ${e.reason} console disconnected. reconnecting...`);
+                window.clearInterval(alive);
 
                 // reconnect
-                if (!isSocketError) {
+                if (socketErrorCount <= 10) {
                     setTimeout(() => {
                         socketConnect();
-                    }, 500);
+                    }, 100);
                 }
-
-                window.clearInterval(alive);
             };
         }
-
-        // Connect to socket
-        socketConnect();
 
         // Watch terminal input
         terminal.onData((data) => {
@@ -189,9 +174,12 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
         return () => {
             terminal?.dispose();
-            socConn.close();
+
+            if (socConn) {
+                socConn.close();
+            }
         };
-    }, [terminal, execUrl]);
+    }, [terminal]);
 
     function sendStringCommand(msg: string, switchCode: number) {
         if (!socket) return;
@@ -217,10 +205,6 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
         sendStringCommand(str, 4);
     };
-
-    // useEffect(() => {
-    //
-    // }, [socket]);
 
     // useEffect(() => {
     //     if (!isExecuting) return;

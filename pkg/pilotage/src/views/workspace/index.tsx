@@ -15,7 +15,7 @@ import { setWorkspace } from '@/stores/slices/workspace.slice';
 import { io, Socket } from 'socket.io-client';
 import { BeaconConnectionMessage } from '@/types';
 import { LighthouseEvent } from '@/constants/lighthouseEvent';
-import { RequestVmForWorkspace } from '@/types/lighthouseSocket.type';
+import { RequestExecUrlResponse, RequestVmForWorkspace } from '@/types/lighthouseSocket.type';
 import { useAppSelector } from '@/stores/hook';
 import { useRouter } from 'next/router';
 
@@ -41,6 +41,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
 
     // VM data
     const [vmData, setVmData] = useState<any>();
+    const [execUrl, setExecUrl] = useState<string | undefined>();
 
     const handleRunCode = () => {
         setIsExecuting(true);
@@ -99,7 +100,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
             setLighthouseSocket(lighthouseIo);
             console.log('connected to lighthouse');
 
-            // TODO: Disable until done dynamicTerminal
+            // NOTE: Comment this line to disable request new vm
             lighthouseIo.emit(
                 LighthouseEvent.REQUEST_VM_FOR_WORKSPACE,
                 {
@@ -213,14 +214,20 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
 
                 <EditorColumn onRunClick={handleRunCode} isExecuting={isExecuting} beaconSocket={beaconSocket} />
 
-                <WorkspaceThirdCol
-                    workspaceData={workspaceData}
-                    accessToken={accessToken}
-                    vmData={vmData}
-                    lightHouseSocket={lighthouseSocket}
-                    isExecuting={isExecuting}
-                    setIsExecuting={setIsExecuting}
-                />
+                <div className={'w--full'}>
+                    {vmData && lighthouseSocket ? (
+                        <WorkspaceThirdCol
+                            workspaceData={workspaceData}
+                            accessToken={accessToken}
+                            vmData={vmData}
+                            lighthouseSocket={lighthouseSocket}
+                            isExecuting={isExecuting}
+                            setIsExecuting={setIsExecuting}
+                        />
+                    ) : (
+                        <div></div>
+                    )}
+                </div>
             </Resizable>
         </div>
     );

@@ -208,64 +208,6 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
     // useEffect(() => {
     //     if (!isExecuting) return;
-    //
-    //     const onRun = async () => {
-    //         if (!socket || !workspaceData) {
-    //             return;
-    //         }
-    //
-    //         // Check diff file not loaded yet
-    //         const notExistFiles = originalWorkspaceFiles?.filter((item) => !workspaceFiles?.find((item2) => item2.path === item.path));
-    //
-    //         if (notExistFiles && notExistFiles.length > 0) {
-    //             try {
-    //                 const { data: scatteredFilesData, error: scatteredFilesError } = await scatteredFilesQuery({
-    //                     variables: {
-    //                         workspaceId: workspaceData._id,
-    //                         filePath: notExistFiles.map((item) => item.path),
-    //                     },
-    //                 });
-    //
-    //                 if (scatteredFilesError) {
-    //                     console.error(scatteredFilesError);
-    //                     messageApi.error('Lỗi khi tải file');
-    //                 }
-    //
-    //                 if (scatteredFilesData) {
-    //                     scatteredFilesData.playground_getScatteredWorkspaceFiles.forEach((item) => {
-    //                         dispatch(addWorkspaceFile(item));
-    //                     });
-    //
-    //                     const newArr = mergeArrays(workspaceFiles, scatteredFilesData.playground_getScatteredWorkspaceFiles);
-    //
-    //                     emitRun(newArr);
-    //                 }
-    //             } catch (e) {
-    //                 console.error(e);
-    //                 messageApi.error('Lỗi khi tải file');
-    //             }
-    //         } else {
-    //             emitRun(workspaceFiles);
-    //         }
-    //     };
-    //
-    //     const emitRun = (files?: any[]) => {
-    //         const langConfig = getLanguageByEditorKey(workspaceData.workspaceLanguage.editorKey);
-    //
-    //         const sendFiles = files?.map((item) => ({
-    //             name: item.name,
-    //             path: item.path,
-    //             content: item.content,
-    //         }));
-    //
-    //         socket.emit('run', {
-    //             langId: workspaceData.workspaceLanguage.key,
-    //             mainFile: langConfig?.entryFile || currentFile,
-    //             codeFiles: sendFiles,
-    //         });
-    //     };
-    //
-    //     onRun();
     // }, [isExecuting]);
 
     return (

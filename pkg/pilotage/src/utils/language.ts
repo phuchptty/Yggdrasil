@@ -1,3 +1,8 @@
+import cppImage from "@/assets/icons/languages/c-.png";
+import pythonImage from "@/assets/icons/languages/python.png";
+import nodejsImage from "@/assets/icons/languages/node-js.png";
+import languageImage from "@/assets/images/language.jpg";
+
 interface LanguageConfig {
     name: string;
     editorKey: string;
@@ -40,4 +45,27 @@ export function getLanguageByEditorKey(editorKey: string): LanguageConfig | null
     const language = languages.find((lang) => lang.editorKey === editorKey);
 
     return language ? language : null;
+}
+
+export function getLanguageIcon(key: string){
+    let image;
+
+    switch (key) {
+        case 'cpp':
+            image = cppImage;
+            break;
+
+        case 'python':
+            image = pythonImage;
+            break;
+
+        case 'nodejs':
+            image = nodejsImage;
+            break;
+
+        default:
+            image = languageImage;
+    }
+
+    return image;
 }

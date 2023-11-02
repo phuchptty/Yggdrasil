@@ -6,10 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/home/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/home/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/banners/banner.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/loading.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/logo-full.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/itemCard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/itemCard/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/loadingPage/index.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/loadingPage/index.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/loadingPage/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/loadingPage/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/language.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/language.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/manageTab/subTab/index.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/manageTab/subTab/index.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/manageTab/subTab/itemCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/manageTab/subTab/itemCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -153,7 +158,7 @@
       <workItem from="1698900244057" duration="234000" />
       <workItem from="1698909615952" duration="10000" />
       <workItem from="1698909770875" duration="2016000" />
-      <workItem from="1698912177898" duration="2510000" />
+      <workItem from="1698912177898" duration="6211000" />
     </task>
     <servers />
   </component>

@@ -2,10 +2,9 @@ import Image from 'next/image';
 import { Playground_Language, Playground_WorkspacePermission } from '@/graphql/generated/types';
 import styles from './index.module.scss';
 import { usePlayground_CreateWorkspaceMutation } from '@/graphql/generated/playground.generated';
-
-import languageImage from '@/assets/images/language.jpg';
 import { message } from 'antd';
 import { useRouter } from 'next/router';
+import { getLanguageIcon } from '@/utils';
 
 export default function ItemCard({ language }: { language: Playground_Language }) {
     const [createWorkspaceMutation] = usePlayground_CreateWorkspaceMutation();
@@ -13,9 +12,6 @@ export default function ItemCard({ language }: { language: Playground_Language }
     const router = useRouter();
 
     const onClick = async () => {
-        // turn on loading
-        // emitter.emit('loading', true);
-
         try {
             const { data, errors } = await createWorkspaceMutation({
                 variables: {
@@ -52,7 +48,7 @@ export default function ItemCard({ language }: { language: Playground_Language }
             {contextMenu}
 
             <div id="itemCardContent" className={styles.itemCardContent}>
-                <Image src={languageImage} className={styles.image} alt="language image" />
+                <Image src={getLanguageIcon(language.key)} className={styles.image} alt="language image" />
                 <span className={styles.text}>{language.name}</span>
             </div>
         </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import styles from './index.module.scss';
-import loadingImage from '@/assets/images/loading.gif';
+import loadingImage from '@/assets/icons/loading.gif';
 import Image from 'next/image';
 
 const LoadingPage = ({ routerMode = true }) => {

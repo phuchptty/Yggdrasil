@@ -11,6 +11,7 @@ import workspacePreview from '@/assets/images/workspacePreview.png';
 import urlJoin from 'url-join';
 import { MittEvent, useMitt } from '@/lib/mitt';
 import { usePlayground_DeleteWorkspaceMutation } from '@/graphql/generated/playground.generated';
+import { getLanguageIcon } from '@/utils';
 
 dayjs.extend(relativeTime);
 
@@ -142,10 +143,14 @@ export default function ItemCard({ data }: Props) {
             {messageContext}
             {contextHolder}
 
-            <div>
+            <div className={'position--relative'}>
                 <Link href={`/workspace/${data.slug}`}>
                     <Image className={styles.cover} alt="workspacePreview" src={workspacePreview} />
                 </Link>
+
+                <div className={styles.languageIcon}>
+                    <Image src={getLanguageIcon(data.workspaceLanguage.key)} alt={'icon'} className={styles.icon} />
+                </div>
             </div>
 
             <div className={'display--flex justify-content--spaceBetween flex-direction--column h--full'}>

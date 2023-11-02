@@ -32,10 +32,10 @@ RUN mkdir /home/${USER}/runner
 RUN chown ${GID}:${GID} /home/${USER}/runner
 VOLUME /home/${USER}/runner
 
-WORKDIR /home/${USER}
-USER ${USER}
-
 # Install dependencies
 RUN npm install -g yarn express cors mongo mongoose nodemon fastify @faker-js/faker socket.io
+
+WORKDIR /home/${USER}
+USER ${USER}
 
 ENTRYPOINT ["/bin/bash"]

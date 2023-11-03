@@ -75,6 +75,9 @@ export class GatewayService {
                     this.forceDisconnect(client, "Forbidden");
                     return;
                 }
+
+                // Set user data
+                client.data.user = user;
             }
 
             const workspacePVCName = `pvc-sandbox-${workspaceId.toString()}`;
@@ -83,6 +86,8 @@ export class GatewayService {
             const pvName = await this.kubeService.getPVNameFromPVC(namespace, workspacePVCName);
 
             this.setWorkspacePath(pvName);
+
+            client.data.workspace = workspace;
         } catch (e: any) {
             this.logger.error(e);
             this.forceDisconnect(client, "Unexpected error");

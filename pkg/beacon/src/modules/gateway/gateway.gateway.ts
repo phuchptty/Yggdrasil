@@ -1,9 +1,10 @@
-import { MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WsException } from "@nestjs/websockets";
+import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WsException } from "@nestjs/websockets";
 import GatewayPackage from "./gatewayPackage";
 import { GatewayService } from "./gateway.service";
-import { UsePipes, ValidationPipe } from "@nestjs/common";
+import { UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ListDirDto, RenameDto, SaveFileContentDto } from "./dto/input.dto";
 import { Socket } from "socket.io";
+import { PublicGuard } from "../../guards/public/public.guard";
 
 @WebSocketGateway({
     cors: {
@@ -64,6 +65,7 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
     }
 
     @SubscribeMessage(GatewayPackage.CREATE_FILE)
+    @UseGuards(PublicGuard)
     packageCreateFile(@MessageBody("params") params: ListDirDto) {
         if (params.path === undefined || params.path === null) {
             throw new WsException("Thiếu đường dẫn");
@@ -73,6 +75,7 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
     }
 
     @SubscribeMessage(GatewayPackage.CREATE_FOLDER)
+    @UseGuards(PublicGuard)
     packageCreateFolder(@MessageBody("params") params: ListDirDto) {
         if (params.path === undefined || params.path === null) {
             throw new WsException("Thiếu đường dẫn");
@@ -82,6 +85,7 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
     }
 
     @SubscribeMessage(GatewayPackage.RENAME)
+    @UseGuards(PublicGuard)
     packageRenameFile(@MessageBody("params") params: RenameDto) {
         if (params.path === undefined || params.path === null) {
             throw new WsException("Thiếu đường dẫn");
@@ -94,6 +98,7 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
     }
 
     @SubscribeMessage(GatewayPackage.DELETE)
+    @UseGuards(PublicGuard)
     packageDeletePath(@MessageBody("params") params: ListDirDto) {
         if (params.path === undefined || params.path === null) {
             throw new WsException("Thiếu đường dẫn");
@@ -103,6 +108,7 @@ export class GatewayGateway implements OnGatewayConnection<Socket> {
     }
 
     @SubscribeMessage(GatewayPackage.SAVE_FILE_CONTENT)
+    @UseGuards(PublicGuard)
     packageSaveFileContent(@MessageBody("params") params: SaveFileContentDto) {
         if (params.path === undefined || params.path === null) {
             throw new WsException("Thiếu đường dẫn");

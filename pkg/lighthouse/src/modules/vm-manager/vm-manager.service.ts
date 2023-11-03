@@ -324,7 +324,7 @@ export class VmManagerService {
             const publicDomain = this.configService.get("publicAppDomain");
             const domain = `${podName}-${port}.${publicDomain}`;
 
-            const a = await this.kubeApi.kubeNetworkApi.createNamespacedIngress(namespace, {
+            await this.kubeApi.kubeNetworkApi.createNamespacedIngress(namespace, {
                 metadata: {
                     name: `port-forward-${port}-${dayjs().unix()}`,
                     annotations: {
@@ -398,6 +398,46 @@ export class VmManagerService {
                     port: port,
                 };
             });
+        } catch (e) {
+            throw new WsException(e);
+        }
+    }
+
+    async deletePortForward(workspaceId: string, podName: string, port: number) {
+        try {
+            const namespace = generateK8sNamespace(workspaceId);
+
+            // Delete ingress
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const lists = await this.kubeApi.kubeNetworkApi.listNamespacedIngress(namespace, {
+                labelSelector: `podName=${podName}`,
+            });
+
+            if (lists.body.items.length === 0) {
+                return;
+            }
+
+            for (const ingress of lists.body.items) {
+                await this.kubeApi.kubeNetworkApi.deleteNamespacedIngress(ingress.metadata.name, namespace);
+            }
+
+            // Delete service
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const s = await this.kubeApi.kubeApi.listNamespacedService(namespace, {
+                labelSelector: `podName=${podName}`,
+            });
+
+            if (s.body.items.length === 0) {
+                return;
+            }
+
+            for (const service of s.body.items) {
+                await this.kubeApi.kubeApi.deleteNamespacedService(service.metadata.name, namespace);
+            }
+
+            return true;
         } catch (e) {
             throw new WsException(e);
         }

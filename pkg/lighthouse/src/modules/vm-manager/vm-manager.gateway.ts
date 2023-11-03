@@ -79,4 +79,15 @@ export class VmManagerGateway implements OnGatewayConnection<Socket>, OnGatewayD
             ports: rsp,
         };
     }
+
+    @SubscribeMessage(VmManagerEvent.DELETE_PORT_FORWARD)
+    async handleDeletePortForwarding(client: Socket, payload: { workspaceId: string; podName: string; port: number }) {
+        const rsp = await this.vmManagerService.deletePortForward(payload.workspaceId, payload.podName, payload.port);
+
+        return {
+            workspaceId: payload.workspaceId,
+            podName: payload.podName,
+            success: rsp,
+        };
+    }
 }

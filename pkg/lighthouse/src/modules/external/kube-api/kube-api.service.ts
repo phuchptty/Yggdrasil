@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod, V1ServicePort } from "@kubernetes/client-node";
+import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod, V1Service } from "@kubernetes/client-node";
 import { ConfigService } from "@nestjs/config";
 import { KubeCreateDeployment } from "./types/deployment.type";
 
@@ -101,21 +101,6 @@ export class KubeApiService implements OnModuleInit {
                         volumes: options.volumes,
                     },
                 },
-            },
-        });
-    }
-
-    public createService(namespace: string, name: string, ports: V1ServicePort[]) {
-        return this.kubeApi.createNamespacedService(namespace, {
-            metadata: {
-                name: name,
-            },
-            spec: {
-                selector: {
-                    app: name,
-                },
-                ports: ports,
-                type: "ClusterIP",
             },
         });
     }

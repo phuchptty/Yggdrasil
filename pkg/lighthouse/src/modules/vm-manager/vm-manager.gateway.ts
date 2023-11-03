@@ -56,4 +56,16 @@ export class VmManagerGateway implements OnGatewayConnection<Socket>, OnGatewayD
             execHost: this.vmManagerService.generateAttachUrl(payload.workspaceId, payload.podName),
         };
     }
+
+    @SubscribeMessage(VmManagerEvent.REQUEST_PORT_FORWARD)
+    async handleRequestPortForward(client: Socket, payload: { workspaceId: string; podName: string; port: number }) {
+        const rsp = await this.vmManagerService.portForward(payload.workspaceId, payload.podName, payload.port);
+
+        return {
+            workspaceId: payload.workspaceId,
+            podName: payload.podName,
+            port: payload.port,
+            domain: rsp.domain,
+        };
+    }
 }

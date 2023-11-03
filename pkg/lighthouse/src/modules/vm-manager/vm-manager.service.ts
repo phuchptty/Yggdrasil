@@ -113,6 +113,11 @@ export class VmManagerService {
                 throw new WsException(errorMessageConstant.NO_WORKSPACE_FOUND_OR_USER_NO_PERMISSION);
             }
 
+            // Public workspace but not owner
+            if (workspace.permission === WorkspacePermission.PUBLIC && workspace.owner._id.toString() !== owner) {
+                throw new WsException(errorMessageConstant.PUBLIC_WORKSPACE_NOT_OWNED);
+            }
+
             const workspaceId = workspace._id.toString();
             const podName = `vm-${uuidv4()}`;
             const redisKey = this.getRedisKey(workspaceId, owner, podName);
@@ -288,40 +293,86 @@ export class VmManagerService {
         }
     }
 
-    async requestReCreateVm(ownerId: string, workspaceSlug: string) {
+    async portForward(workspaceId: string, podName: string, port: number) {
         try {
-            // Query workspace
-            const workspace = await this.wsService.findOneBySlug(ownerId, workspaceSlug);
+            const namespace = generateK8sNamespace(workspaceId);
 
-            if (!workspace) {
-                throw new GraphQLError("Không tìm thấy workspace hoặc bạn không có quyền truy cập workspace này!");
-            }
+            const s = await this.kubeApi.kubeApi.createNamespacedService(namespace, {
+                metadata: {
+                    name: `port-forward-${port}-${dayjs().unix()}`,
+                    labels: {
+                        app: `port-forward-${podName}-${port}`,
+                        "app-type": "vm-guest",
+                        podName: podName,
+                    },
+                },
+                spec: {
+                    selector: {
+                        app: podName,
+                    },
+                    ports: [
+                        {
+                            name: `port-${port}`,
+                            port: port,
+                            targetPort: port,
+                        },
+                    ],
+                },
+            });
 
-            if (workspace.permission === WorkspacePermission.PRIVATE && workspace.owner._id.toString() !== ownerId) {
-                throw new GraphQLError("Bạn không có quyền truy cập Workspace này!");
-            }
+            // Create ingress
+            const publicDomain = this.configService.get("publicAppDomain");
+            const domain = `${podName}-${port}.${publicDomain}`;
 
-            const namespace = generateK8sNamespace(workspace._id.toString());
-            const podName = generateK8sPodName(workspace._id.toString(), ownerId);
+            const a = await this.kubeApi.kubeNetworkApi.createNamespacedIngress(namespace, {
+                metadata: {
+                    name: `port-forward-${port}-${dayjs().unix()}`,
+                    annotations: {
+                        "cert-manager.io/cluster-issuer": "le-dns01",
+                    },
+                    labels: {
+                        app: `port-forward-${podName}-${port}`,
+                        podName: podName,
+                        "app-type": "vm-guest",
+                    },
+                },
+                spec: {
+                    ingressClassName: "nginx",
+                    rules: [
+                        {
+                            host: domain,
+                            http: {
+                                paths: [
+                                    {
+                                        path: "/",
+                                        pathType: "Prefix",
+                                        backend: {
+                                            service: {
+                                                name: s.body.metadata.name,
+                                                port: {
+                                                    number: port,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                    tls: [
+                        {
+                            hosts: [domain],
+                        },
+                    ],
+                },
+            });
 
-            // Check exist vm
-            // const vmTrashCheck = await this.redis.hgetall(`vm:provision:${podName}`);
-            //
-            // if (!vmTrashCheck) {
-            //     throw new GraphQLError("Workspace này đã được xóa!");
-            // }
-
-            // Delete pod
-            await this.kubeApi.deletePod(namespace, podName);
-
-            // Recreate pod
-            // return await this.provisionVm(ownerId, workspace);
+            return {
+                domain: domain,
+                port: port,
+            };
         } catch (e) {
-            if (e?.response?.body.status === "Failure") {
-                throw new GraphQLError(e?.response.body.message);
-            }
-
-            throw new GraphQLError(e);
+            throw new WsException(e);
         }
     }
 }

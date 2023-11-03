@@ -6,6 +6,7 @@ export const VmManagerEvent = {
     HEARTBEAT: "HEARTBEAT",
     REQUEST_EXEC_URL: "REQUEST_EXEC_URL",
     REQUEST_ATTACH_URL: "REQUEST_ATTACH_URL",
+    REQUEST_PORT_FORWARD: "REQUEST_PORT_FORWARD",
 };
 
 export enum VmState {

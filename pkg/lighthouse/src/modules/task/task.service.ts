@@ -12,6 +12,44 @@ export class TaskService {
 
     constructor(private readonly redisService: RedisService, private readonly kubeClient: KubeApiService) {}
 
+    private async deleteItem(namespace: string, podName: string, redisKey: string) {
+        try {
+            // Delete pod
+            await this.kubeClient.deletePod(namespace, podName);
+
+            // Get all service related
+            const appSelector = `podName=${podName}`;
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const s = await this.kubeClient.kubeApi.listServiceForAllNamespaces({
+                labelSelector: appSelector,
+            });
+
+            // Delete service
+            for (const service of s.body.items) {
+                await this.kubeClient.kubeApi.deleteNamespacedService(service.metadata.namespace, service.metadata.name);
+            }
+
+            // Find all ingress related
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const i = await this.kubeClient.kubeNetworkApi.listIngressForAllNamespaces({
+                labelSelector: appSelector,
+            });
+
+            // Delete ingress
+            for (const ingress of i.body.items) {
+                await this.kubeClient.kubeNetworkApi.deleteNamespacedIngress(ingress.metadata.namespace, ingress.metadata.name);
+            }
+
+            // Delete pod from redis
+            await this.redisService.redisClient.del(redisKey);
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+
     @Cron(CronExpression.EVERY_10_MINUTES)
     async handlePendingDeletePod() {
         try {
@@ -39,11 +77,7 @@ export class TaskService {
                 const namespace = generateK8sNamespace(workspaceId);
 
                 try {
-                    // Delete pod
-                    await this.kubeClient.deletePod(namespace, podName);
-
-                    // Delete pod from redis
-                    this.redisService.redisClient.del(document.id);
+                    await this.deleteItem(namespace, podName, document.id);
                 } catch (e) {
                     this.logger.error("Delete pod failed", e);
                 }
@@ -87,7 +121,7 @@ export class TaskService {
     @Cron(CronExpression.EVERY_HOUR)
     async handleExpiredWorkspace() {
         try {
-            this.logger.debug("Performing task: handleDisconnectedPod");
+            this.logger.debug("Performing task: handleExpiredWorkspace");
 
             // Get all pending delete pods
             const redisKey = await this.redisService.redisClient.ft.SEARCH("idx:vm-provision", `@state:${VmState.PROVISIONED}`);
@@ -111,7 +145,7 @@ export class TaskService {
                     this.redisService.redisClient.hSet(document.id, "state", VmState.PENDING_DELETE);
                 }
             }
-        } catch (e){
+        } catch (e) {
             this.logger.error(e);
         }
     }

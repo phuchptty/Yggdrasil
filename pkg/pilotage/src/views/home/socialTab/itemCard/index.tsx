@@ -1,4 +1,4 @@
-import { Playground_Workspace, Playground_WorkspaceStatus } from '@/graphql/generated/types';
+import { Playground_Workspace } from '@/graphql/generated/types';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { Avatar, Dropdown, message, Modal } from 'antd';
@@ -85,8 +85,10 @@ export default function SocialTabItemCard({ data }: Props) {
 
                 <div className={styles.subTitleZone}>
                     <div className={styles.userZone}>
-                        <Avatar src={data.owner.avatar?.downloadUrl || 'https://tek4.vn/images/default-user-avatar.png'} size={36} />
-                        <p>{data?.owner.name}</p>
+                        <Avatar src={'/images/default-user-avatar.jpg'} size={36} />
+                        <p>
+                            {data?.owner.lastName} {data?.owner.firstName}
+                        </p>
                     </div>
 
                     <div></div>

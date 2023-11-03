@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Resizable from 'react-split';
 import InfoColTabInfo from '@/views/workspace/infoColTabs/info';
 import EditorColumn from './editorCol';
-import { Playground_Workspace } from '@/graphql/generated/types';
+import { Playground_Workspace, Playground_WorkspacePermission } from '@/graphql/generated/types';
 import WorkspaceThirdCol from '@/views/workspace/thirdTab';
 import InfoColTabFile from '@/views/workspace/infoColTabs/fileTree';
 import styles from './index.module.scss';
@@ -66,7 +66,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
         const ioCon = io(beaconUrl.toString(), {
             reconnection: true,
             extraHeaders: {
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: accessToken ? `Bearer ${accessToken}` : '',
             },
         });
 
@@ -92,7 +92,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
         const lighthouseIo = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
             reconnection: true,
             extraHeaders: {
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: accessToken ? `Bearer ${accessToken}` : '',
             },
         });
 
@@ -117,6 +117,10 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
         });
 
         lighthouseIo.on('CONNECTION_MESSAGE', (value: BeaconConnectionMessage) => {
+            if (value.message === 'MISSING_AUTHORIZATION_HEADER' && workspaceData.permission === Playground_WorkspacePermission.Public) {
+                messageApi.warning('Bạn cần đăng nhập để sử dụng máy ảo.', 3);
+                return;
+            }
             messageApi.error(value.message);
         });
 
@@ -224,6 +228,10 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
                             isExecuting={isExecuting}
                             setIsExecuting={setIsExecuting}
                         />
+                    ) : workspaceData.permission === Playground_WorkspacePermission.Public ? (
+                        <div>
+                            <p>WỎkspace public</p>
+                        </div>
                     ) : (
                         <div></div>
                     )}

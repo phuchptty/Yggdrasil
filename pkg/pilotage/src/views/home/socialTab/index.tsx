@@ -17,8 +17,8 @@ export default function ViewHomeSocialTab({ languages, languageCountData }: Prop
 
         if (languageData) {
             zone.push(
-                <div>
-                    <ViewHomeSocialLanguageItem languageData={languageData} key={lang.languageId} />
+                <div key={lang.languageId}>
+                    <ViewHomeSocialLanguageItem languageData={languageData} />
                 </div>,
             );
         }

@@ -375,4 +375,31 @@ export class VmManagerService {
             throw new WsException(e);
         }
     }
+
+    async getListPortForward(workspaceId: string, podName: string) {
+        try {
+            const namespace = generateK8sNamespace(workspaceId);
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const lists = await this.kubeApi.kubeNetworkApi.listNamespacedIngress(namespace, {
+                labelSelector: `podName=${podName}`,
+            });
+
+            if (lists.body.items.length === 0) {
+                return [];
+            }
+
+            return lists.body.items.map((ingress) => {
+                const domain = ingress.spec.rules[0].host;
+                const port = ingress.spec.rules[0].http.paths[0].backend.service.port.number;
+                return {
+                    domain: domain,
+                    port: port,
+                };
+            });
+        } catch (e) {
+            throw new WsException(e);
+        }
+    }
 }

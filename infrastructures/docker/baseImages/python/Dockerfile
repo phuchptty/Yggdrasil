@@ -32,7 +32,7 @@ RUN mkdir /home/${USER}/runner
 RUN chown ${GID}:${GID} /home/${USER}/runner
 VOLUME /home/${USER}/runner
 
-WORKDIR /home/${USER}
+WORKDIR /home/${USER}/runner
 USER ${USER}
 
 # Install dependencies

@@ -35,7 +35,7 @@ VOLUME /home/${USER}/runner
 # Install dependencies
 RUN npm install -g yarn express cors mongo mongoose nodemon fastify @faker-js/faker socket.io --force
 
-WORKDIR /home/${USER}
+WORKDIR /home/${USER}/runner
 USER ${USER}
 
 ENTRYPOINT ["/bin/bash"]

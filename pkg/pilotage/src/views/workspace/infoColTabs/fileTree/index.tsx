@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import styles from './index.module.scss';
 import * as React from 'react';
 import { addWorkspaceFile, openNewFile } from '@/stores/slices/workspaceFile.slice';
-import { FileAddOutlined } from '@ant-design/icons';
+import { FileAddOutlined, ReloadOutlined } from '@ant-design/icons';
 import { DeletePathResponse, DirFlatTreeResponse, FileContentResponse, FileCreateResponse } from '@/types';
 import { Socket } from 'socket.io-client';
 import { BeaconEvent } from '@/constants/beaconEvent';
@@ -76,7 +76,9 @@ export default function InfoColTabFile({ beaconSocket }: Props) {
     useEffect(() => {
         if (!beaconSocket) return;
 
-        getStructure();
+        setTimeout(() => {
+            getStructure();
+        }, 800);
     }, [beaconSocket]);
 
     // Open file
@@ -277,6 +279,10 @@ export default function InfoColTabFile({ beaconSocket }: Props) {
                     </div>
 
                     <div className={styles.headerDiv}>
+                        <Tooltip title="Tải lại" placement={'bottom'} arrow={false}>
+                            <Button type={'text'} onClick={() => getStructure()} icon={<ReloadOutlined />}></Button>
+                        </Tooltip>
+
                         <Tooltip title="Tạo mới" placement={'bottom'} arrow={false}>
                             <Button type={'text'} onClick={() => setIsModalOpen(true)} icon={<FileAddOutlined />}></Button>
                         </Tooltip>

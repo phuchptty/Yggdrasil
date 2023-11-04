@@ -23,6 +23,7 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
     const dispatch = useAppDispatch();
 
     const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice.workspaceFiles);
+    const openFiles = useAppSelector((state) => state.workspaceFileSlice.openFiles);
     const [messageApi, contextHolder] = message.useMessage();
 
     const [workspaceFile, setWorkspaceFile] = useState<GetFileContentResponseDto>();
@@ -99,7 +100,7 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
             },
             (res: SaveFileContentResponse) => {
                 if (res.success) {
-                    console.log('File saved!')
+                    console.log('File saved!');
 
                     currentFileState.current = FileState.SAVED;
                     dispatch(changeFileState({ path: path, state: FileState.SAVED }));
@@ -110,7 +111,7 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
         );
     };
 
-    const onChange = debounce((value: string | undefined) => {
+    const onChange = (value: string | undefined) => {
         if (!value || !path) return;
 
         setValue(value);
@@ -118,9 +119,14 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
         // change file state
         if (currentFileState.current !== FileState.CHANGED) {
             currentFileState.current = FileState.CHANGED;
-            dispatch(changeFileState({ path: path, state: FileState.CHANGED }));
+
+            const file = openFiles.find((item) => item.path === path);
+
+            if (file && file.state !== FileState.CHANGED) {
+                dispatch(changeFileState({ path: path, state: FileState.CHANGED }));
+            }
         }
-    }, 250);
+    };
 
     const handleEditorWillMount = (monaco: Monaco) => {
         const yggdrasilTheme: editor.IStandaloneThemeData = {

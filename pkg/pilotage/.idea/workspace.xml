@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/portForward/index.module.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/portForward/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/constants/lighthouseEvent.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/lighthouseEvent.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/lighthouseSocket.type.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/lighthouseSocket.type.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,7 +156,10 @@
       <workItem from="1698989267679" duration="2033000" />
       <workItem from="1699012724845" duration="5000" />
       <workItem from="1699048199589" duration="305000" />
-      <workItem from="1699080712036" duration="10173000" />
+      <workItem from="1699080712036" duration="10704000" />
+      <workItem from="1699136162407" duration="165000" />
+      <workItem from="1699136454347" duration="577000" />
+      <workItem from="1699139699502" duration="1464000" />
     </task>
     <servers />
   </component>

@@ -15,9 +15,10 @@ import { setWorkspace } from '@/stores/slices/workspace.slice';
 import { io, Socket } from 'socket.io-client';
 import { BeaconConnectionMessage } from '@/types';
 import { LighthouseEvent } from '@/constants/lighthouseEvent';
-import { RequestExecUrlResponse, RequestVmForWorkspace } from '@/types/lighthouseSocket.type';
+import { RequestVmForWorkspace } from '@/types/lighthouseSocket.type';
 import { useAppSelector } from '@/stores/hook';
 import { useRouter } from 'next/router';
+import photocopyImg from '@/assets/icons/workspace/photocopy.svg';
 
 type Props = {
     workspaceData: Playground_Workspace;
@@ -229,11 +230,14 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
                             setIsExecuting={setIsExecuting}
                         />
                     ) : workspaceData.permission === Playground_WorkspacePermission.Public ? (
-                        <div>
-                            <p>WỎkspace public</p>
+                        <div className={'h--full display--flex align-items--center px--32'}>
+                            <div>
+                                <Image src={photocopyImg} alt={''} />
+                                <p className={"mt--8 text-align--center"}>VM chỉ khả dụng khi workspace đó của bạn !</p>
+                            </div>
                         </div>
                     ) : (
-                        <div></div>
+                        <div>Creating terminal...</div>
                     )}
                 </div>
             </Resizable>

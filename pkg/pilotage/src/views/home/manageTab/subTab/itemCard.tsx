@@ -1,8 +1,8 @@
 import { Playground_WorkspacePermission } from '@/graphql/generated/types';
 import Image from 'next/image';
 import dayjs from 'dayjs';
-import { Dropdown, message, Modal } from 'antd';
 import type { MenuProps } from 'antd';
+import { Dropdown, message, Modal } from 'antd';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import Link from 'next/link';
 import styles from './index.module.scss';
@@ -12,6 +12,8 @@ import urlJoin from 'url-join';
 import { MittEvent, useMitt } from '@/lib/mitt';
 import { usePlayground_DeleteWorkspaceMutation } from '@/graphql/generated/playground.generated';
 import { getLanguageIcon } from '@/utils';
+import globalIcon from '@/assets/icons/workspace/global.svg';
+import lockIcon from '@/assets/icons/workspace/ic_outline-lock.svg';
 
 dayjs.extend(relativeTime);
 
@@ -150,6 +152,10 @@ export default function ItemCard({ data }: Props) {
 
                 <div className={styles.languageIcon}>
                     <Image src={getLanguageIcon(data.workspaceLanguage.key)} alt={'icon'} className={styles.icon} />
+                </div>
+
+                <div className={styles.permissionIcon}>
+                    <Image src={data.permission === Playground_WorkspacePermission.Public ? globalIcon : lockIcon} alt={'icon'} />
                 </div>
             </div>
 

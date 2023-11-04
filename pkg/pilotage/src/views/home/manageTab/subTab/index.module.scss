@@ -98,11 +98,19 @@
         position: absolute;
         bottom: 10px;
         left: 10px;
+        z-index: 10;
 
         .icon {
             width: 20px;
             height: 20px;
         }
+    }
+
+    & .permissionIcon {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 10;
     }
 
     & .cardText {

@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="095376f5-5242-4b00-8f99-0f49aeff2372" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/socialTab/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/socialTab/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/socialTab/itemCard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/socialTab/itemCard/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/workspace/[slug].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/workspace/[slug].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/manageTab/subTab/index.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/manageTab/subTab/index.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/manageTab/subTab/itemCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/manageTab/subTab/itemCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -152,7 +153,10 @@
       <workItem from="1698909615952" duration="10000" />
       <workItem from="1698909770875" duration="2016000" />
       <workItem from="1698912177898" duration="6542000" />
-      <workItem from="1698989267679" duration="1379000" />
+      <workItem from="1698989267679" duration="2033000" />
+      <workItem from="1699012724845" duration="5000" />
+      <workItem from="1699048199589" duration="305000" />
+      <workItem from="1699080712036" duration="3530000" />
     </task>
     <servers />
   </component>

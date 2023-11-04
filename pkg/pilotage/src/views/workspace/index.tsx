@@ -10,6 +10,7 @@ import InfoColTabFile from '@/views/workspace/infoColTabs/fileTree';
 import styles from './index.module.scss';
 import folderIcon from '@/assets/icons/workspace/Folder_Open.svg';
 import bookIcon from '@/assets/icons/workspace/carbon_book.svg';
+import portIcon from '@/assets/icons/workspace/mdi_application-import.svg';
 import { useDispatch } from 'react-redux';
 import { setWorkspace } from '@/stores/slices/workspace.slice';
 import { io, Socket } from 'socket.io-client';
@@ -19,6 +20,7 @@ import { RequestVmForWorkspace } from '@/types/lighthouseSocket.type';
 import { useAppSelector } from '@/stores/hook';
 import { useRouter } from 'next/router';
 import photocopyImg from '@/assets/icons/workspace/photocopy.svg';
+import InfoColPortForward from '@/views/workspace/infoColTabs/portForward';
 
 type Props = {
     workspaceData: Playground_Workspace;
@@ -183,6 +185,11 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
         },
         {
             key: '1',
+            label: `Port Forwarding`,
+            children: <InfoColPortForward vmData={vmData} lighthouseSocket={lighthouseSocket} />,
+        },
+        {
+            key: '10',
             label: `Thông in`,
             children: <InfoColTabInfo />,
         },
@@ -203,12 +210,25 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
                         />
                     </Tooltip>
 
+                    {!userData || (workspaceData.permission === Playground_WorkspacePermission.Public && workspaceData.owner._id !== userData._id) ? (
+                        <></>
+                    ) : (
+                        <Tooltip placement={'right'} title={'Port Forwarding'}>
+                            <Button
+                                className={`${styles.toolBarBtn} ${infoColActiveTab === '1' ? styles.active : ''}`}
+                                icon={<Image src={portIcon} alt={'folder icon'} />}
+                                size={'large'}
+                                onClick={() => setInfoColActiveTab('1')}
+                            />
+                        </Tooltip>
+                    )}
+
                     <Tooltip placement={'right'} title={'Thông tin'}>
                         <Button
-                            className={`${styles.toolBarBtn} ${infoColActiveTab === '1' ? styles.active : ''}`}
+                            className={`${styles.toolBarBtn} ${infoColActiveTab === '10' ? styles.active : ''}`}
                             icon={<Image src={bookIcon} alt={'book icon'} />}
                             size={'large'}
-                            onClick={() => setInfoColActiveTab('1')}
+                            onClick={() => setInfoColActiveTab('10')}
                         />
                     </Tooltip>
                 </div>
@@ -233,7 +253,7 @@ export default function ViewWorkspace({ workspaceData, accessToken }: Props) {
                         <div className={'h--full display--flex align-items--center px--32'}>
                             <div>
                                 <Image src={photocopyImg} alt={''} />
-                                <p className={"mt--8 text-align--center"}>VM chỉ khả dụng khi workspace đó của bạn !</p>
+                                <p className={'mt--8 text-align--center'}>VM chỉ khả dụng khi workspace đó của bạn !</p>
                             </div>
                         </div>
                     ) : (

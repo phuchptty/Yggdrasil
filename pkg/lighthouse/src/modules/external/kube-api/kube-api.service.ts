@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod, V1Service } from "@kubernetes/client-node";
+import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod } from "@kubernetes/client-node";
 import { ConfigService } from "@nestjs/config";
 import { KubeCreateDeployment } from "./types/deployment.type";
 
@@ -160,4 +160,19 @@ export class KubeApiService implements OnModuleInit {
     public deletePod(namespace: string, name: string) {
         return this.kubeApi.deleteNamespacedPod(name, namespace);
     }
+
+    // public async getNodeDescribe() {
+    //     try {
+    //         this.kubeApi.listNode()
+    //         const { body: node } = await this.kubeApi.readNode("doan-cluster");
+    //
+    //         const resource = node.status.capacity;
+    //         const capacity = {
+    //             cpu: resource.cpu,
+    //             memory: resource.memory,
+    //         };
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
 }

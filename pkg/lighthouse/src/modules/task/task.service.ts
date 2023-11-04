@@ -12,19 +12,33 @@ export class TaskService {
 
     constructor(private readonly redisService: RedisService, private readonly kubeClient: KubeApiService) {}
 
+    public async getServices() {
+        try {
+            // Get all service related
+            const appSelector = `app.kubernetes.io/name=beacon`;
+
+            // return this.kubeClient.kubeApi.listServiceForAllNamespaces(undefined, undefined, undefined, appSelector);
+            return this.kubeClient.kubeApi.listNamespacedService("beacon", undefined, undefined, undefined, undefined, appSelector);
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+
     private async deleteItem(namespace: string, podName: string, redisKey: string) {
         try {
             // Delete pod
             await this.kubeClient.deletePod(namespace, podName);
+
+            // Delete pod from redis
+            // Because services and ingress are not consume storage, so we don't need care too much about delete it
+            await this.redisService.redisClient.del(redisKey);
 
             // Get all service related
             const appSelector = `podName=${podName}`;
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const s = await this.kubeClient.kubeApi.listServiceForAllNamespaces({
-                labelSelector: appSelector,
-            });
+            const s = await this.kubeClient.kubeApi.listNamespacedService(namespace, undefined, undefined, undefined, undefined, appSelector);
 
             // Delete service
             for (const service of s.body.items) {
@@ -34,17 +48,12 @@ export class TaskService {
             // Find all ingress related
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const i = await this.kubeClient.kubeNetworkApi.listIngressForAllNamespaces({
-                labelSelector: appSelector,
-            });
+            const i = await this.kubeClient.kubeNetworkApi.listNamespacedIngress(namespace, undefined, undefined, undefined, undefined, appSelector);
 
             // Delete ingress
             for (const ingress of i.body.items) {
                 await this.kubeClient.kubeNetworkApi.deleteNamespacedIngress(ingress.metadata.namespace, ingress.metadata.name);
             }
-
-            // Delete pod from redis
-            await this.redisService.redisClient.del(redisKey);
         } catch (e) {
             throw new Error(e);
         }
@@ -77,8 +86,14 @@ export class TaskService {
                 const namespace = generateK8sNamespace(workspaceId);
 
                 try {
+                    await this.kubeClient.kubeApi.readNamespacedPod("beacon", "beacon");
                     await this.deleteItem(namespace, podName, document.id);
                 } catch (e) {
+                    if (e.response.body.code === 404) {
+                        await this.redisService.redisClient.del(document.id);
+                        continue;
+                    }
+
                     this.logger.error("Delete pod failed", e);
                 }
             }
@@ -125,6 +140,8 @@ export class TaskService {
 
             // Get all pending delete pods
             const redisKey = await this.redisService.redisClient.ft.SEARCH("idx:vm-provision", `@state:${VmState.PROVISIONED}`);
+
+            console.log(redisKey);
 
             if (redisKey.total === 0 || redisKey.documents.length === 0) {
                 return;

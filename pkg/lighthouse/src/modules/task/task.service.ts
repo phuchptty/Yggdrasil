@@ -86,7 +86,7 @@ export class TaskService {
                 const namespace = generateK8sNamespace(workspaceId);
 
                 try {
-                    await this.kubeClient.kubeApi.readNamespacedPod("beacon", "beacon");
+                    await this.kubeClient.kubeApi.readNamespacedPod(podName, namespace);
                     await this.deleteItem(namespace, podName, document.id);
                 } catch (e) {
                     if (e.response.body.code === 404) {

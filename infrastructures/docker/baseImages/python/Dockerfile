@@ -32,10 +32,6 @@ RUN mkdir /home/${USER}/runner
 RUN chown ${GID}:${GID} /home/${USER}/runner
 VOLUME /home/${USER}/runner
 
-# Create entrypoint
-COPY pre-run.sh .
-RUN chmod +x pre-run.sh
-
 WORKDIR /home/${USER}/runner
 USER ${USER}
 

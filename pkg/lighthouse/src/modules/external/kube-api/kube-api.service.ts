@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod } from "@kubernetes/client-node";
+import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod, BatchV1Api } from "@kubernetes/client-node";
 import { ConfigService } from "@nestjs/config";
 import { KubeCreateDeployment } from "./types/deployment.type";
 
@@ -11,6 +11,7 @@ export class KubeApiService implements OnModuleInit {
     public kubeApi: CoreV1Api;
     public kubeAppsApi: AppsV1Api;
     public kubeNetworkApi: NetworkingV1Api;
+    public kubeBatchApi: BatchV1Api;
 
     constructor(private readonly configService: ConfigService) {}
 
@@ -21,6 +22,7 @@ export class KubeApiService implements OnModuleInit {
         this.kubeApi = kc.makeApiClient(CoreV1Api);
         this.kubeAppsApi = kc.makeApiClient(AppsV1Api);
         this.kubeNetworkApi = kc.makeApiClient(NetworkingV1Api);
+        this.kubeBatchApi = kc.makeApiClient(BatchV1Api);
 
         this.kubeConfig = kc;
 

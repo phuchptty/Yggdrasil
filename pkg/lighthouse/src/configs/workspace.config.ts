@@ -1,9 +1,9 @@
 export const workspaceConfig = () => ({
     workspace: {
         defaultSpecs: {
-            cpu: "300m",
+            cpu: "500m",
             memory: "256Mi",
-            storage: "1Gi",
+            storage: "2Gi",
         },
     },
 });

@@ -2,6 +2,7 @@ type LanguageStartFile = {
     name: string;
     mimeType: string;
     content?: string;
+    postCreateCommand?: string[];
 };
 
 const languageStartFile: Record<string, LanguageStartFile> = {
@@ -14,11 +15,13 @@ const languageStartFile: Record<string, LanguageStartFile> = {
         name: "main.cpp",
         content: ``,
         mimeType: "text/plain",
+        postCreateCommand: ["touch", "/mnt/workspace/main.cpp"],
     },
     python: {
         name: "main.py",
         content: ``,
         mimeType: "text/x-python",
+        postCreateCommand: ["touch", "/mnt/workspace/main.py"],
     },
     java: {
         name: "Main.java",
@@ -29,6 +32,7 @@ const languageStartFile: Record<string, LanguageStartFile> = {
         name: "main.js",
         content: ``,
         mimeType: "text/javascript",
+        postCreateCommand: [`printf "{\n\tname:\"yggdrasil\",\n\tversion:\"1.0.0\",\n\tmain:\"index.js\",\n\tlicense:\"MIT\",\n\tprivate:false\n}" > /mnt/workspace/package.json`, "touch", "/mnt/workspace/index.js"],
     },
     typescript: {
         name: "main.ts",

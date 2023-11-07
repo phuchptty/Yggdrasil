@@ -10,6 +10,7 @@ import { WorkspacePermission } from "../../commons/enums";
 import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { KubeApiService } from "../external/kube-api/kube-api.service";
 import { ConfigService } from "@nestjs/config";
+import languageStartFile from "../../constants/languageStartFile.constant";
 
 @Injectable()
 export class WorkspaceService {
@@ -162,6 +163,12 @@ export class WorkspaceService {
             const workspaceStorageQuota = this.configService.get("workspace.defaultSpecs.storage");
             const workspacePVCName = generateK8sPvcName(workspaceId.toString());
 
+            const languageConfig = languageStartFile[language.key];
+
+            if (!languageConfig) {
+                throw new GraphQLError("Language config not found");
+            }
+
             // Create namespace
             await this.kubeApi.createNamespace(
                 workspaceNamespace,
@@ -176,6 +183,45 @@ export class WorkspaceService {
             // Create persistent volume claim
             await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota, undefined, "nfs-csi");
 
+            if (languageConfig.postCreateCommand) {
+                // Create job to create file
+                await this.kubeApi.kubeBatchApi.createNamespacedJob(workspaceNamespace, {
+                    metadata: {
+                        name: `create-file-${workspaceId.toString()}`,
+                    },
+                    spec: {
+                        ttlSecondsAfterFinished: 60,
+                        template: {
+                            spec: {
+                                containers: [
+                                    {
+                                        name: `create-file-${workspaceId.toString()}`,
+                                        image: "busybox",
+                                        imagePullPolicy: "IfNotPresent",
+                                        command: languageConfig.postCreateCommand,
+                                        volumeMounts: [
+                                            {
+                                                name: "workspace-storage",
+                                                mountPath: "/mnt/workspace",
+                                            },
+                                        ],
+                                    },
+                                ],
+                                volumes: [
+                                    {
+                                        name: "workspace-storage",
+                                        persistentVolumeClaim: {
+                                            claimName: workspacePVCName,
+                                        },
+                                    },
+                                ],
+                                restartPolicy: "OnFailure",
+                            },
+                        },
+                    },
+                });
+            }
+
             // Save to DB
             const wsInstance = new this.wsModel({
                 _id: workspaceId,
@@ -187,7 +233,7 @@ export class WorkspaceService {
 
             let wsSave = await wsInstance.save();
             wsSave = await wsSave.populate(["workspaceLanguage"]);
-          
+
             return wsSave;
         } catch (e) {
             if (e?.response?.body.status === "Failure") {

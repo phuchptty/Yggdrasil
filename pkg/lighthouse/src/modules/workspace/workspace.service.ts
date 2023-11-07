@@ -190,7 +190,7 @@ export class WorkspaceService {
                         name: `create-file-${workspaceId.toString()}`,
                     },
                     spec: {
-                        // ttlSecondsAfterFinished: 60,
+                        ttlSecondsAfterFinished: 60,
                         template: {
                             spec: {
                                 containers: [

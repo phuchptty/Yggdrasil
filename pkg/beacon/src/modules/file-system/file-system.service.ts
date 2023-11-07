@@ -6,6 +6,7 @@ import { FilePropertiesResponseDto, FolderFlatTreeResponseDto, FolderTreeRespons
 import { FileTypeEnum } from "../../types/enum/file.enum";
 import { toUnixPath } from "../../utils";
 import mime from "mime-types";
+import { ignoreFileList, ignoreFolderList } from "../../constants";
 
 @Injectable()
 export class FileSystemService {
@@ -76,12 +77,20 @@ export class FileSystemService {
                 const fileStats = fs.statSync(filePath);
 
                 if (fileStats.isDirectory()) {
+                    if (ignoreFolderList.includes(file)) {
+                        continue;
+                    }
+
                     const childTree = await this.getFolderTree(join(folderPath, file));
 
                     if (childTree) {
                         tree.children.push(childTree);
                     }
                 } else {
+                    if (ignoreFileList.includes(file)) {
+                        continue;
+                    }
+
                     const mimeType = mime.lookup(filePath);
 
                     tree.children.push({

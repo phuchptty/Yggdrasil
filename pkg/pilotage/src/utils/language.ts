@@ -1,7 +1,7 @@
-import cppImage from "@/assets/icons/languages/c-.png";
-import pythonImage from "@/assets/icons/languages/python.png";
-import nodejsImage from "@/assets/icons/languages/node-js.png";
-import languageImage from "@/assets/images/language.jpg";
+import cppImage from '@/assets/icons/languages/c-.png';
+import pythonImage from '@/assets/icons/languages/python.png';
+import nodejsImage from '@/assets/icons/languages/node-js.png';
+import languageImage from '@/assets/images/language.jpg';
 
 interface LanguageConfig {
     name: string;
@@ -47,7 +47,7 @@ export function getLanguageByEditorKey(editorKey: string): LanguageConfig | null
     return language ? language : null;
 }
 
-export function getLanguageIcon(key: string){
+export function getLanguageIcon(key: string) {
     let image;
 
     switch (key) {
@@ -59,7 +59,7 @@ export function getLanguageIcon(key: string){
             image = pythonImage;
             break;
 
-        case 'nodejs':
+        case 'javascript':
             image = nodejsImage;
             break;
 

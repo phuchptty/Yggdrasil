@@ -181,6 +181,7 @@ export class VmManagerService {
                 },
                 spec: {
                     automountServiceAccountToken: false,
+                    hostname: "vm",
                     containers: [
                         {
                             name: podName,

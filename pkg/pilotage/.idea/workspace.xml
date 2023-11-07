@@ -8,7 +8,6 @@
       <change beforePath="$PROJECT_DIR$/../../infrastructures/manifests/cluster-role/lighthouse-cluster-role.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../../infrastructures/manifests/cluster-role/lighthouse-cluster-role.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/infoColTabs/fileTree/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +73,8 @@
       <workItem from="1699202533130" duration="856000" />
       <workItem from="1699349867532" duration="10000" />
       <workItem from="1699371527728" duration="1115000" />
-      <workItem from="1699373140914" duration="1953000" />
+      <workItem from="1699373140914" duration="2201000" />
+      <workItem from="1699379469691" duration="224000" />
     </task>
     <servers />
   </component>

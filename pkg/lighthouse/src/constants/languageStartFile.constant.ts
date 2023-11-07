@@ -32,7 +32,7 @@ const languageStartFile: Record<string, LanguageStartFile> = {
         name: "main.js",
         content: ``,
         mimeType: "text/javascript",
-        postCreateCommand: [`printf "{\n\tname:\"yggdrasil\",\n\tversion:\"1.0.0\",\n\tmain:\"index.js\",\n\tlicense:\"MIT\",\n\tprivate:false\n}" > /mnt/workspace/package.json`, "touch", "/mnt/workspace/index.js"],
+        postCreateCommand: [`printf`, `'{\n\t"name":"yggdrasil",\n\t"version":"1.0.0",\n\t"main":"index.js",\n\t"license":"MIT",\n\t"private":false\n}" > /mnt/workspace/package.json`],
     },
     typescript: {
         name: "main.ts",

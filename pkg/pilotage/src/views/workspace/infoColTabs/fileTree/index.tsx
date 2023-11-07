@@ -79,6 +79,11 @@ export default function InfoColTabFile({ beaconSocket }: Props) {
         setTimeout(() => {
             getStructure();
         }, 800);
+
+        // Get structure every 2s
+        setInterval(() => {
+            getStructure();
+        }, 2000);
     }, [beaconSocket]);
 
     // Open file

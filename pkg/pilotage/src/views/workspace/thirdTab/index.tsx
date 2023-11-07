@@ -14,6 +14,7 @@ import { LighthouseEvent } from '@/constants/lighthouseEvent';
 import { RequestExecUrlResponse } from '@/types/lighthouseSocket.type';
 import dynamic from 'next/dynamic';
 import { Terminal } from 'xterm';
+import dayjs from 'dayjs';
 
 const DynamicTerminal = dynamic(() => import('@/components/dynamicTerminal'), {
     ssr: false,
@@ -52,8 +53,9 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
         let socConn: WebSocket;
         let firstConnect = true;
-        let socketErrorCount = 0;
         let localExecUrl: string;
+        let socketErrorTimestamp = dayjs().unix();
+        let socketErrorFirstTime = false;
 
         lighthouseSocket.emit(
             LighthouseEvent.REQUEST_ATTACH_URL,
@@ -93,12 +95,19 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
             if (!terminal) return;
 
             let alive: number | undefined;
+            let reconnectSetTimeout: NodeJS.Timeout | undefined;
 
             socConn = new WebSocket(localExecUrl, k8sProtocols);
             socConn.binaryType = 'arraybuffer';
 
             socConn.onopen = function () {
                 console.log('console connected');
+
+                // Clear error
+                socketErrorFirstTime = false;
+                if (reconnectSetTimeout) {
+                    clearTimeout(reconnectSetTimeout);
+                }
 
                 // Set socket to state
                 setSocket(socConn);
@@ -151,7 +160,11 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
 
             socConn.onerror = function (e) {
                 terminal.writeln("Error: Couldn't connect to console. Reconnecting...\n");
-                socketErrorCount += 1;
+
+                if (!socketErrorFirstTime) {
+                    socketErrorFirstTime = true;
+                    socketErrorTimestamp = dayjs().unix();
+                }
             };
 
             socConn.onclose = function (e) {
@@ -159,8 +172,8 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
                 window.clearInterval(alive);
 
                 // reconnect
-                if (socketErrorCount <= 10) {
-                    setTimeout(() => {
+                if (dayjs().unix() - socketErrorTimestamp <= 3 * 60) {
+                    reconnectSetTimeout = setTimeout(() => {
                         socketConnect();
                     }, 100);
                 }

@@ -3,6 +3,7 @@ type LanguageStartFile = {
     mimeType: string;
     content?: string;
     postCreateCommand?: string[];
+    postCreateImage?: string;
 };
 
 const languageStartFile: Record<string, LanguageStartFile> = {
@@ -32,7 +33,8 @@ const languageStartFile: Record<string, LanguageStartFile> = {
         name: "main.js",
         content: ``,
         mimeType: "text/javascript",
-        postCreateCommand: [`printf`, `'{\n\t"name":"yggdrasil",\n\t"version":"1.0.0",\n\t"main":"index.js",\n\t"license":"MIT",\n\t"private":false\n}" > /mnt/workspace/package.json`],
+        postCreateCommand: ["/bin/sh", "-c", "yarn init -y; yarn; touch index.js"],
+        postCreateImage: "node:18-alpine",
     },
     typescript: {
         name: "main.ts",

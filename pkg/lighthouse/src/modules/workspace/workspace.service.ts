@@ -190,15 +190,16 @@ export class WorkspaceService {
                         name: `create-file-${workspaceId.toString()}`,
                     },
                     spec: {
-                        ttlSecondsAfterFinished: 60,
+                        // ttlSecondsAfterFinished: 60,
                         template: {
                             spec: {
                                 containers: [
                                     {
                                         name: `create-file-${workspaceId.toString()}`,
-                                        image: "busybox",
+                                        image: languageConfig.postCreateImage || "busybox",
                                         imagePullPolicy: "IfNotPresent",
                                         command: languageConfig.postCreateCommand,
+                                        workingDir: "/mnt/workspace",
                                         volumeMounts: [
                                             {
                                                 name: "workspace-storage",

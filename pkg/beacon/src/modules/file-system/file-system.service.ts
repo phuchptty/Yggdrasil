@@ -153,7 +153,9 @@ export class FileSystemService {
                             type: FileTypeEnum.FILE,
                         });
                     } else if (stats.isDirectory()) {
-                        traverseFolder(filePath, join(currentPath, file));
+                        if (!ignoreFolderList.includes(file)) {
+                            traverseFolder(filePath, join(currentPath, file));
+                        }
                     }
                 });
             }

@@ -145,13 +145,15 @@ export class FileSystemService {
                     const mimeType = mime.lookup(filePath);
 
                     if (stats.isFile()) {
-                        result.push({
-                            name: file,
-                            path: toUnixPath(join(currentPath, file)),
-                            mimeType: mimeType,
-                            size: stats.size,
-                            type: FileTypeEnum.FILE,
-                        });
+                        if (!ignoreFileList.includes(file)) {
+                            result.push({
+                                name: file,
+                                path: toUnixPath(join(currentPath, file)),
+                                mimeType: mimeType,
+                                size: stats.size,
+                                type: FileTypeEnum.FILE,
+                            });
+                        }
                     } else if (stats.isDirectory()) {
                         if (!ignoreFolderList.includes(file)) {
                             traverseFolder(filePath, join(currentPath, file));

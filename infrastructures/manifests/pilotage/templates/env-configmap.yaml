@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ .Release.Name }}-app-env-configmap'
+
+data:
+  NODE_ENV: {{ .Values.appConfig.env }}
+  SITE_URL: {{ .Values.appConfig.siteUrl | quote }}
+  NEXT_PUBLIC_API_URL: {{ .Values.appConfig.apiUrl | quote }}
+  NEXT_PUBLIC_NODE_ENV: {{ .Values.appConfig.env }}
+
+  KEYCLOAK_ID: {{ .Values.appConfig.keycloak.clientAuthId }}
+  KEYCLOAK_SECRET: {{ .Values.appConfig.keycloak.clientSecret }}
+  KEYCLOAK_ISSUER: {{ .Values.appConfig.keycloak.issuer }}
+
+  NEXTAUTH_SECRET: {{ .Values.appConfig.nextAuth.secret }}
+  NEXTAUTH_URL: {{ .Values.appConfig.nextAuth.url }}

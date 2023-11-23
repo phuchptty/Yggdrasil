@@ -8,7 +8,7 @@ appConfig:
   siteUrl: "https://yds.cuterabbit.art"
   env: production
   apiUrl: "https://lighthouse.yds.cuterabbit.art"
-  ssrApiUrl: "https://lighthouse.yds.cuterabbit.art"
+  ssrApiUrl: "http://lighthouse.lighthouse.svc.cluster.local:3000"
 
   keycloak:
     issuer: "http://keycloak.keycloak.svc.cluster.local/realms/yggdrasil"
@@ -21,7 +21,7 @@ appConfig:
 
 image:
   repository: ghcr.io/phuchptty/yggdrasil/pilotage
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 

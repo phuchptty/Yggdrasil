@@ -6,7 +6,10 @@ metadata:
 data:
   NODE_ENV: {{ .Values.appConfig.env }}
   SITE_URL: {{ .Values.appConfig.siteUrl | quote }}
+  
   NEXT_PUBLIC_API_URL: {{ .Values.appConfig.apiUrl | quote }}
+  NEXT_SSR_API_URL: {{ .Values.appConfig.ssrApiUrl | quote }}
+  
   NEXT_PUBLIC_NODE_ENV: {{ .Values.appConfig.env }}
 
   KEYCLOAK_ID: {{ .Values.appConfig.keycloak.clientAuthId }}

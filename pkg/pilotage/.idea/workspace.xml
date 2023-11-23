@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4824e1da-d8ec-49c4-b40c-4bef9c1941c9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env.production" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env.local" beforeDir="false" afterPath="$PROJECT_DIR$/.env.local" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/apolloClientSSR.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/apolloClientSSR.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +33,7 @@
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "E:/PROJECT/KMA/Yggdrasil/pkg/pilotage",
+    "last_opened_file_path": "E:/PROJECT/KMA/Yggdrasil/pkg/lighthouse",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -83,7 +79,7 @@
       <workItem from="1699949452481" duration="1131000" />
       <workItem from="1699951562163" duration="657000" />
       <workItem from="1700075366588" duration="18000" />
-      <workItem from="1700731052924" duration="1062000" />
+      <workItem from="1700731052924" duration="1381000" />
     </task>
     <servers />
   </component>

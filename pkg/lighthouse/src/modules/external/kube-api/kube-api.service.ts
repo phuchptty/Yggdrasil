@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod, BatchV1Api } from "@kubernetes/client-node";
+import { AppsV1Api, CoreV1Api, KubeConfig, NetworkingV1Api, V1Pod, BatchV1Api, KubernetesObjectApi, loadYaml } from "@kubernetes/client-node";
 import { ConfigService } from "@nestjs/config";
 import { KubeCreateDeployment } from "./types/deployment.type";
 
@@ -12,6 +12,7 @@ export class KubeApiService implements OnModuleInit {
     public kubeAppsApi: AppsV1Api;
     public kubeNetworkApi: NetworkingV1Api;
     public kubeBatchApi: BatchV1Api;
+    public kubeObjectApiClient: KubernetesObjectApi;
 
     constructor(private readonly configService: ConfigService) {}
 
@@ -23,10 +24,22 @@ export class KubeApiService implements OnModuleInit {
         this.kubeAppsApi = kc.makeApiClient(AppsV1Api);
         this.kubeNetworkApi = kc.makeApiClient(NetworkingV1Api);
         this.kubeBatchApi = kc.makeApiClient(BatchV1Api);
+        this.kubeObjectApiClient = KubernetesObjectApi.makeApiClient(kc);
 
         this.kubeConfig = kc;
 
         this.logger.log("KubeApiService initialized");
+    }
+
+    public sendRawSchema(schema: string) {
+        try {
+            // Load raw yaml
+            const spec = loadYaml(schema);
+
+            return this.kubeObjectApiClient.create(spec);
+        } catch (e) {
+            throw e;
+        }
     }
 
     public getPod(namespace: string, name: string) {

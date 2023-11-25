@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { PaginateModel, Types } from "mongoose";
 import { Workspace, WorkspaceDocument } from "./schema/workspace.schema";
@@ -11,9 +11,12 @@ import { PaginateInput } from "../../commons/dto/paginateInfo.input";
 import { KubeApiService } from "../external/kube-api/kube-api.service";
 import { ConfigService } from "@nestjs/config";
 import languageStartFile from "../../constants/languageStartFile.constant";
+import { loadYaml } from "@kubernetes/client-node";
 
 @Injectable()
 export class WorkspaceService {
+    private logger = new Logger(WorkspaceService.name);
+
     constructor(
         @InjectModel(Workspace.name) private wsModel: PaginateModel<WorkspaceDocument>,
         private readonly languageService: LanguageService,
@@ -179,6 +182,31 @@ export class WorkspaceService {
                     "field.cattle.io/projectId": "local:p-guest-vm",
                 },
             );
+
+            // Create network policy
+            try {
+                const schema = `
+                    apiVersion: crd.projectcalico.org/v1
+                    kind: NetworkPolicy
+                    metadata:
+                      name: deny-access-cross-namespace-${workspaceId.toString()}
+                      namespace: ${workspaceNamespace}
+                    spec:
+                      egress:
+                        - action: Deny
+                          destination:
+                            nets:
+                              - 10.0.0.0/8
+                        - action: Allow
+                          destination:
+                            nets:
+                              - 0.0.0.0/0
+                `;
+
+                await this.kubeApi.sendRawSchema(schema);
+            } catch (e) {
+                this.logger.error("Create network policy failed:", e.response.body);
+            }
 
             // Create persistent volume claim
             await this.kubeApi.createPersistentVolumeClaim(workspaceNamespace, workspacePVCName, workspaceStorageQuota, undefined, "nfs-csi");

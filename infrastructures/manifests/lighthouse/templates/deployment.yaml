@@ -39,7 +39,7 @@ spec:
                   echo "Checking redis port"
                   while [ $OK != 1 ]; do
                   echo -n "."
-                  nc -z {{ .Release.Name }}-redis-headless.{{ .Release.Namespace }}.svc.cluster.local 6379 2>&1 >/dev/null && OK=1 || sleep 1
+                  nc -z redis-svc.{{ .Release.Namespace }}.svc.cluster.local 6379 2>&1 >/dev/null && OK=1 || sleep 1
                   done
                   echo
                   echo "Done"

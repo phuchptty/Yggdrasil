@@ -1,6 +1,6 @@
 dependencies:
-- name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 18.1.6
-digest: sha256:37e6745de960fa0c85f7dab456c389c7465030b85b555240d8757a9088510e38
-generated: "2023-10-22T03:08:37.0702372+07:00"
+- name: redis-stack-server
+  repository: https://redis-stack.github.io/helm-redis-stack/
+  version: 0.4.6
+digest: sha256:4e975fcba8f11443d9469e9914baaf9bc13bb8d0fe71e8e47fe6388c1aac075a
+generated: "2023-11-26T01:36:45.2033+07:00"

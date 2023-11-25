@@ -15,9 +15,7 @@ appConfig:
       uri: "mongodb+srv://yggdrasil-pc:ciZYtbaZFkNnnIHm@cluster0.cwnwsdr.mongodb.net/?retryWrites=true&w=majority"
       name: "yggdrasil-dev"
     redis:
-      host: redis-19909.c302.asia-northeast1-1.gce.cloud.redislabs.com
-      port: 19909
-      pass: PfJXQtGoLD6JMB8NqLqYJaEhcPfZQCKE
+      pass: chungtalagicuanhaudau
 
   keycloak:
     base: "http://keycloak.keycloak.svc.cluster.local"
@@ -100,8 +98,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-redis:
-  architecture: standalone
-  auth:
-    enabled: false

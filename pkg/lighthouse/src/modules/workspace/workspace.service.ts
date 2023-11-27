@@ -196,7 +196,7 @@ export class WorkspaceService {
                         - action: Deny
                           destination:
                             nets:
-                              - 10.0.0.0/8
+                              - 10.42.0.0/8
                         - action: Allow
                           destination:
                             nets:

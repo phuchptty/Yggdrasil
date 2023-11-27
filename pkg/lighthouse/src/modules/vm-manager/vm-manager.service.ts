@@ -6,7 +6,7 @@ import { WorkspaceService } from "../workspace/workspace.service";
 import { KubeApiService } from "../external/kube-api/kube-api.service";
 import { Workspace } from "../workspace/schema/workspace.schema";
 import containerImagesConstant from "../../constants/containerImages.constant";
-import { generateK8sNamespace, generateK8sPodName, generateK8sPvcName, generateK8sVolumeName } from "../../utils";
+import { generateK8sNamespace, generateK8sPvcName, generateK8sVolumeName } from "../../utils";
 import urlJoin from "url-join";
 import dayjs from "dayjs";
 import { v4 as uuidv4 } from "uuid";
@@ -121,6 +121,14 @@ export class VmManagerService {
             const workspaceId = workspace._id.toString();
             const podName = `vm-${uuidv4()}`;
             const redisKey = this.getRedisKey(workspaceId, owner, podName);
+            const namespace = generateK8sNamespace(workspaceId);
+
+            // Check if vm is already provisioned max 2
+            const listPod = await this.kubeApi.kubeApi.listNamespacedPod(namespace);
+
+            if (listPod.body.items.length >= 2) {
+                throw new WsException(errorMessageConstant.ONLY_ONE_VM_PER_WORKSPACE);
+            }
 
             // Check exist vm exist
             const vmPersistCheck = await this.redisService.redisClient.hGet(redisKey, "socketId");

@@ -215,6 +215,8 @@ export class VmManagerService {
                     ],
                     securityContext: {
                         fsGroup: 1234,
+                        runAsGroup: 1234,
+                        runAsUser: 6789,
                     },
                     dnsConfig: {
                         nameservers: ["1.1.1.1", "8.8.8.8"],

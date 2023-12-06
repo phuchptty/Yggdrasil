@@ -6,7 +6,7 @@ ENV USER=alixia
 ENV UID=6789
 ENV GID=1234
 
-RUN apk update && apk add bash
+RUN apk update && apk add bash bind-tools
 
 RUN addgroup --gid ${GID} hk3rd
 

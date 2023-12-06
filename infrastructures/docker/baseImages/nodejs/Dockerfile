@@ -30,6 +30,7 @@ RUN chmod g+s /home/${USER}
 # Create a directory for nfs mount
 RUN mkdir /home/${USER}/runner
 RUN chown ${GID}:${GID} /home/${USER}/runner
+RUN chmod 777 /home/${USER}/runner
 VOLUME /home/${USER}/runner
 
 # Install dependencies

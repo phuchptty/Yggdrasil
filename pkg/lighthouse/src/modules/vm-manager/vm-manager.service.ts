@@ -203,6 +203,9 @@ export class VmManagerService {
                             ],
                             stdin: true,
                             tty: true,
+                            securityContext: {
+                                privileged: false,
+                            },
                         },
                     ],
                     volumes: [

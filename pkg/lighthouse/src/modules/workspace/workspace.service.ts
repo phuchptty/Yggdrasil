@@ -234,6 +234,9 @@ export class WorkspaceService {
                                                 mountPath: "/mnt/workspace",
                                             },
                                         ],
+                                        securityContext: {
+                                            privileged: false,
+                                        },
                                     },
                                 ],
                                 volumes: [
@@ -245,6 +248,11 @@ export class WorkspaceService {
                                     },
                                 ],
                                 restartPolicy: "OnFailure",
+                                securityContext: {
+                                    fsGroup: 1234,
+                                    runAsGroup: 1234,
+                                    runAsUser: 6789,
+                                },
                             },
                         },
                     },

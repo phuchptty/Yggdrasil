@@ -201,6 +201,8 @@ export class WorkspaceService {
                           destination:
                             nets:
                               - 0.0.0.0/0
+                      ingress:
+                        - action: Allow
                 `;
 
                 await this.kubeApi.sendRawSchema(schema);

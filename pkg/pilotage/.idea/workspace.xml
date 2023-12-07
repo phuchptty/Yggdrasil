@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4824e1da-d8ec-49c4-b40c-4bef9c1941c9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/dynamicTerminal/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dynamicTerminal/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/monacoEditor/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/workspace/thirdTab/index.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="4824e1da-d8ec-49c4-b40c-4bef9c1941c9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -84,7 +79,7 @@
       <workItem from="1699951562163" duration="657000" />
       <workItem from="1700075366588" duration="18000" />
       <workItem from="1700731052924" duration="1381000" />
-      <workItem from="1701956193282" duration="947000" />
+      <workItem from="1701956193282" duration="1059000" />
     </task>
     <servers />
   </component>

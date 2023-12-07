@@ -1,7 +1,6 @@
 import Editor, { Monaco } from '@monaco-editor/react';
 import { useEffect, useRef, useState } from 'react';
 import { editor } from 'monaco-editor';
-import debounce from 'lodash/debounce';
 import { message } from 'antd';
 import styles from './index.module.scss';
 import { useAppDispatch, useAppSelector } from '@/stores/hook';
@@ -166,6 +165,9 @@ export default function MonacoEditor({ path, beaconSocket }: Props) {
                 onMount={handleEditorDidMount}
                 onChange={onChange}
                 theme={'yggdrasilTheme'}
+                options={{
+                    fontSize: 22,
+                }}
             />
         </div>
     );

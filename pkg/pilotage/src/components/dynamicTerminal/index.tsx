@@ -10,7 +10,9 @@ type Props = {
 };
 
 export default function DynamicTerminal(props: Props) {
-    const term = new Terminal();
+    const term = new Terminal({
+        fontSize: 22,
+    });
     const fitAddon = new FitAddon();
 
     const terminalRef: any = useRef(null);

@@ -1,15 +1,12 @@
-import getConfig from 'next/config';
 import styles from './index.module.scss';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'xterm/css/xterm.css';
-import { useAppDispatch, useAppSelector } from '@/stores/hook';
+import { useAppSelector } from '@/stores/hook';
 import { Socket } from 'socket.io-client';
 import { Playground_Workspace } from '@/graphql/generated/types';
-import { getLanguageByEditorKey } from '@/utils';
 import Image from 'next/image';
 import mobileLogin from '@/assets/images/mobile-login.svg';
 import { Button, message } from 'antd';
-import { mergeArrays } from '@/utils/array';
 import { LighthouseEvent } from '@/constants/lighthouseEvent';
 import { RequestExecUrlResponse } from '@/types/lighthouseSocket.type';
 import dynamic from 'next/dynamic';
@@ -32,19 +29,12 @@ type Props = {
 const k8sProtocols = ['v4.channel.k8s.io', 'v3.channel.k8s.io', 'v2.channel.k8s.io', 'channel.k8s.io'];
 
 export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecuting, setIsExecuting, vmData, lighthouseSocket }: Props) {
-    const dispatch = useAppDispatch();
     const [messageApi, messageContext] = message.useMessage();
 
-    const currentFile = useAppSelector((state) => state.workspaceFileSlice.currentFile);
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
-
-    const workspaceFiles = useAppSelector((state) => state.workspaceFileSlice.workspaceFiles);
 
     const [terminal, setTerminal] = useState<Terminal>();
     const [socket, setSocket] = useState<WebSocket>();
-
-    // Exec url
-    const [execUrl, setExecUrl] = useState<string>();
 
     useEffect(() => {
         if (!terminal) {
@@ -65,7 +55,6 @@ export default function WorkspaceThirdCol({ workspaceData, accessToken, isExecut
             },
             (requestAttachRes: RequestExecUrlResponse) => {
                 console.log(requestAttachRes);
-                setExecUrl(requestAttachRes.execHost);
                 localExecUrl = requestAttachRes.execHost;
 
                 terminal.writeln('Get exec url success. Connecting...\n');

@@ -24,20 +24,13 @@ export async function getStaticProps() {
             query: Playground_LanguagesDocument,
         });
 
-        const { data: countData, error: countError } = await apolloClientSSR.query<Playground_CountPublicWorkspaceByLanguagesQuery>({
-            query: Playground_CountPublicWorkspaceByLanguagesDocument,
-        });
-
-        if (languageError || countError) {
-            console.error(languageError || countError);
+        if (languageError) {
+            console.error(languageError);
         }
-
-        const filteredCountData = countData?.playground_countPublicWorkspaceByLanguages?.filter((item) => item?.count > 0);
 
         return {
             props: {
                 languages: languageData,
-                countData: filteredCountData,
             },
         };
     } catch (e) {
@@ -71,7 +64,7 @@ export default function Page({ languages, countData }: Props) {
         {
             key: '2',
             label: `Cộng đồng`,
-            children: <ViewHomeSocialTab languages={languages} languageCountData={countData} />,
+            children: <ViewHomeSocialTab languages={languages} />,
         },
     ];
 
